@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ScalableImageView">
+        <attr name="aspectRadioHeight" format="integer"/>
+        <attr name="aspectRadioWidth" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="ForegroundLayout">
+        <attr name="foreground" format="reference|color"/>
+    </declare-styleable>
+</resources>

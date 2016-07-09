@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include
+        android:layout_marginRight="@dimen/item_half_spacing"
+        android:layout_weight="1"
+        android:id="@+id/bangumi"
+        layout="@layout/bangumi_end_item"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"/>
+
+    <include
+        android:layout_marginRight="@dimen/item_half_spacing"
+        android:layout_marginLeft="@dimen/item_half_spacing"
+        android:layout_weight="1"
+        android:id="@+id/bangumi_1"
+        layout="@layout/bangumi_end_item"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"/>
+
+    <include
+        android:layout_marginLeft="@dimen/item_half_spacing"
+        android:layout_weight="1"
+        android:id="@+id/bangumi_2"
+        layout="@layout/bangumi_end_item"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"/>
+
+</LinearLayout>

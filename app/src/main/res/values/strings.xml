@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">IMBiliBili</string>
+    <string name="splash_skip">跳过 %ss</string>
+</resources>

@@ -1,40 +1,23 @@
 package com.lh.imbilibili.view;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
 
-import com.lh.imbilibili.IMBilibiliApplication;
-import com.lh.imbilibili.data.api.BilibiliApi;
-import com.lh.imbilibili.view.component.DaggerBaseActivityComponent;
-
-import javax.inject.Inject;
+import com.lh.imbilibili.R;
 
 /**
  * Created by liuhui on 2016/7/5.
  */
 public class BaseActivity extends AppCompatActivity {
-    @Inject
-    protected BilibiliApi api;
-    @Inject
-    protected Handler handler;
 
-    public BilibiliApi getApi() {
-        return api;
+    protected void initStatusBar() {
+        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
+        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+        View view = new View(this);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,statusBarHeight);
+        view.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+        viewGroup.addView(view,params);
     }
-
-    public Handler getHandler() {
-        return handler;
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        DaggerBaseActivityComponent.builder()
-                .iMBilibiliComponent(IMBilibiliApplication.getApplication().getBilibiliComponent())
-                .build()
-                .inject(this);
-    }
-
 }

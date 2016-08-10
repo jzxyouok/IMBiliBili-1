@@ -1,29 +1,26 @@
 package com.lh.imbilibili.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.widget.LinearLayout;
 
 import com.lh.imbilibili.R;
 
-/**
- * Created by liuhui on 2016/7/9.
- */
-public class ForegroundLinearLayout extends LinearLayout {
+public class ForegroundLinearLayout extends LinearLayoutCompat {
 
-    private Drawable foreground;
-    private boolean foregroundSizeChange = false;
-    private Rect selfRect;
-    private Rect overlayRect;
+    private Drawable mForeground;
+
+    private boolean mForegroundBoundChange;
 
     public ForegroundLinearLayout(Context context) {
         super(context);
+        init(context, null);
     }
 
     public ForegroundLinearLayout(Context context, AttributeSet attrs) {
@@ -36,52 +33,38 @@ public class ForegroundLinearLayout extends LinearLayout {
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            selfRect = new Rect();
-            overlayRect = new Rect();
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ForegroundLayout);
-            Drawable drawable = typedArray.getDrawable(R.styleable.ForegroundLayout_foreground);
-            setForeground(drawable);
-            typedArray.recycle();
+    private void init(Context context, @Nullable AttributeSet attrs) {
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ForegroundView);
+            mForeground = array.getDrawable(R.styleable.ForegroundView_android_foreground);
+            setForeground(mForeground);
+            array.recycle();
         }
     }
-
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        foregroundSizeChange = changed;
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        foregroundSizeChange = true;
-    }
-
-    @Override
-    public void setForeground(Drawable drawable) {
+    public void setForeground(Drawable foreground) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            super.setForeground(drawable);
+            super.setForeground(foreground);
         } else {
-            if (foreground != drawable) {
-                if (foreground != null) {
-                    foreground.setCallback(null);
-                    unscheduleDrawable(foreground);
+            if (mForeground != foreground) {
+                if (mForeground != null) {
+                    mForeground.setCallback(null);
+                    unscheduleDrawable(mForeground);
                 }
-                foreground = drawable;
-                if (drawable != null) {
-                    setWillNotDraw(false);
-                    drawable.setCallback(this);
-                    if (drawable.isStateful()) {
-                        drawable.setState(getDrawableState());
-                    }
-                } else {
-                    setWillNotDraw(true);
-                }
-                requestLayout();
-                invalidate();
             }
+            mForeground = foreground;
+            if (mForeground != null) {
+//                mForegroundBoundChange = true;
+                setWillNotDraw(false);
+                mForeground.setCallback(this);
+                if (mForeground.isStateful()) {
+                    mForeground.setState(getDrawableState());
+                }
+            } else {
+                setWillNotDraw(true);
+            }
+            requestLayout();
+            invalidate();
         }
     }
 
@@ -90,7 +73,7 @@ public class ForegroundLinearLayout extends LinearLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return super.verifyDrawable(who);
         } else {
-            return super.verifyDrawable(who) || who == foreground;
+            return super.verifyDrawable(who) || (who == mForeground);
         }
     }
 
@@ -98,8 +81,8 @@ public class ForegroundLinearLayout extends LinearLayout {
     public void jumpDrawablesToCurrentState() {
         super.jumpDrawablesToCurrentState();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (foreground != null && foreground.isStateful()) {
-                foreground.setState(getDrawableState());
+            if (mForeground != null) {
+                mForeground.jumpToCurrentState();
             }
         }
     }
@@ -108,40 +91,46 @@ public class ForegroundLinearLayout extends LinearLayout {
     protected void drawableStateChanged() {
         super.drawableStateChanged();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (foreground != null && foreground.isStateful()) {
-                foreground.setState(getDrawableState());
+            if (mForeground != null && mForeground.isStateful()) {
+                mForeground.setState(getDrawableState());
             }
         }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+//        System.out.println(changed);
+        mForegroundBoundChange |= changed;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mForegroundBoundChange = true;
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (foreground != null) {
-                if (foregroundSizeChange) {
-                    foregroundSizeChange = false;
-                    int w = getRight() - getLeft();
-                    int h = getBottom() - getTop();
-                    selfRect.set(getPaddingLeft(), getPaddingTop(),
-                            w - getPaddingRight(), h - getPaddingBottom());
-                    Gravity.apply(Gravity.FILL, foreground.getIntrinsicWidth(),
-                            foreground.getIntrinsicHeight(), selfRect, overlayRect);
-                    foreground.setBounds(overlayRect);
+            if (mForeground != null) {
+                if (mForegroundBoundChange) {
+                    mForegroundBoundChange = false;
+                    mForeground.setBounds(0, 0, getRight() - getLeft(), getBottom() - getTop());
                 }
-                foreground.draw(canvas);
+                mForeground.draw(canvas);
             }
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void drawableHotspotChanged(float x, float y) {
         super.drawableHotspotChanged(x, y);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (foreground != null) {
-                    foreground.setHotspot(x, y);
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (mForeground != null) {
+                mForeground.setHotspot(x, y);
             }
         }
     }

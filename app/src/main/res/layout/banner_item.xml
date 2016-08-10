@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.lh.imbilibili.widget.BannerView
+<com.lh.imbilibili.widget.ScalableImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="105dp">
-</com.lh.imbilibili.widget.BannerView>
+    android:layout_height="wrap_content"
+    android:foreground="?selectableItemBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:aspectRadioWidth="960"
+    app:aspectRadioHeight="280"
+    android:clickable="true">
+</com.lh.imbilibili.widget.ScalableImageView>

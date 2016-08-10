@@ -1,6 +1,5 @@
 package com.lh.imbilibili.view.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.lh.imbilibili.R;
@@ -17,6 +16,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, MainFragment.newInstance()).commit();
+        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(MainFragment.TAG);
+        if(mainFragment == null){
+            mainFragment = MainFragment.newInstance();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container, mainFragment,MainFragment.TAG).commit();
     }
 }

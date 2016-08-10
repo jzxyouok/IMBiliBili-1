@@ -17,7 +17,9 @@ public class BiliSignInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request finalRequest=null;
         Request oldlRequest =chain.request();
-        if(oldlRequest.url().host().equals("bangumi.bilibili.com")) {
+        if(oldlRequest.url().host().equals("bangumi.bilibili.com")
+                || oldlRequest.url().host().equals("api.bilibili.com")
+                /*|| oldlRequest.url().host().equals("interface.bilibili.com")*/) {
             HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
             String sign = BiliBilliSignUtils.getSign(oldlRequest.url().query());
             urlBuilder.addQueryParameter(Constant.QUERY_SIGN,sign);

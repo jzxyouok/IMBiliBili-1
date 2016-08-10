@@ -1,7 +1,5 @@
 package com.lh.imbilibili.model;
 
-import java.util.List;
-
 /**
  * Created by liuhui on 2016/7/5.
  */

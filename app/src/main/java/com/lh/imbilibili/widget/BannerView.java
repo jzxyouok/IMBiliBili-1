@@ -1,7 +1,6 @@
 package com.lh.imbilibili.widget;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -24,7 +23,7 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
 
     private Adaper adaper;
     private int currentPosition = 0;
-    private Handler handler;
+    //private Handler handler;
     private boolean isLoop = false;
     private boolean isTouch = false;
 
@@ -49,7 +48,6 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
     }
 
     private void init(Context context) {
-        handler = new Handler();
         halfSpace = getResources().getDimensionPixelSize(R.dimen.item_half_spacing);
         loopRunnable = new LoopRunnable();
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -113,13 +111,13 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
         loopTime = time;
         if (!isLoop) {
             isLoop = true;
-            handler.postDelayed(loopRunnable, loopTime);
+            postDelayed(loopRunnable, loopTime);
         }
     }
 
     public void stopLoop() {
         isLoop = false;
-        handler.removeCallbacks(loopRunnable);
+        removeCallbacks(loopRunnable);
     }
 
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
@@ -166,6 +164,13 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
         }
     }
 
+    public void setCurrentItem(int position,boolean smooth){
+        viewPager.setCurrentItem(position,smooth);
+    }
+
+    public int getCurrentPosition(){
+        return currentPosition;
+    }
 
     public abstract static class Adaper extends PagerAdapter {
 
@@ -201,9 +206,15 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        startLoop(loopTime);
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        handler.removeCallbacksAndMessages(null);
+        stopLoop();
     }
 
     public class LoopRunnable implements Runnable {
@@ -213,7 +224,7 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
             if (!isTouch) {
                 currentPosition++;
                 viewPager.setCurrentItem(currentPosition, true);
-                handler.postDelayed(this, loopTime);
+                postDelayed(this, loopTime);
             }
         }
     }

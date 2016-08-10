@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.lh.imbilibili.widget.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:foreground="?selectableItemBackground"
     android:gravity="center"
     android:orientation="horizontal"
     android:padding="@dimen/item_spacing">
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressbar"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="false"/>
+        android:indeterminate="false" />
 
     <TextView
         android:id="@+id/text"
@@ -21,7 +21,7 @@
         android:layout_marginLeft="8.0dip"
         android:text="加载中"
         android:textAppearance="@style/TextAppearance.App.Subtitle"
-        android:textColor="@color/gray_dark"/>
+        android:textColor="@color/gray_dark" />
 
 
-</LinearLayout>
+</com.lh.imbilibili.widget.ForegroundLinearLayout>

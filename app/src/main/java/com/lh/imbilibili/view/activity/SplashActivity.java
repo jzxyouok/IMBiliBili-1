@@ -2,7 +2,6 @@ package com.lh.imbilibili.view.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -10,6 +9,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
@@ -19,8 +20,6 @@ import com.lh.imbilibili.utils.StorageUtils;
 import com.lh.imbilibili.view.BaseActivity;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,10 +59,11 @@ public class SplashActivity extends BaseActivity {
         int height = DisplayUtils.getWindowsHeight(this);
         final File splashFile = StorageUtils.getAppFile(this, Constant.SPLASH_FILE);
         setDefaultSplash();
-        handler.postDelayed(new Runnable() {
+        IMBilibiliApplication.getApplication().getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startActivity(intent);
+                finish();
             }
         }, 2000);
 //        if(!splashFile.exists()||splashFile.length()==0){
@@ -86,17 +86,9 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void setDefaultSplash() {
-        try {
-            InputStream splash = getAssets().open("splash/ic_splash_default.png");
-            InputStream splashIco = getAssets().open("splash/ic_splash_copy.png");
-            splashBitmap = BitmapFactory.decodeStream(splash);
-            splashIcoBitmap = BitmapFactory.decodeStream(splashIco);
-            ivSplash.setImageBitmap(splashBitmap);
-            ivSplashIcon.setVisibility(View.VISIBLE);
-            ivSplashIcon.setImageBitmap(splashIcoBitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ivSplashIcon.setVisibility(View.VISIBLE);
+        Glide.with(this).load("file:///android_asset/splash/ic_splash_default.png").into(ivSplash);
+        Glide.with(this).load("file:///android_asset/splash/ic_splash_copy.png").into(ivSplashIcon);
     }
 
     @Override

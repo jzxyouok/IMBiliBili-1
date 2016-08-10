@@ -509,6 +509,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
                 } else {
                     showMediaControlView();
                 }
+                mGestureType = GestureType.None;
             }
             return true;
         }
@@ -533,6 +534,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
                     } else if (e1.getX() < getWidth() / 3.0) {//左边
                         mGestureType = GestureType.Brightness;
                     } else {
+                        mGestureType = GestureType.None;
                         return false;
                     }
                 }

@@ -8,8 +8,17 @@ public class Constant {
     //public static final String APPKEY="f3bb208b3d081dc8";
     //public static final String SECRETKEY ="ea85624dfcf12d7cc7b2b3a94fac1f2c";
 
-    public static final String APPKEY = "27eb53fc9058f8c3";
-    public static final String SECRETKEY = "c2ed53a74eeefe3cf99fbd01d8c9c375";
+//    public static final String APPKEY = "27eb53fc9058f8c3";
+//    public static final String SECRETKEY = "c2ed53a74eeefe3cf99fbd01d8c9c375";
+
+//    public static final String APPKEY = "422fd9d7289a1dd9";
+//    public static final String SECRETKEY = "ba3a4e554e9a6e15dc4d1d70c2b154e3";
+
+//    public static final String APPKEY = "85eb6835b0a1034e";
+//    public static final String SECRETKEY = "2ad42749773c441109bdc0191257a664";
+
+    public static final String APPKEY = "9326043312df4201";
+    public static final String SECRETKEY = "af97f9c667f1bbb47752d4fedbe27842";
 
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";

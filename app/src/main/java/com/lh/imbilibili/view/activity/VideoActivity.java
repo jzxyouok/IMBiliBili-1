@@ -129,12 +129,14 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         });
     }
 
+    // TODO: 2016/8/26 视频质量接口
     private void loadPlayInfo(String aid, String cid, final int quality) {
-        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(aid, 0, 3, 0, cid, quality, "json", "86385cdc024c0f6c", "mp4");
+//        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(aid, 0, 3, 0, cid, quality, "json", "86385cdc024c0f6c", "mp4");
+        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.APPKEY, cid, "json", "mp4");
         playInfoCall.enqueue(new Callback<VideoPlayData>() {
             @Override
             public void onResponse(Call<VideoPlayData> call, Response<VideoPlayData> response) {
-                if (response.body() != null) {
+                if (response.body() != null && response.body().getDurl() != null) {
                     appendVideoMsg("正在解析播放地址...", "成功", false);
                     mVideoPlayData = response.body();
                     if (mIsFirstLoadVideo) {
@@ -145,6 +147,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                     }
                     mVideoControlView.setCurrentVideoQuality(quality);
                     mIjkVideoView.start();
+                } else {
+                    appendVideoMsg("正在解析播放地址...", "失败", false);
                 }
             }
 

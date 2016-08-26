@@ -19,7 +19,7 @@ public class BiliSignInterceptor implements Interceptor {
         Request oldlRequest = chain.request();
         if (oldlRequest.url().host().equals("bangumi.bilibili.com")
                 || oldlRequest.url().host().equals("api.bilibili.com")
-                /*|| oldlRequest.url().host().equals("interface.bilibili.com")*/) {
+                || oldlRequest.url().host().equals("interface.bilibili.com")) {
             HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
             String sign = BiliBilliSignUtils.getSign(oldlRequest.url().query());
             urlBuilder.addQueryParameter(Constant.QUERY_SIGN, sign);

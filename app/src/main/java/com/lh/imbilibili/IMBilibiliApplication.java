@@ -25,13 +25,13 @@ public class IMBilibiliApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        application=this;
+        application = this;
         LeakCanary.install(this);
         initComponent();
     }
 
     private void initComponent() {
-        bilibiliComponent=DaggerIMBilibiliComponent.builder()
+        bilibiliComponent = DaggerIMBilibiliComponent.builder()
                 .bilibiliApiModule(new BilibiliApiModule())
                 .iMBilibiliModule(new IMBilibiliModule(this))
                 .build();
@@ -46,6 +46,7 @@ public class IMBilibiliApplication extends Application {
     public Handler getHandler() {
         return mHandler;
     }
+
     public IMBilibiliComponent getBilibiliComponent() {
         return bilibiliComponent;
     }

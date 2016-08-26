@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class IndexPage {
 //    private List<Banner> banners;
-//    private List<Bangumi> ends;
+//    private List<InnerBangumi> ends;
 //    private LatestUpdate latestUpdate;
 //
 //
@@ -20,11 +20,11 @@ public class IndexPage {
 //        this.banners = banners;
 //    }
 //
-//    public List<Bangumi> getEnds() {
+//    public List<InnerBangumi> getEnds() {
 //        return ends;
 //    }
 //
-//    public void setEnds(List<Bangumi> ends) {
+//    public void setEnds(List<InnerBangumi> ends) {
 //        this.ends = ends;
 //    }
 //
@@ -37,14 +37,14 @@ public class IndexPage {
 //    }
 //
 //    public static class LatestUpdate{
-//        private List<Bangumi> list;
+//        private List<InnerBangumi> list;
 //        private String updateCount;
 //
-//        public List<Bangumi> getList() {
+//        public List<InnerBangumi> getList() {
 //            return list;
 //        }
 //
-//        public void setList(List<Bangumi> list) {
+//        public void setList(List<InnerBangumi> list) {
 //            this.list = list;
 //        }
 //
@@ -85,7 +85,7 @@ public class IndexPage {
         this.serializing = serializing;
     }
 
-    public static class Ad{
+    public static class Ad {
         private List<Object> body;
         private List<Banner> head;
 
@@ -106,7 +106,7 @@ public class IndexPage {
         }
     }
 
-    public static class Previous{
+    public static class Previous {
         private List<Bangumi> list;
         private int season;
         private int year;

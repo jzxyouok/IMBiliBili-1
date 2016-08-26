@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,18 +37,18 @@ public class SeasonGroupAdapter extends RecyclerView.Adapter {
             R.drawable.bangumi_home_ic_season_2,
             R.drawable.bangumi_home_ic_season_3,
             R.drawable.bangumi_home_ic_season_4};
-    private int[] mMonth = new int[]{1,4,7,10};
+    private int[] mMonth = new int[]{1, 4, 7, 10};
 
     private List<SeasonGroup> mSeasonGroups;
 
     private Context mContext;
 
-    public SeasonGroupAdapter(Context mContext,@Nullable List<SeasonGroup> mSeasonGroups) {
+    public SeasonGroupAdapter(Context mContext, @Nullable List<SeasonGroup> mSeasonGroups) {
         this.mContext = mContext;
         this.mSeasonGroups = mSeasonGroups;
     }
 
-    public void setSeasonGroups(List<SeasonGroup> seasonGroups){
+    public void setSeasonGroups(List<SeasonGroup> seasonGroups) {
         mSeasonGroups = seasonGroups;
     }
 
@@ -77,27 +76,29 @@ public class SeasonGroupAdapter extends RecyclerView.Adapter {
         SeasonGroup seasonGroup = mSeasonGroups.get(index);
         if (getItemViewType(position) == SEASON_HEAD) {
             SeasonHeadHolder headHolder = (SeasonHeadHolder) holder;
-            Drawable drawable = ContextCompat.getDrawable(mContext,mHeadImgs[seasonGroup.getSeason()-1]);
-            drawable.setBounds(0,0,drawable.getMinimumWidth(), drawable.getMinimumHeight());
-            headHolder.tvTitle.setCompoundDrawables(drawable,null,null,null);
-            headHolder.tvTitle.setText(StringUtils.format("%d年%d月",seasonGroup.getYear(),mMonth[seasonGroup.getSeason()-1]));
+            Drawable drawable = ContextCompat.getDrawable(mContext, mHeadImgs[seasonGroup.getSeason() - 1]);
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            headHolder.tvTitle.setCompoundDrawables(drawable, null, null, null);
+            headHolder.tvTitle.setText(StringUtils.format("%d年%d月", seasonGroup.getYear(), mMonth[seasonGroup.getSeason() - 1]));
             headHolder.tvSubTitle.setText("更多");
+            headHolder.mYear = seasonGroup.getYear();
+            headHolder.mMonth = seasonGroup.getSeason();
         } else {
             SeasonItemHolder itemHolder = (SeasonItemHolder) holder;
-            int groupIndex = position-(index*4+1);
+            int groupIndex = position - (index * 4 + 1);
             int groupSize = seasonGroup.getList().size();
-            if(groupIndex<groupSize) {
+            if (groupIndex < groupSize) {
                 itemHolder.itemView.setVisibility(View.VISIBLE);
                 Bangumi bangumi = seasonGroup.getList().get(groupIndex);
                 Glide.with(mContext).load(bangumi.getCover())
-                        .transform(new RoundedCornersTransformation(mContext,3))
+                        .transform(new RoundedCornersTransformation(mContext, 3))
                         .into(itemHolder.ivCover);
                 itemHolder.tv1.setVisibility(View.GONE);
                 itemHolder.tvFavourite.setVisibility(View.VISIBLE);
-                itemHolder.seasonId = bangumi.getSeasonId();
+                itemHolder.mSeasonId = bangumi.getSeasonId();
                 itemHolder.tvTitle.setText(bangumi.getTitle());
-                itemHolder.tvFavourite.setText(StringUtils.format("%s人在追番",StringUtils.formateNumber(bangumi.getFavourites())));
-            }else {
+                itemHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));
+            } else {
                 itemHolder.itemView.setVisibility(View.GONE);
             }
         }
@@ -121,21 +122,42 @@ public class SeasonGroupAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public class SeasonHeadHolder extends RecyclerView.ViewHolder {
+    public interface onItemClickListener {
+        void onItemClick(int type, RecyclerView.ViewHolder viewHolder);
+    }
+
+    public class SeasonHeadHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         @BindView(R.id.title)
         TextView tvTitle;
         @BindView(R.id.sub_title)
         TextView tvSubTitle;
+        private int mYear;
+        private int mMonth;
 
         public SeasonHeadHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        public int getMonth() {
+            return mMonth;
+        }
+
+        public int getYear() {
+            return mYear;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(SEASON_HEAD, this);
+            }
         }
     }
 
     public class SeasonItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private String seasonId;
 
         @BindView(R.id.feedback_container)
         ViewGroup container;
@@ -147,6 +169,7 @@ public class SeasonGroupAdapter extends RecyclerView.Adapter {
         TextView tv1;
         @BindView(R.id.favourites)
         TextView tvFavourite;
+        private String mSeasonId;
 
         public SeasonItemHolder(View itemView) {
             super(itemView);
@@ -155,18 +178,14 @@ public class SeasonGroupAdapter extends RecyclerView.Adapter {
         }
 
         public String getSeasonId() {
-            return seasonId;
+            return mSeasonId;
         }
 
         @Override
         public void onClick(View v) {
-            if(mOnItemClickListener!=null){
-                mOnItemClickListener.onItemClick(SEASON_ITEM,this);
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(SEASON_ITEM, this);
             }
         }
-    }
-
-    public interface onItemClickListener{
-        void onItemClick(int type, RecyclerView.ViewHolder viewHolder);
     }
 }

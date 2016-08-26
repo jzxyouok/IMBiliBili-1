@@ -15,17 +15,17 @@ import okhttp3.Response;
 public class BiliSignInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request finalRequest=null;
-        Request oldlRequest =chain.request();
-        if(oldlRequest.url().host().equals("bangumi.bilibili.com")
+        Request finalRequest = null;
+        Request oldlRequest = chain.request();
+        if (oldlRequest.url().host().equals("bangumi.bilibili.com")
                 || oldlRequest.url().host().equals("api.bilibili.com")
                 /*|| oldlRequest.url().host().equals("interface.bilibili.com")*/) {
             HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
             String sign = BiliBilliSignUtils.getSign(oldlRequest.url().query());
-            urlBuilder.addQueryParameter(Constant.QUERY_SIGN,sign);
-            finalRequest=oldlRequest.newBuilder().url(urlBuilder.build()).build();
-        }else {
-            finalRequest=oldlRequest;
+            urlBuilder.addQueryParameter(Constant.QUERY_SIGN, sign);
+            finalRequest = oldlRequest.newBuilder().url(urlBuilder.build()).build();
+        } else {
+            finalRequest = oldlRequest;
         }
         return chain.proceed(finalRequest);
     }

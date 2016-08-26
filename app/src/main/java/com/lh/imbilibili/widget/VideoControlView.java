@@ -2,20 +2,15 @@ package com.lh.imbilibili.widget;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,15 +94,8 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private int mCurrentQuality;
 
     private OnQualitySelectListener mOnQualitySelectListener;
-
-    private enum GestureType {
-        None,
-        Volume,
-        Brightness,
-        FastBackwardOrForward,
-        SingleTapConfirmed,
-        DoubleTap
-    }
+    private boolean mScrollingSeekBar = false;
+    private int mBeforeScrollPosition;
 
     public VideoControlView(Context context) {
         this(context, null, 0);
@@ -115,22 +103,6 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
 
     public VideoControlView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-    }
-
-    public VideoControlView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        mShowing = false;
-        mCurrentPosition = -1;
-        mCurrentBufferPercentage = 0;
-        setClickable(true);
-        LayoutInflater inflater = LayoutInflater.from(context);
-//        initPrePlayView(context);
-//        initVideoView(context);
-//        initBufferingView(context, inflater);
-        initMediaControlView(context, inflater);
-        initMediaLevelView(context, inflater);
-        initGestureInfoView(context, inflater);
-        initGesture(context);
     }
 
 //    private void initPrePlayView(Context context) {
@@ -162,6 +134,22 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
 //        addView(mBufferingGroup);
 //    }
 
+    public VideoControlView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        mShowing = false;
+        mCurrentPosition = -1;
+        mCurrentBufferPercentage = 0;
+        setClickable(true);
+        LayoutInflater inflater = LayoutInflater.from(context);
+//        initPrePlayView(context);
+//        initVideoView(context);
+//        initBufferingView(context, inflater);
+        initMediaControlView(context, inflater);
+        initMediaLevelView(context, inflater);
+        initGestureInfoView(context, inflater);
+        initGesture(context);
+    }
+
     private void initMediaControlView(Context context, LayoutInflater inflater) {
         mMediaControlView = inflater.inflate(R.layout.player_control_view, this, false);
         mSeekBar = (SeekBar) mMediaControlView.findViewById(R.id.seekbar);
@@ -172,12 +160,12 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mTvQualitySelect = (TextView) mMediaControlView.findViewById(R.id.quality_select);
         mIvBack = (ImageView) mMediaControlView.findViewById(R.id.back);
         mTvVideoInfo = (TextView) mMediaControlView.findViewById(R.id.video_info);
-        ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view,null);
-        for(int i =0;i<popuView.getChildCount();i++){
+        ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view, null);
+        for (int i = 0; i < popuView.getChildCount(); i++) {
             popuView.getChildAt(i).setOnClickListener(this);
         }
-        mQualityPopuWindow =new PopupWindow(popuView,mTvQualitySelect.getLayoutParams().width,ViewGroup.LayoutParams.WRAP_CONTENT);
-        mQualityPopuWindow.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(),R.color.black_60_alpha)));
+        mQualityPopuWindow = new PopupWindow(popuView, mTvQualitySelect.getLayoutParams().width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mQualityPopuWindow.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.black_60_alpha)));
         mQualityPopuWindow.setOutsideTouchable(true);
         mSeekBar.setOnSeekBarChangeListener(this);
         addView(mMediaControlView);
@@ -223,11 +211,11 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mTvTitle.setText(title);
     }
 
-    public void setOnQualitySelectListener(OnQualitySelectListener l){
+    public void setOnQualitySelectListener(OnQualitySelectListener l) {
         mOnQualitySelectListener = l;
     }
 
-    public void setCurrentVideoQuality(int quality){
+    public void setCurrentVideoQuality(int quality) {
         mCurrentQuality = quality;
         mTvQualitySelect.setText(qualityCodeForString(mCurrentQuality));
     }
@@ -261,7 +249,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private void showMediaControlView() {
         mShowing = true;
         mHandler.sendEmptyMessage(MSG_UPDATE_MEDIA_CONTROL_VIEW);
-        mHandler.sendEmptyMessageDelayed(MSG_HIDE_MEDIA_CONTROL,MEDIA_CONTROL_TIME_OUT);
+        mHandler.sendEmptyMessageDelayed(MSG_HIDE_MEDIA_CONTROL, MEDIA_CONTROL_TIME_OUT);
         mMediaControlView.setVisibility(VISIBLE);
         mTvTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
     }
@@ -289,10 +277,11 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mIvPlayPause.setImageLevel(mIjkVideoView.isPlaying() ? 1 : 0);
         int total = mIjkVideoView.getDuration();
         int currentPosition = mIjkVideoView.getCurrentPosition();
-        float percent = 100f * currentPosition / total;
+//        float percent = 100f * currentPosition / total;
         mTvCurrentTime.setText(stringForTime(currentPosition));
         mTvTotalTime.setText(stringForTime(total));
-        mSeekBar.setProgress((int) percent);
+        mSeekBar.setProgress(currentPosition);
+        mSeekBar.setMax(total);
         mSeekBar.setSecondaryProgress(mCurrentBufferPercentage);
     }
 
@@ -318,12 +307,12 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         }
     }
 
-    private String qualityCodeForString(int quality){
-        if(quality == 1){
+    private String qualityCodeForString(int quality) {
+        if (quality == 1) {
             return "流畅";
-        }else if(quality == 2){
+        } else if (quality == 2) {
             return "高清";
-        }else {
+        } else {
             return "超清";
         }
     }
@@ -421,15 +410,12 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mBrightnessBar.setVisibility(GONE);
     }
 
-    private boolean mScrollingSeekBar = false;
-    private int mBeforeScrollPosition;
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (mIjkVideoView != null && mScrollingSeekBar) {
-            float percent = progress / 100f;
+//            float percent = progress / 100f;
             int totalTime = mIjkVideoView.getDuration();
-            setFastBackwardForwardGestureInfo((int) (percent * totalTime), mBeforeScrollPosition, totalTime);
+            setFastBackwardForwardGestureInfo(progress, mBeforeScrollPosition, totalTime);
         }
     }
 
@@ -451,12 +437,59 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
             mHandler.sendEmptyMessageDelayed(MSG_HIDE_MEDIA_CONTROL, MEDIA_CONTROL_TIME_OUT);
         }
         if (mIjkVideoView != null) {
-            float percent = seekBar.getProgress() / 100f;
-            int pos = (int) (percent * mIjkVideoView.getDuration());
+//            float percent = seekBar.getProgress() / 100f;
+            int pos = seekBar.getProgress();
             mIjkVideoView.seekTo(pos);
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.smooth_quality:
+            case R.id.high_quality:
+            case R.id.super_high_quality:
+                mQualityPopuWindow.dismiss();
+                mHandler.sendEmptyMessage(MSG_HIDE_MEDIA_CONTROL);
+                if (mOnQualitySelectListener != null) {
+                    mOnQualitySelectListener.onQualitySelect(Integer.parseInt((String) v.getTag()));
+                }
+                break;
+            case R.id.play_pause_toggle:
+                playOrPause();
+                break;
+            case R.id.back:
+                ((Activity) getContext()).finish();
+                break;
+            case R.id.video_info:
+                if (mIjkVideoView != null) {
+                    mIjkVideoView.showMediaInfo();
+                }
+                break;
+            case R.id.quality_select:
+                System.out.println("show");
+                mQualityPopuWindow.showAsDropDown(v);
+                break;
+        }
+    }
+
+    @Override
+    public void onBufferingUpdate(IMediaPlayer mp, int percent) {
+        mCurrentBufferPercentage = percent;
+    }
+
+    private enum GestureType {
+        None,
+        Volume,
+        Brightness,
+        FastBackwardOrForward,
+        SingleTapConfirmed,
+        DoubleTap
+    }
+
+    public interface OnQualitySelectListener {
+        void onQualitySelect(int quality);
+    }
 
     private static class ControlHandler extends Handler {
         private WeakReference<VideoControlView> mVideoControlView;
@@ -478,7 +511,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
                         mVideoControlView.get().hideBrightnessBar();
                         break;
                     case MSG_HIDE_MEDIA_CONTROL:
-                        if(!mVideoControlView.get().mQualityPopuWindow.isShowing()){
+                        if (!mVideoControlView.get().mQualityPopuWindow.isShowing()) {
                             mVideoControlView.get().hideMediaControlView();
                         }
                         break;
@@ -566,42 +599,5 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
             }
             return true;
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.smooth_quality: case R.id.high_quality:case R.id.super_high_quality:
-                mQualityPopuWindow.dismiss();
-                mHandler.sendEmptyMessage(MSG_HIDE_MEDIA_CONTROL);
-                if(mOnQualitySelectListener!=null){
-                    mOnQualitySelectListener.onQualitySelect(Integer.parseInt((String) v.getTag()));
-                }
-                break;
-            case R.id.play_pause_toggle:
-                playOrPause();
-                break;
-            case R.id.back:
-                ((Activity)getContext()).finish();
-                break;
-            case R.id.video_info:
-                if(mIjkVideoView!=null){
-                    mIjkVideoView.showMediaInfo();
-                }
-                break;
-            case R.id.quality_select:
-                System.out.println("show");
-                mQualityPopuWindow.showAsDropDown(v);
-                break;
-        }
-    }
-
-    @Override
-    public void onBufferingUpdate(IMediaPlayer mp, int percent) {
-        mCurrentBufferPercentage = percent;
-    }
-
-    public interface OnQualitySelectListener{
-        void onQualitySelect(int quality);
     }
 }

@@ -1,6 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -73,18 +72,18 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void loadAllData(boolean forceRefresh) {
-        if(indexData == null || forceRefresh){
+        if (indexData == null || forceRefresh) {
             loadIndexData();
         }
-        if(bangumis == null || bangumis.size()==0){
-            loadBangumiRecommendData("-1",10);
+        if (bangumis == null || bangumis.size() == 0) {
+            loadBangumiRecommendData("-1", 10);
         }
     }
 
     private void initRecyclerView() {
         if (adapter == null) {
             swipeRefreshLayout.setOnRefreshListener(this);
-            adapter = new BangumiAdapter(getActivity(), indexData ,bangumis);
+            adapter = new BangumiAdapter(getActivity(), indexData, bangumis);
             adapter.setItemClickListener(this);
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
             gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -184,7 +183,7 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        if(bangumis!=null) {
+        if (bangumis != null) {
             bangumis.clear();
         }
         recyclerView.setEnableLoadMore(true);
@@ -202,38 +201,43 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onClick(int itemType, int position) {
-        Intent intent = new Intent();
+//        Intent intent = new Intent();
         if (itemType == BangumiAdapter.SERIALIZING_GRID_ITEM) {
-            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getSerializing().get(position).getSeasonId());
-            intent.setClass(getContext(), BangumiDetailActivity.class);
+//            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getSerializing().get(position).getSeasonId());
+//            intent.setClass(getContext(), BangumiDetailActivity.class);
+            BangumiDetailActivity.startActivity(getContext(), indexData.getSerializing().get(position).getSeasonId());
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_ITEM) {
-            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getPrevious().getList().get(position).getSeasonId());
-            intent.setClass(getContext(), BangumiDetailActivity.class);
+//            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getPrevious().getList().get(position).getSeasonId());
+//            intent.setClass(getContext(), BangumiDetailActivity.class);
+            BangumiDetailActivity.startActivity(getContext(), indexData.getPrevious().getList().get(position).getSeasonId());
         } else if (itemType == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
                 itemType == BangumiAdapter.BANNER) {
             String link = null;
-            if(itemType == BangumiAdapter.BANNER){
+            if (itemType == BangumiAdapter.BANNER) {
                 Banner banner = indexData.getAd().getHead().get(position);
                 link = banner.getLink();
-            }else {
+            } else {
                 IndexBangumiRecommend bangumi = bangumis.get(position);
                 link = bangumi.getLink();
             }
             if (link.contains("anime")) {
                 String[] temp = link.split("anime/");
-                intent.putExtra(Constant.QUERY_SEASON_ID, temp[temp.length - 1]);
-                intent.setClass(getContext(), BangumiDetailActivity.class);
+//                intent.putExtra(Constant.QUERY_SEASON_ID, temp[temp.length - 1]);
+//                intent.setClass(getContext(), BangumiDetailActivity.class);
+                BangumiDetailActivity.startActivity(getContext(), temp[temp.length - 1]);
             } else {
-                intent.putExtra(WebViewActivity.EXTRA_DATA, link);
-                intent.setClass(getContext(), WebViewActivity.class);
+//                intent.putExtra(WebViewActivity.EXTRA_DATA, link);
+//                intent.setClass(getContext(), WebViewActivity.class);
+                WebViewActivity.startActivity(getContext(), link);
             }
-        } else if(itemType == BangumiAdapter.SEASON_BANGUMI_HEAD){
-            intent.setClass(getContext(), SeasonGroupActivity.class);
-        }else {
+        } else if (itemType == BangumiAdapter.SEASON_BANGUMI_HEAD) {
+//            intent.setClass(getContext(), SeasonGroupActivity.class);
+            SeasonGroupActivity.startActivity(getContext());
+        } else {
             // TODO: 2016/8/9
             return;
         }
-        startActivity(intent);
+//        startActivity(intent);
     }
 
     @Override

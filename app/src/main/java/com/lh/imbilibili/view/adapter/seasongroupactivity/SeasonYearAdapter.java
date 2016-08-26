@@ -27,7 +27,7 @@ public class SeasonYearAdapter extends RecyclerView.Adapter {
 
     private int mCurrentSelectPosition = 0;
 
-    public SeasonYearAdapter(Context context,@Nullable List<Integer> years) {
+    public SeasonYearAdapter(Context context, @Nullable List<Integer> years) {
         mContext = context;
         mYears = years;
     }
@@ -40,7 +40,7 @@ public class SeasonYearAdapter extends RecyclerView.Adapter {
         mOnYearItemClickListener = l;
     }
 
-    public void selectItem(int position){
+    public void selectItem(int position) {
         int prePosition = mCurrentSelectPosition;
         mCurrentSelectPosition = position;
         notifyItemChanged(prePosition);
@@ -58,24 +58,29 @@ public class SeasonYearAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         SeasonYearHolder yearHolder = (SeasonYearHolder) holder;
         yearHolder.textView.setText(String.valueOf(mYears.get(position)));
-        if(mCurrentSelectPosition == position){
+        if (mCurrentSelectPosition == position) {
             yearHolder.textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-        }else {
+        } else {
             yearHolder.textView.setTextColor(Color.BLACK);
         }
     }
 
     @Override
     public int getItemCount() {
-        if(mYears == null){
+        if (mYears == null) {
             return 0;
-        }else {
+        } else {
             return mYears.size();
         }
     }
 
+    public interface onYearItemClickListener {
+        void onYearItemClick(int year);
+    }
+
     public class SeasonYearHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textView;
+
         public SeasonYearHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView;
@@ -85,13 +90,9 @@ public class SeasonYearAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View v) {
             selectItem(getAdapterPosition());
-            if(mOnYearItemClickListener!=null){
+            if (mOnYearItemClickListener != null) {
                 mOnYearItemClickListener.onYearItemClick(mYears.get(getAdapterPosition()));
             }
         }
-    }
-
-    public interface onYearItemClickListener{
-        void onYearItemClick(int year);
     }
 }

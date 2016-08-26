@@ -13,6 +13,9 @@ public class SeasonGroup implements Parcelable {
     private int season;
     private int year;
 
+    public SeasonGroup() {
+    }
+
     public List<Bangumi> getList() {
         return list;
     }
@@ -49,16 +52,13 @@ public class SeasonGroup implements Parcelable {
         dest.writeInt(this.year);
     }
 
-    public SeasonGroup() {
-    }
-
     protected SeasonGroup(Parcel in) {
         this.list = in.createTypedArrayList(Bangumi.CREATOR);
         this.season = in.readInt();
         this.year = in.readInt();
     }
 
-    public static final Parcelable.Creator<SeasonGroup> CREATOR = new Parcelable.Creator<SeasonGroup>() {
+    public static final Creator<SeasonGroup> CREATOR = new Creator<SeasonGroup>() {
         @Override
         public SeasonGroup createFromParcel(Parcel source) {
             return new SeasonGroup(source);

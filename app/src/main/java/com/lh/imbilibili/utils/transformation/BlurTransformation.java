@@ -21,12 +21,12 @@ public class BlurTransformation extends BitmapTransformation {
     public BlurTransformation(Context context, float radius) {
         super(context);
         this.radius = radius;
-        rs = RenderScript.create( context );
+        rs = RenderScript.create(context);
     }
 
     @Override
     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-        Bitmap blurredBitmap = toTransform.copy( Bitmap.Config.ARGB_8888, true );
+        Bitmap blurredBitmap = toTransform.copy(Bitmap.Config.ARGB_8888, true);
         Allocation input = Allocation.createFromBitmap(
                 rs,
                 blurredBitmap,
@@ -46,6 +46,6 @@ public class BlurTransformation extends BitmapTransformation {
 
     @Override
     public String getId() {
-        return "BlurTransformation(radius:"+radius+")";
+        return "BlurTransformation(radius:" + radius + ")";
     }
 }

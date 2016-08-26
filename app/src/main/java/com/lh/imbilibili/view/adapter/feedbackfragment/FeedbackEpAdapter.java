@@ -39,7 +39,7 @@ public class FeedbackEpAdapter extends RecyclerView.Adapter<FeedbackEpAdapter.Ep
         if (position == 0 && episodes.size() == 0) {
             holder.tvIndex.setText("无");
             holder.newTag.setVisibility(View.GONE);
-        }else {
+        } else {
             BangumiDetail.Episode episode = episodes.get(position);
             holder.tvIndex.setText(episode.getIndex());
             holder.itemView.setSelected(position == selectPosition);
@@ -48,9 +48,9 @@ public class FeedbackEpAdapter extends RecyclerView.Adapter<FeedbackEpAdapter.Ep
 
     @Override
     public int getItemCount() {
-        if(episodes==null) {
+        if (episodes == null) {
             return 0;
-        }else {
+        } else {
             return episodes.size();
         }
     }
@@ -64,6 +64,10 @@ public class FeedbackEpAdapter extends RecyclerView.Adapter<FeedbackEpAdapter.Ep
 
     public void setOnEpClickListener(onEpClickListener listener) {
         this.listener = listener;
+    }
+
+    public interface onEpClickListener {
+        void onEpClick(int position);
     }
 
     public class EpisodeViewHolder extends RecyclerView.ViewHolder {
@@ -80,15 +84,11 @@ public class FeedbackEpAdapter extends RecyclerView.Adapter<FeedbackEpAdapter.Ep
                 @Override
                 public void onClick(View v) {
                     selectItem(getAdapterPosition());
-                    if(listener!=null && episodes.size()>0){
+                    if (listener != null && episodes.size() > 0) {
                         listener.onEpClick(getAdapterPosition());
                     }
                 }
             });
         }
-    }
-
-    public interface onEpClickListener{
-        void onEpClick(int position);
     }
 }

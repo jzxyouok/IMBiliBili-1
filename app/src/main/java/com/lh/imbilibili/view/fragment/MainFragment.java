@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.MainViewPagerAdapter;
-import com.squareup.haha.perflib.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +26,7 @@ import butterknife.ButterKnife;
  */
 public class MainFragment extends BaseFragment {
 
-    public static final String TAG="MainFragment";
-
-    private List<BaseFragment> fragments;
-
-    private MainViewPagerAdapter adapter;
-
+    public static final String TAG = "MainFragment";
     @BindView(R.id.viewpager)
     ViewPager viewPager;
     @BindView(R.id.tabs)
@@ -45,7 +39,8 @@ public class MainFragment extends BaseFragment {
     ImageView ivNoticeBadge;
     @BindView(R.id.nick_name)
     TextView tvNickName;
-
+    private List<BaseFragment> fragments;
+    private MainViewPagerAdapter adapter;
 
     public static MainFragment newInstance() {
         return new MainFragment();

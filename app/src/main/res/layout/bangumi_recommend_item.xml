@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.lh.imbilibili.widget.CardFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.lh.imbilibili.widget.CardFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:foreground="?selectableItemBackground">
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp">
 
-        <com.lh.imbilibili.widget.ScalableImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:scaleType="fitXY"
-            app:aspectRadioWidth="960"
-            app:aspectRadioHeight="300"
+        <com.lh.imbilibili.widget.ScalableImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            app:aspectRadioHeight="300"
+            app:aspectRadioWidth="960" />
 
         <TextView
             android:id="@+id/title"
@@ -31,7 +28,7 @@
             android:layout_marginTop="8dp"
             android:singleLine="true"
             android:textAppearance="@style/TextAppearance.App.Title"
-            android:textColor="?android:textColorPrimary"/>
+            android:textColor="?android:textColorPrimary" />
 
         <ImageView
             android:id="@+id/badge"
@@ -47,7 +44,7 @@
             android:paddingTop="8dp"
             android:src="@drawable/ic_new_text"
             android:textAppearance="@style/TextAppearance.App.Body"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/text1"
@@ -60,7 +57,7 @@
             android:ellipsize="end"
             android:lineSpacingMultiplier="1.2"
             android:textAppearance="@style/TextAppearance.App.Subtitle"
-            android:textColor="@color/gray_dark"/>
+            android:textColor="@color/gray_dark" />
         <!--<TextView-->
         <!--android:id="@+id/text2"-->
         <!--android:layout_width="wrap_content"-->

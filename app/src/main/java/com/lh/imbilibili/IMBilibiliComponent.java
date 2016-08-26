@@ -16,7 +16,7 @@ import retrofit2.Retrofit;
  * Created by liuhui on 2016/7/5.
  */
 @Singleton
-@Component(modules = {BilibiliApiModule.class,IMBilibiliModule.class})
+@Component(modules = {BilibiliApiModule.class, IMBilibiliModule.class})
 public interface IMBilibiliComponent {
 
     BilibiliApi getBiliApi();

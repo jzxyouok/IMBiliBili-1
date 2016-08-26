@@ -17,9 +17,9 @@ public class MainActivity extends BaseActivity {
 
     private void initView() {
         MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(MainFragment.TAG);
-        if(mainFragment == null){
+        if (mainFragment == null) {
             mainFragment = MainFragment.newInstance();
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container, mainFragment,MainFragment.TAG).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container, mainFragment, MainFragment.TAG).commit();
     }
 }

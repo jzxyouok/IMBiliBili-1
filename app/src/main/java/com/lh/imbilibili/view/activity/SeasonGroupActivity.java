@@ -1,5 +1,6 @@
 package com.lh.imbilibili.view.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -62,6 +63,11 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
 
     private Call<BiliBiliResultResponse<List<SeasonGroup>>> mSeasonGroupCall;
 
+    public static void startActivity(Context context) {
+        Intent intent = new Intent(context, SeasonGroupActivity.class);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,36 +102,36 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
     }
 
     private void initRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if(position%4==0){
+                if (position % 4 == 0) {
                     return 3;
-                }else {
+                } else {
                     return 1;
                 }
             }
         });
-        mSeasonGroupAdapter = new SeasonGroupAdapter(this,mSeasonGroups);
+        mSeasonGroupAdapter = new SeasonGroupAdapter(this, mSeasonGroups);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.addItemDecoration(new SeasonGroupItemDecoration(this));
         mRecyclerView.setAdapter(mSeasonGroupAdapter);
-        GridLayoutManager yearGridLayoutManager = new GridLayoutManager(this,5);
-        mSeasonYearAdapter = new SeasonYearAdapter(this,mYears);
+        GridLayoutManager yearGridLayoutManager = new GridLayoutManager(this, 5);
+        mSeasonYearAdapter = new SeasonYearAdapter(this, mYears);
         mRecyclerViewYear.setLayoutManager(yearGridLayoutManager);
-        mRecyclerViewYear.addItemDecoration(new GridRecyclerViewItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_large_spacing),false));
+        mRecyclerViewYear.addItemDecoration(new GridRecyclerViewItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_large_spacing), false));
         mRecyclerViewYear.setAdapter(mSeasonYearAdapter);
         mSeasonYearAdapter.setOnYearItemClickListener(this);
         mSeasonGroupAdapter.setOnItemClickListener(this);
     }
 
     private void loadData() {
-        mSeasonGroupCall = IMBilibiliApplication.getApplication().getApi().getSeasonGroup(Constant.APPKEY,Constant.BUILD,Constant.MOBI_APP,Constant.PLATFORM,System.currentTimeMillis());
+        mSeasonGroupCall = IMBilibiliApplication.getApplication().getApi().getSeasonGroup(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM, System.currentTimeMillis());
         mSeasonGroupCall.enqueue(new Callback<BiliBiliResultResponse<List<SeasonGroup>>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<List<SeasonGroup>>> call, Response<BiliBiliResultResponse<List<SeasonGroup>>> response) {
-                if(response.body().getCode() == 0){
+                if (response.body().getCode() == 0) {
                     mSeasonGroups = response.body().getResult();
                     mYears = canculateYear(mSeasonGroups);
                     mTvYear.setText(String.valueOf(mYears.get(0)));
@@ -143,26 +149,26 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         });
     }
 
-    private List<Integer> canculateYear(List<SeasonGroup> seasonGroups){
+    private List<Integer> canculateYear(List<SeasonGroup> seasonGroups) {
         List<Integer> years = new ArrayList<>();
-        for(int i = 0;i<seasonGroups.size();i++){
+        for (int i = 0; i < seasonGroups.size(); i++) {
             int year = seasonGroups.get(i).getYear();
-            if(!years.contains(year)) {
+            if (!years.contains(year)) {
                 years.add(seasonGroups.get(i).getYear());
             }
         }
         return years;
     }
 
-    private int canculatePositionByYear(int year){
+    private int canculatePositionByYear(int year) {
         int index = 0;
-        for(int i = 0;i<mSeasonGroups.size();i++){
-            if(mSeasonGroups.get(i).getYear() == year){
+        for (int i = 0; i < mSeasonGroups.size(); i++) {
+            if (mSeasonGroups.get(i).getYear() == year) {
                 index = i;
                 break;
             }
         }
-        return index*4;
+        return index * 4;
     }
 
     @Override
@@ -176,25 +182,29 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
         int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
         View view = new View(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,statusBarHeight);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
         view.setBackgroundColor(Color.parseColor("#20000000"));
-        viewGroup.addView(view,params);
+        viewGroup.addView(view, params);
     }
 
     @Override
     public void onYearItemClick(int year) {
         mTvYear.setText(String.valueOf(year));
         mDrawerLayout.closeDrawer(mDrawer);
-        ((GridLayoutManager)mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(canculatePositionByYear(year),0);
+        ((GridLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(canculatePositionByYear(year), 0);
     }
 
     @Override
     public void onItemClick(int type, RecyclerView.ViewHolder viewHolder) {
-        if(type == SeasonGroupAdapter.SEASON_ITEM){
+        if (type == SeasonGroupAdapter.SEASON_ITEM) {
             SeasonGroupAdapter.SeasonItemHolder seasonItemHolder = (SeasonGroupAdapter.SeasonItemHolder) viewHolder;
-            Intent i =new Intent(this, BangumiDetailActivity.class);
-            i.putExtra(Constant.QUERY_SEASON_ID,seasonItemHolder.getSeasonId());
-            startActivity(i);
+//            Intent i =new Intent(this, BangumiDetailActivity.class);
+//            i.putExtra(Constant.QUERY_SEASON_ID,seasonItemHolder.getSeasonId());
+//            startActivity(i);
+            BangumiDetailActivity.startActivity(this, seasonItemHolder.getSeasonId());
+        } else if (type == SeasonGroupAdapter.SEASON_HEAD) {
+            SeasonGroupAdapter.SeasonHeadHolder seasonHeadHolder = (SeasonGroupAdapter.SeasonHeadHolder) viewHolder;
+            BangumiIndexActivity.startActivity(this, seasonHeadHolder.getYear(), seasonHeadHolder.getMonth());
         }
     }
 }

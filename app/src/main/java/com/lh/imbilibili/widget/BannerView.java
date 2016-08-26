@@ -164,12 +164,24 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
         }
     }
 
-    public void setCurrentItem(int position,boolean smooth){
-        viewPager.setCurrentItem(position,smooth);
+    public void setCurrentItem(int position, boolean smooth) {
+        viewPager.setCurrentItem(position, smooth);
     }
 
-    public int getCurrentPosition(){
+    public int getCurrentPosition() {
         return currentPosition;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        startLoop(loopTime);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopLoop();
     }
 
     public abstract static class Adaper extends PagerAdapter {
@@ -203,18 +215,6 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
             }
             return getItemView(container, realPosition);
         }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        startLoop(loopTime);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        stopLoop();
     }
 
     public class LoopRunnable implements Runnable {

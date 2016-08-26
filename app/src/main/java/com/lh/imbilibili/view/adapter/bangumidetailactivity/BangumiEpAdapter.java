@@ -43,7 +43,7 @@ public class BangumiEpAdapter extends RecyclerView.Adapter<BangumiEpAdapter.Epis
         if (position == 0 && episodes.size() == 0) {
             holder.tvIndex.setText("无");
             holder.newTag.setVisibility(View.GONE);
-        }else {
+        } else {
             BangumiDetail.Episode episode = episodes.get(position);
             if ("1".equals(episode.getIsNew())) {
                 holder.newTag.setVisibility(View.VISIBLE);
@@ -75,6 +75,10 @@ public class BangumiEpAdapter extends RecyclerView.Adapter<BangumiEpAdapter.Epis
         this.listener = listener;
     }
 
+    public interface onEpClickListener {
+        void onEpClick(int position);
+    }
+
     public class EpisodeViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.index)
@@ -89,15 +93,11 @@ public class BangumiEpAdapter extends RecyclerView.Adapter<BangumiEpAdapter.Epis
                 @Override
                 public void onClick(View v) {
                     selectItem(getAdapterPosition());
-                    if(listener!=null && episodes.size()>0){
+                    if (listener != null && episodes.size() > 0) {
                         listener.onEpClick(getAdapterPosition());
                     }
                 }
             });
         }
-    }
-
-    public interface onEpClickListener{
-        void onEpClick(int position);
     }
 }

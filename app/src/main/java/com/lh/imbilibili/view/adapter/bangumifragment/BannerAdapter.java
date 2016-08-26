@@ -24,20 +24,20 @@ public class BannerAdapter extends BannerView.Adaper {
 
     @Override
     public int getBannerCount() {
-        if(banners==null){
+        if (banners == null) {
             return 0;
-        }else{
+        } else {
             return banners.size();
         }
     }
 
     @Override
     public Object getItemView(ViewGroup container, int position) {
-        ScalableImageView imageView=new ScalableImageView(container.getContext());
+        ScalableImageView imageView = new ScalableImageView(container.getContext());
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         imageView.setWidthRatio(960);
         imageView.setHeightRatio(300);
-        ViewGroup.LayoutParams layoutParams=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageView.setLayoutParams(layoutParams);
         Glide.with(container.getContext()).load(banners.get(position).getImg()).into(imageView);
         container.addView(imageView);
@@ -50,7 +50,7 @@ public class BannerAdapter extends BannerView.Adaper {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view==object;
+        return view == object;
     }
 
     public void setBanners(List<Banner> banners) {

@@ -54,4 +54,6 @@
     <color name="blue_light">#ff21c1fc</color>
     <color name="theme_color_view_background">#fffafafa</color>
 
+    <color name="bangumi_index_mask">#b3000000</color>
+
 </resources>

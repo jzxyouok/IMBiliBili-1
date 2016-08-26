@@ -311,8 +311,7 @@
                         android:textColor="@color/gray_dark"
                         android:visibility="gone" />
 
-                    <include
-                        layout="@layout/bangumi_season_comment_footer" />
+                    <include layout="@layout/bangumi_season_comment_footer" />
 
                     <TextView
                         android:id="@+id/recommend_bangumi_header"

@@ -16,8 +16,8 @@ public class BaseActivity extends AppCompatActivity {
         ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
         int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
         View view = new View(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,statusBarHeight);
-        view.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
-        viewGroup.addView(view,params);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
+        view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        viewGroup.addView(view, params);
     }
 }

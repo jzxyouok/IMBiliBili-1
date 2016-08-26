@@ -26,26 +26,26 @@ public class RoundedCornersTransformation extends BitmapTransformation {
 
     @Override
     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-        Bitmap bitmap = pool.get(outWidth,outHeight, Bitmap.Config.ARGB_8888);
-        if(bitmap == null){
-            bitmap = Bitmap.createBitmap(outWidth,outHeight,Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = pool.get(outWidth, outHeight, Bitmap.Config.ARGB_8888);
+        if (bitmap == null) {
+            bitmap = Bitmap.createBitmap(outWidth, outHeight, Bitmap.Config.ARGB_8888);
         }
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawARGB(0,0,0,0);
+        canvas.drawARGB(0, 0, 0, 0);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.RED);
-        RectF rectF = new RectF(0,0,outWidth,outHeight);
-        canvas.drawRoundRect(rectF,radius,radius,paint);
+        RectF rectF = new RectF(0, 0, outWidth, outHeight);
+        canvas.drawRoundRect(rectF, radius, radius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        Rect srcRect = new Rect(0,0,toTransform.getWidth(),toTransform.getHeight());
-        Rect dstRect = new Rect(0,0,outWidth,outHeight);
-        canvas.drawBitmap(toTransform,srcRect,dstRect,paint);
+        Rect srcRect = new Rect(0, 0, toTransform.getWidth(), toTransform.getHeight());
+        Rect dstRect = new Rect(0, 0, outWidth, outHeight);
+        canvas.drawBitmap(toTransform, srcRect, dstRect, paint);
         return bitmap;
     }
 
     @Override
     public String getId() {
-        return "RoundedCornersTransformation(radius:"+radius+")";
+        return "RoundedCornersTransformation(radius:" + radius + ")";
     }
 }

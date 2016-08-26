@@ -49,7 +49,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             R.drawable.bangumi_home_ic_season_2,
             R.drawable.bangumi_home_ic_season_3,
             R.drawable.bangumi_home_ic_season_4};
-    private int[] mMonth = new int[]{1,4,7,10};
+    private int[] mMonth = new int[]{1, 4, 7, 10};
 
     private Context context;
 
@@ -131,7 +131,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             List<Bangumi> bangumis = indexPage.getSerializing();
             Bangumi bangumi = bangumis.get(position - 3);
             Glide.with(context).load(bangumi.getCover())
-                    .transform(new RoundedCornersTransformation(context,2))
+                    .transform(new RoundedCornersTransformation(context, 2))
                     .into(gridHolder.ivCover);
             gridHolder.tvFavourite.setVisibility(View.GONE);
             gridHolder.tv1.setVisibility(View.VISIBLE);
@@ -139,21 +139,21 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             gridHolder.tv1.setText(StringUtils.format("更新至第%s话", bangumi.getNewestEpIndex()));
             gridHolder.tv2.setText(bangumi.getLastTime());
             Drawable drawable = DrawableCompat.wrap(gridHolder.tv2.getBackground());
-            if(bangumi.getWatchingCount()>=8000){
+            if (bangumi.getWatchingCount() >= 8000) {
                 gridHolder.tv2.setVisibility(View.VISIBLE);
-                DrawableCompat.setTint(drawable,ContextCompat.getColor(context,R.color.colorPrimary));
-            }else if(bangumi.getWatchingCount() >= 10) {
+                DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.colorPrimary));
+            } else if (bangumi.getWatchingCount() >= 10) {
                 gridHolder.tv2.setVisibility(View.VISIBLE);
-                DrawableCompat.setTint(drawable,Color.GRAY);
-            }else {
+                DrawableCompat.setTint(drawable, Color.GRAY);
+            } else {
                 gridHolder.tv2.setVisibility(View.GONE);
             }
             gridHolder.tv2.setBackground(drawable);
-            gridHolder.tv2.setText(StringUtils.format("%s人在看",StringUtils.formateNumber(bangumi.getWatchingCount())));
+            gridHolder.tv2.setText(StringUtils.format("%s人在看", StringUtils.formateNumber(bangumi.getWatchingCount())));
         } else if (getItemType(position) == SEASON_BANGUMI_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
-            headHolder.tvTitle.setText(StringUtils.format("%d月新番",mMonth[indexPage.getPrevious().getSeason()-1]));
-            headHolder.setLeftDrawable(mHeadImgs[indexPage.getPrevious().getSeason()-1]);
+            headHolder.tvTitle.setText(StringUtils.format("%d月新番", mMonth[indexPage.getPrevious().getSeason() - 1]));
+            headHolder.setLeftDrawable(mHeadImgs[indexPage.getPrevious().getSeason() - 1]);
             headHolder.tvSubTitle.setText("分季列表");
         } else if (getItemViewType(position) == SEASON_BANGUMI_ITEM) {
             SeasonHolder seasonHolder = (SeasonHolder) holder;
@@ -162,10 +162,10 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             seasonHolder.tv1.setVisibility(View.GONE);
             seasonHolder.tvFavourite.setVisibility(View.VISIBLE);
             Glide.with(context).load(bangumi.getCover())
-                    .transform(new RoundedCornersTransformation(context,2))
+                    .transform(new RoundedCornersTransformation(context, 2))
                     .into(seasonHolder.ivCover);
             seasonHolder.tvTitle.setText(bangumi.getTitle());
-            seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番",StringUtils.formateNumber(bangumi.getFavourites())));
+            seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));
         } else if (getItemType(position) == BANGUMI_RECOMMEND_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("番剧推荐");
@@ -183,12 +183,12 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
 
     @Override
     public int getRealItemCount() {
-        if(indexPage == null){
+        if (indexPage == null) {
             return 0;
-        }else if(bangumis == null) {
+        } else if (bangumis == null) {
             return 13;
         } else {
-            return 13+bangumis.size();
+            return 13 + bangumis.size();
         }
     }
 
@@ -204,6 +204,10 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         this.itemClickListener = itemClickListener;
     }
 
+    public interface OnItemClickListener {
+        void onClick(int itemType, int position);
+    }
+
     public class BannerHolder extends RecyclerView.ViewHolder {
 
         ScalableImageView bannerView;
@@ -214,8 +218,8 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             bannerView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(itemClickListener!=null){
-                        itemClickListener.onClick(BANNER,0);
+                    if (itemClickListener != null) {
+                        itemClickListener.onClick(BANNER, 0);
                     }
                 }
             });
@@ -227,7 +231,6 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             super(itemView);
         }
     }
-
 
     public class HeadHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.title)
@@ -241,8 +244,8 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(itemClickListener!=null){
-                        itemClickListener.onClick(getItemType(getAdapterPosition()),getAdapterPosition());
+                    if (itemClickListener != null) {
+                        itemClickListener.onClick(getItemType(getAdapterPosition()), getAdapterPosition());
                     }
                 }
             });
@@ -340,9 +343,5 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
                 }
             });
         }
-    }
-
-    public interface OnItemClickListener {
-        void onClick(int itemType, int position);
     }
 }

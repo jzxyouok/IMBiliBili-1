@@ -15,6 +15,9 @@ public class Tag implements Parcelable {
     @SerializedName("tag_name")
     private String tagName;
 
+    public Tag() {
+    }
+
     public String getCover() {
         return cover;
     }
@@ -51,16 +54,13 @@ public class Tag implements Parcelable {
         dest.writeString(this.tagName);
     }
 
-    public Tag() {
-    }
-
     protected Tag(Parcel in) {
         this.cover = in.readString();
         this.tagId = in.readString();
         this.tagName = in.readString();
     }
 
-    public static final Parcelable.Creator<Tag> CREATOR = new Parcelable.Creator<Tag>() {
+    public static final Creator<Tag> CREATOR = new Creator<Tag>() {
         @Override
         public Tag createFromParcel(Parcel source) {
             return new Tag(source);

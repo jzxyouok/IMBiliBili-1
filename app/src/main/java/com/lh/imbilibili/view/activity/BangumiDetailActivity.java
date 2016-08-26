@@ -1,5 +1,6 @@
 package com.lh.imbilibili.view.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -35,10 +36,10 @@ import com.lh.imbilibili.utils.transformation.BlurTransformation;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.utils.transformation.TopCropTransformation;
 import com.lh.imbilibili.view.BaseActivity;
+import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.BangumiEpAdapter;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.BangumiRecommendAdapter;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.SeasonListAdapter;
-import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
 import com.lh.imbilibili.widget.FeedbackView;
 import com.lh.imbilibili.widget.ForegroundLinearLayout;
 import com.lh.imbilibili.widget.ScalableImageView;
@@ -123,6 +124,12 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     private BangumiRecommendAdapter recommendAdapter;
 
     private int selectEpPosition = 0;
+
+    public static void startActivity(Context context, String seasonId) {
+        Intent intent = new Intent(context, BangumiDetailActivity.class);
+        intent.putExtra(Constant.QUERY_SEASON_ID, seasonId);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -231,9 +238,9 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
         seasonRecommendCall.enqueue(new Callback<BiliBiliResultResponse<SeasonRecommend>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<SeasonRecommend>> call, Response<BiliBiliResultResponse<SeasonRecommend>> response) {
-                if(response.body().getCode() == 0){
+                if (response.body().getCode() == 0) {
                     recommendSeasons = response.body().getResult();
-                    if(response.body().getResult().getList().size()>0){
+                    if (response.body().getResult().getList().size() > 0) {
                         setBangumiRecommendDate();
                     }
                 }
@@ -249,11 +256,11 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     private void setBangumiRecommendDate() {
         tvRecommendBangumiHeader.setVisibility(View.VISIBLE);
         recommendRecyclerView.setVisibility(View.VISIBLE);
-        if(recommendAdapter == null){
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
+        if (recommendAdapter == null) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
             recommendAdapter = new BangumiRecommendAdapter(this, recommendSeasons.getList());
             recommendRecyclerView.setLayoutManager(gridLayoutManager);
-            recommendRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this,false));
+            recommendRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this, false));
             recommendRecyclerView.setHasFixedSize(true);
             recommendRecyclerView.setNestedScrollingEnabled(false);
             recommendRecyclerView.setAdapter(recommendAdapter);
@@ -288,12 +295,12 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
                 .into(ivBackground);
         tvTitle.setText(bangumiDetail.getTitle());
         if ("0".equals(bangumiDetail.getIsFinish())) {
-            tvText1.setText(StringUtils.format("连载中，每周%s更新",StringUtils.str2Weekday(bangumiDetail.getWeekday())));
+            tvText1.setText(StringUtils.format("连载中，每周%s更新", StringUtils.str2Weekday(bangumiDetail.getWeekday())));
         } else {
-            tvText1.setText(StringUtils.format("已完结，%s话全",bangumiDetail.getTotalCount()));
+            tvText1.setText(StringUtils.format("已完结，%s话全", bangumiDetail.getTotalCount()));
         }
-        tvText2.setText(StringUtils.format("播放：%s",StringUtils.formateNumber(bangumiDetail.getPlayCount())));
-        tvText3.setText(StringUtils.format("追番：%s",StringUtils.formateNumber(bangumiDetail.getFavorites())));
+        tvText2.setText(StringUtils.format("播放：%s", StringUtils.formateNumber(bangumiDetail.getPlayCount())));
+        tvText3.setText(StringUtils.format("追番：%s", StringUtils.formateNumber(bangumiDetail.getFavorites())));
         tvDescription.setText(bangumiDetail.getEvaluate());
         setBangumiEpRecyclerView();
     }
@@ -322,7 +329,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
         if (bangumiEpAdapter == null) {
             GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
             bangumiEpAdapter = new BangumiEpAdapter(bangumiDetail.getEpisodes());
-            epRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this,false));
+            epRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this, false));
             epRecyclerView.setLayoutManager(gridLayoutManager);
             epRecyclerView.setAdapter(bangumiEpAdapter);
             epRecyclerView.setNestedScrollingEnabled(false);
@@ -335,18 +342,18 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
 
     @Override
     protected void onDestroy() {
-        CallUtils.cancelCall(bangumiDetailCall,feedbackCall, seasonRecommendCall);
+        CallUtils.cancelCall(bangumiDetailCall, feedbackCall, seasonRecommendCall);
         super.onDestroy();
     }
 
     @Override
     public void onEpClick(int position) {
-        if(selectEpPosition!=position) {
+        if (selectEpPosition != position) {
             selectEpPosition = position;
             loadFeedbackDate(bangumiDetail.getEpisodes().get(position).getAvId(),
                     bangumiDetail.getEpisodes().get(position).getIndex());
         }
-        VideoActivity.startVideoActivity(this,bangumiDetail.getEpisodes().get(position),bangumiDetail.getTitle());
+        VideoActivity.startVideoActivity(this, bangumiDetail.getEpisodes().get(position), bangumiDetail.getTitle());
     }
 
     @Override
@@ -356,17 +363,18 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
 
     @Override
     public void onBangumiRecommendItemClick(int position) {
-        Intent intent =new Intent();
-        intent.setClass(this,BangumiDetailActivity.class);
-        intent.putExtra(Constant.QUERY_SEASON_ID,recommendSeasons.getList().get(position).getSeasonId());
-        startActivity(intent);
+//        Intent intent =new Intent();
+//        intent.setClass(this,BangumiDetailActivity.class);
+//        intent.putExtra(Constant.QUERY_SEASON_ID,recommendSeasons.getList().get(position).getSeasonId());
+//        startActivity(intent);
+        BangumiDetailActivity.startActivity(this, recommendSeasons.getList().get(position).getSeasonId());
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.season_comment_title_layout||
-                v.getId() == R.id.more){
-            FeedbackActivity.startActivity(this,selectEpPosition,bangumiDetail);
+        if (v.getId() == R.id.season_comment_title_layout ||
+                v.getId() == R.id.more) {
+            FeedbackActivity.startActivity(this, selectEpPosition, bangumiDetail);
         }
     }
 }

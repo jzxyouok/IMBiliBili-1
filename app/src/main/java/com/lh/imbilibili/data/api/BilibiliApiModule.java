@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class BilibiliApiModule {
     @Singleton
     @Provides
-    public Retrofit provideRetrofit(OkHttpClient client){
+    public Retrofit provideRetrofit(OkHttpClient client) {
         return new Retrofit.Builder().baseUrl(Constant.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
@@ -30,7 +30,7 @@ public class BilibiliApiModule {
 
     @Singleton
     @Provides
-    public OkHttpClient provideOkHttpClient(){
+    public OkHttpClient provideOkHttpClient() {
         HttpLoggingInterceptor logi = new HttpLoggingInterceptor();
         logi.setLevel(HttpLoggingInterceptor.Level.BODY);
         return new OkHttpClient.Builder().writeTimeout(3000, TimeUnit.MILLISECONDS)

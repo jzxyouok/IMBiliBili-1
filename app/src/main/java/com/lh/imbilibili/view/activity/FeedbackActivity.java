@@ -2,13 +2,10 @@ package com.lh.imbilibili.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.lh.imbilibili.R;
@@ -30,10 +27,10 @@ public class FeedbackActivity extends BaseActivity {
     FrameLayout feedbackContainer;
     private FeedbackFragment feedbackFragment;
 
-    public static void startActivity(Context context,int position,BangumiDetail bangumiDetail){
-        Intent intent = new Intent(context,FeedbackActivity.class);
-        intent.putExtra("position",position);
-        intent.putExtra("data",bangumiDetail);
+    public static void startActivity(Context context, int position, BangumiDetail bangumiDetail) {
+        Intent intent = new Intent(context, FeedbackActivity.class);
+        intent.putExtra("position", position);
+        intent.putExtra("data", bangumiDetail);
 //        intent.putExtra(Constant.SEASONID_EXTRA,episodes.get(position).getAvId());
 //        intent.putExtra(Constant.EPISODES_EXTRA,new Gson().toJson(episodes));
         context.startActivity(intent);
@@ -61,9 +58,9 @@ public class FeedbackActivity extends BaseActivity {
 
     private void initFragment() {
         feedbackFragment = (FeedbackFragment) getSupportFragmentManager().findFragmentByTag(FeedbackFragment.TAG);
-        if(feedbackFragment == null){
+        if (feedbackFragment == null) {
             feedbackFragment = FeedbackFragment.newInstance(getIntent().getExtras());
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container,feedbackFragment,FeedbackFragment.TAG).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container, feedbackFragment, FeedbackFragment.TAG).commit();
     }
 }

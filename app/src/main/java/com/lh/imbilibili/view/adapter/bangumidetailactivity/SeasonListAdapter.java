@@ -40,7 +40,7 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
 
     @Override
     public SeasonViewHold onCreateViewHolder(ViewGroup parent, int viewType) {
-        IndicatorTextView view =new IndicatorTextView(parent.getContext());
+        IndicatorTextView view = new IndicatorTextView(parent.getContext());
         view.setGravity(Gravity.CENTER);
         view.setTextColor(Color.BLACK);
         return new SeasonViewHold(view);
@@ -50,28 +50,28 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
     public void onBindViewHolder(SeasonViewHold holder, int position) {
         Drawable foreDrawable = null;
         Drawable backDrawable = null;
-        if(position == 0){
-            backDrawable = ContextCompat.getDrawable(context,R.drawable.bangumi_season_title_background_first);
+        if (position == 0) {
+            backDrawable = ContextCompat.getDrawable(context, R.drawable.bangumi_season_title_background_first);
             foreDrawable = ContextCompat.getDrawable(context, R.drawable.selector_bangumi_season_indicator_first);
-        }else if(position == seasons.size()-1){
-            backDrawable = ContextCompat.getDrawable(context,R.drawable.bangumi_season_title_background_last);
-            foreDrawable = ContextCompat.getDrawable(context,R.drawable.selector_bangumi_season_indicator_last);
-        }else {
-            backDrawable = ContextCompat.getDrawable(context,R.drawable.bangumi_season_title_background_m);
-            foreDrawable = ContextCompat.getDrawable(context,R.drawable.selector_bangumi_season_indicator_mid);
+        } else if (position == seasons.size() - 1) {
+            backDrawable = ContextCompat.getDrawable(context, R.drawable.bangumi_season_title_background_last);
+            foreDrawable = ContextCompat.getDrawable(context, R.drawable.selector_bangumi_season_indicator_last);
+        } else {
+            backDrawable = ContextCompat.getDrawable(context, R.drawable.bangumi_season_title_background_m);
+            foreDrawable = ContextCompat.getDrawable(context, R.drawable.selector_bangumi_season_indicator_mid);
         }
         int[][] states = new int[2][];
-        int[] colors = new int[]{Color.GRAY,Color.WHITE};
+        int[] colors = new int[]{Color.GRAY, Color.WHITE};
         states[0] = new int[]{android.R.attr.state_pressed};
         states[1] = new int[]{};
-        ColorStateList colorStateList = new ColorStateList(states,colors);
+        ColorStateList colorStateList = new ColorStateList(states, colors);
         backDrawable = DrawableCompat.wrap(backDrawable);
         foreDrawable = DrawableCompat.wrap(foreDrawable);
-        DrawableCompat.setTintList(backDrawable,colorStateList);
+        DrawableCompat.setTintList(backDrawable, colorStateList);
         DrawableCompat.setTint(foreDrawable, ContextCompat.getColor(context, R.color.colorPrimaryDark));
-        if(selectPosition == position) {
+        if (selectPosition == position) {
             holder.tvTitle.setIndicatorDrawable(foreDrawable);
-        }else {
+        } else {
             holder.tvTitle.setIndicatorDrawable(null);
         }
         holder.tvTitle.setBackground(backDrawable);
@@ -83,8 +83,8 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
         return seasons.size();
     }
 
-    public void selectItem(int position){
-        int prePosition =selectPosition;
+    public void selectItem(int position) {
+        int prePosition = selectPosition;
         selectPosition = position;
         notifyItemChanged(prePosition);
         notifyItemChanged(selectPosition);
@@ -94,10 +94,10 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
         return selectPosition;
     }
 
-    public void selectItem(String seasonId){
-        for(int i = 0; i< seasons.size(); i++){
+    public void selectItem(String seasonId) {
+        for (int i = 0; i < seasons.size(); i++) {
             Bangumi bangumi = seasons.get(i);
-            if(bangumi.getSeasonId().equals(seasonId)){
+            if (bangumi.getSeasonId().equals(seasonId)) {
                 selectItem(i);
                 break;
             }
@@ -108,8 +108,13 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
         this.listener = listener;
     }
 
-    public class SeasonViewHold extends RecyclerView.ViewHolder{
+    public interface OnSeasonItemClickListener {
+        void onSeasonItemClick(int position);
+    }
+
+    public class SeasonViewHold extends RecyclerView.ViewHolder {
         IndicatorTextView tvTitle;
+
         public SeasonViewHold(View itemView) {
             super(itemView);
             tvTitle = (IndicatorTextView) itemView;
@@ -117,15 +122,11 @@ public class SeasonListAdapter extends RecyclerView.Adapter<SeasonListAdapter.Se
                 @Override
                 public void onClick(View v) {
                     selectItem(getAdapterPosition());
-                    if(listener!=null){
+                    if (listener != null) {
                         listener.onSeasonItemClick(getAdapterPosition());
                     }
                 }
             });
         }
-    }
-
-    public interface OnSeasonItemClickListener {
-        void onSeasonItemClick(int position);
     }
 }

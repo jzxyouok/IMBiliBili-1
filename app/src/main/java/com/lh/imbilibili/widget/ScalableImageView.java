@@ -15,6 +15,21 @@ public class ScalableImageView extends ImageView {
     private int widthRatio = 0;
     private int heightRatio = 0;
 
+    public ScalableImageView(Context context) {
+        super(context);
+        init(context, null);
+    }
+
+    public ScalableImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
+
+    public ScalableImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs);
+    }
+
     public int getWidthRatio() {
         return widthRatio;
     }
@@ -29,21 +44,6 @@ public class ScalableImageView extends ImageView {
 
     public void setHeightRatio(int heightRatio) {
         this.heightRatio = heightRatio;
-    }
-
-    public ScalableImageView(Context context) {
-        super(context);
-        init(context, null);
-    }
-
-    public ScalableImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
-
-    public ScalableImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {

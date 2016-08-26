@@ -34,8 +34,8 @@ import retrofit2.Response;
  */
 public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerView.onLoadMoreLinstener, LoadMoreRecyclerView.onLoadMoreViewClickListener, View.OnClickListener {
 
-    public static final String TAG="FeedbackFragment";
-
+    public static final String TAG = "FeedbackFragment";
+    private final int pageSize = 20;
     @BindView(R.id.title)
     TextView tvTitle;
     @BindView(R.id.comment_count)
@@ -44,13 +44,9 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     TextView tvChooseEpisode;
     @BindView(R.id.feedback_list)
     LoadMoreRecyclerView recyclerView;
-
     private FeedbackData feedbackData;
     private BangumiDetail bangumiDetail;
-
     private int currentPage = 0;
-    private final int pageSize = 20;
-
     private FeedbackAdapter feedbackAdapter;
 
     private Call<BilibiliDataResponse<FeedbackData>> feedbackCall;
@@ -59,7 +55,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     private int selectPosition;
     private EpisodeFragment episodeFragment;
 
-    public static FeedbackFragment newInstance(Bundle bundle){
+    public static FeedbackFragment newInstance(Bundle bundle) {
         FeedbackFragment feedbackFragment = new FeedbackFragment();
         feedbackFragment.setArguments(bundle);
         return feedbackFragment;
@@ -77,22 +73,22 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bangumiDetail = getArguments().getParcelable("data");
-        selectPosition = getArguments().getInt("position",0);
+        selectPosition = getArguments().getInt("position", 0);
         initView();
         if (feedbackData == null) {
-            tvTitle.setText(StringUtils.format("第%s话",bangumiDetail.getEpisodes().get(selectPosition).getIndex()));
-            loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(),0);
+            tvTitle.setText(StringUtils.format("第%s话", bangumiDetail.getEpisodes().get(selectPosition).getIndex()));
+            loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(), 0);
             loadReplyCount(bangumiDetail.getEpisodes().get(selectPosition).getAvId());
         }
     }
 
-    private void loadReplyCount(String id){
-        replyCountCall = IMBilibiliApplication.getApplication().getApi().getReplyCount(Constant.APPKEY,Constant.BUILD,Constant.MOBI_APP,id,Constant.PLATFORM,1);
+    private void loadReplyCount(String id) {
+        replyCountCall = IMBilibiliApplication.getApplication().getApi().getReplyCount(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, id, Constant.PLATFORM, 1);
         replyCountCall.enqueue(new Callback<BilibiliDataResponse<ReplyCount>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<ReplyCount>> call, Response<BilibiliDataResponse<ReplyCount>> response) {
-                if(response.body().getCode() == 0){
-                    tvCommentCount.setText(StringUtils.format("%d楼",response.body().getData().getCount()));
+                if (response.body().getCode() == 0) {
+                    tvCommentCount.setText(StringUtils.format("%d楼", response.body().getData().getCount()));
                 }
             }
 
@@ -103,15 +99,15 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
         });
     }
 
-    private void loadFeedbackData(String id,int page) {
+    private void loadFeedbackData(String id, int page) {
         feedbackCall = IMBilibiliApplication.getApplication().getApi().getFeedback(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, 0, id, Constant.PLATFORM, page, pageSize, 0, 1);
         feedbackCall.enqueue(new Callback<BilibiliDataResponse<FeedbackData>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<FeedbackData>> call, Response<BilibiliDataResponse<FeedbackData>> response) {
                 if (response.body().getCode() == 0) {
-                    if(feedbackData == null) {
+                    if (feedbackData == null) {
                         feedbackData = response.body().getData();
-                    }else {
+                    } else {
                         feedbackData.getReplies().addAll(response.body().getData().getReplies());
                         recyclerView.setLoading(false);
                     }
@@ -123,7 +119,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
             @Override
             public void onFailure(Call<BilibiliDataResponse<FeedbackData>> call, Throwable t) {
                 recyclerView.setEnableLoadMore(false);
-                recyclerView.setLoadView("点击重试",false);
+                recyclerView.setLoadView("点击重试", false);
                 recyclerView.setOnLoadMoreViewClickListener(FeedbackFragment.this);
             }
         });
@@ -140,35 +136,35 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
         tvChooseEpisode.setOnClickListener(this);
     }
 
-    private void showEpChooseDialog(){
-        if(episodeFragment == null) {
+    private void showEpChooseDialog() {
+        if (episodeFragment == null) {
             episodeFragment = new EpisodeFragment();
             episodeFragment.setCancelable(true);
         }
         episodeFragment.setArguments(getArguments());
-        episodeFragment.show(getFragmentManager(),EpisodeFragment.TAG);
+        episodeFragment.show(getFragmentManager(), EpisodeFragment.TAG);
     }
 
     @Override
     public void onDestroy() {
-        CallUtils.cancelCall(feedbackCall,replyCountCall);
+        CallUtils.cancelCall(feedbackCall, replyCountCall);
         super.onDestroy();
     }
 
     @Override
     public void onLoadMore() {
         currentPage++;
-        loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(),currentPage);
+        loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(), currentPage);
     }
 
     @Override
     public void onLoadMoreViewClick() {
-        if(currentPage>0){
+        if (currentPage > 0) {
             currentPage--;
         }
         recyclerView.setEnableLoadMore(true);
-        recyclerView.setLoadView("加载中",true);
-        loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(),currentPage);
+        recyclerView.setLoadView("加载中", true);
+        loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(), currentPage);
     }
 
     @Override
@@ -179,11 +175,11 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     public void onEpisodeSelect(int position) {
         selectPosition = position;
         feedbackData = null;
-        currentPage=0;
-        tvTitle.setText(StringUtils.format("第%s话",bangumiDetail.getEpisodes().get(position).getIndex()));
-        loadFeedbackData(bangumiDetail.getEpisodes().get(position).getAvId(),currentPage);
+        currentPage = 0;
+        tvTitle.setText(StringUtils.format("第%s话", bangumiDetail.getEpisodes().get(position).getIndex()));
+        loadFeedbackData(bangumiDetail.getEpisodes().get(position).getAvId(), currentPage);
         loadReplyCount(bangumiDetail.getEpisodes().get(position).getAvId());
-        if(episodeFragment!=null){
+        if (episodeFragment != null) {
             episodeFragment.dismiss();
         }
     }

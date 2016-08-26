@@ -44,7 +44,7 @@ public class BangumiRecommendAdapter extends RecyclerView.Adapter<BangumiRecomme
 
     @Override
     public BangumiHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bangumi_grid_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bangumi_grid_item, parent, false);
         return new BangumiHolder(view);
     }
 
@@ -52,10 +52,10 @@ public class BangumiRecommendAdapter extends RecyclerView.Adapter<BangumiRecomme
     public void onBindViewHolder(BangumiHolder holder, int position) {
         Bangumi bangumi = bangumis.get(position);
         Glide.with(context).load(bangumi.getCover())
-                .transform(new RoundedCornersTransformation(context.getApplicationContext(),2))
+                .transform(new RoundedCornersTransformation(context.getApplicationContext(), 2))
                 .into(holder.ivCover);
         holder.tvTitle.setText(bangumi.getTitle());
-        holder.tvFavourite.setText(StringUtils.format("%s人追番",StringUtils.formateNumber(bangumi.getFollow())));
+        holder.tvFavourite.setText(StringUtils.format("%s人追番", StringUtils.formateNumber(bangumi.getFollow())));
     }
 
     @Override
@@ -63,7 +63,11 @@ public class BangumiRecommendAdapter extends RecyclerView.Adapter<BangumiRecomme
         return bangumis.size();
     }
 
-    public class BangumiHolder extends RecyclerView.ViewHolder{
+    public interface OnBangumiRecommendItemClickListener {
+        void onBangumiRecommendItemClick(int position);
+    }
+
+    public class BangumiHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.cover)
         ScalableImageView ivCover;
         @BindView(R.id.favourites)
@@ -72,23 +76,20 @@ public class BangumiRecommendAdapter extends RecyclerView.Adapter<BangumiRecomme
         TextView tvTitle;
         @BindView(R.id.text1)
         TextView txt1;
+
         public BangumiHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             txt1.setVisibility(View.GONE);
             tvFavourite.setVisibility(View.VISIBLE);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(itemClickListener != null){
+                    if (itemClickListener != null) {
                         itemClickListener.onBangumiRecommendItemClick(getAdapterPosition());
                     }
                 }
             });
         }
-    }
-
-    public interface OnBangumiRecommendItemClickListener{
-        void onBangumiRecommendItemClick(int position);
     }
 }

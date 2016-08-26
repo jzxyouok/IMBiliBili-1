@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
-    android:id="@+id/toolbar"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
     android:minHeight="?attr/actionBarSize"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:layout_scrollFlags="scroll|enterAlways"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:contentInsetEnd="0dp"
     app:contentInsetLeft="0dp"
-    app:contentInsetStart="0dp"
     app:contentInsetRight="0dp"
-    app:contentInsetEnd="0dp">
+    app:contentInsetStart="0dp"
+    app:layout_scrollFlags="scroll|enterAlways"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
     <LinearLayout
         android:id="@+id/navigation"
@@ -24,7 +23,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_drawer_home"/>
+            android:src="@drawable/ic_drawer_home" />
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -36,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right|top"
                 android:src="@drawable/ic_avatar_answer_badge"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/notice_badge"
@@ -45,15 +44,15 @@
                 android:layout_gravity="center|right|top"
                 android:layout_marginRight="1dp"
                 android:src="@drawable/shape_topbar_notice_badge"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <com.lh.imbilibili.widget.ScalableImageView
                 android:id="@+id/avatar"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
+                android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="14dp"
-                android:layout_marginRight="4dp"
-                android:layout_gravity="left|center_vertical"/>
+                android:layout_marginRight="4dp" />
         </FrameLayout>
 
         <TextView
@@ -61,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:singleLine="true"/>
+            android:singleLine="true" />
     </LinearLayout>
 
 </android.support.v7.widget.Toolbar>

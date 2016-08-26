@@ -24,19 +24,19 @@ public class FileUtils {
         }
     }
 
-    public static void clearFile(File file){
+    public static void clearFile(File file) {
         FileWriter writer = null;
         try {
-            writer=new FileWriter(file,false);
+            writer = new FileWriter(file, false);
             writer.write("");
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             closeStream(writer);
         }
     }
 
-    public static void writeToFile(File file,String content){
+    public static void writeToFile(File file, String content) {
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(file, false);

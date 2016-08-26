@@ -4,10 +4,10 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@color/black_60_alpha"
+    android:clickable="false"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="@dimen/item_spacing"
-    android:clickable="false"
     android:visibility="gone">
 
     <TextView

@@ -52,31 +52,33 @@ public class LoadMoreRecyclerView extends RecyclerView {
     @Override
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
-        mAdapter = (LoadMoreAdapter) adapter;
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.recyclerview_load_more_item, this, false);
-        mLoadMoreViewHolder = new LoadMoreViewHolder(view);
-        mLoadMoreViewHolder.itemView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mOnLoadMoreViewClickListener!=null){
-                    mOnLoadMoreViewClickListener.onLoadMoreViewClick();
+        if (!isInEditMode()) {
+            mAdapter = (LoadMoreAdapter) adapter;
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.recyclerview_load_more_item, this, false);
+            mLoadMoreViewHolder = new LoadMoreViewHolder(view);
+            mLoadMoreViewHolder.itemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnLoadMoreViewClickListener != null) {
+                        mOnLoadMoreViewClickListener.onLoadMoreViewClick();
+                    }
                 }
-            }
-        });
-        setLoadMoreViewClickable(false);
-        mAdapter.setmLoadMoreViewHolder(mLoadMoreViewHolder);
+            });
+            setLoadMoreViewClickable(false);
+            mAdapter.setmLoadMoreViewHolder(mLoadMoreViewHolder);
+        }
     }
 
     public void setOnLoadMoreLinstener(onLoadMoreLinstener loadMoreLinstener) {
         mOnLoadMoreLinstener = loadMoreLinstener;
     }
 
-    public void setOnLoadMoreViewClickListener(onLoadMoreViewClickListener clickListener){
+    public void setOnLoadMoreViewClickListener(onLoadMoreViewClickListener clickListener) {
         setLoadMoreViewClickable(true);
         mOnLoadMoreViewClickListener = clickListener;
     }
 
-    public void setLoadMoreViewClickable(boolean clickable){
+    public void setLoadMoreViewClickable(boolean clickable) {
         mLoadMoreViewHolder.itemView.setClickable(clickable);
     }
 
@@ -92,20 +94,6 @@ public class LoadMoreRecyclerView extends RecyclerView {
     public void setLoadView(String text, boolean showProgress) {
         mLoadMoreViewHolder.progressBar.setVisibility(showProgress ? VISIBLE : GONE);
         mLoadMoreViewHolder.textView.setText(text);
-    }
-
-    public class LoadMoreScrollLinstener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            LayoutManager layoutManager = recyclerView.getLayoutManager();
-            View view = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE &&
-                    !isLoading && mOnLoadMoreLinstener != null &&
-                    mEnableLoadMore && recyclerView.getChildViewHolder(view) instanceof LoadMoreViewHolder) {
-                isLoading = true;
-                mOnLoadMoreLinstener.onLoadMore();
-            }
-        }
     }
 
     public interface onLoadMoreLinstener {
@@ -174,6 +162,20 @@ public class LoadMoreRecyclerView extends RecyclerView {
 
         private void setmLoadMoreViewHolder(LoadMoreViewHolder holder) {
             mLoadMoreViewHolder = holder;
+        }
+    }
+
+    public class LoadMoreScrollLinstener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            LayoutManager layoutManager = recyclerView.getLayoutManager();
+            View view = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE &&
+                    !isLoading && mOnLoadMoreLinstener != null &&
+                    mEnableLoadMore && recyclerView.getChildViewHolder(view) instanceof LoadMoreViewHolder) {
+                isLoading = true;
+                mOnLoadMoreLinstener.onLoadMore();
+            }
         }
     }
 }

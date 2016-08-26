@@ -41,6 +41,7 @@ public class ForegroundLinearLayout extends LinearLayoutCompat {
             array.recycle();
         }
     }
+
     @Override
     public void setForeground(Drawable foreground) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

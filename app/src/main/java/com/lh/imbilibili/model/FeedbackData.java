@@ -35,7 +35,7 @@ public class FeedbackData {
         this.replies = replies;
     }
 
-    public static class Page{
+    public static class Page {
         private int acount;
         private int count;
         private int num;

@@ -23,13 +23,13 @@ public class IMBilibiliModule {
 
     @Singleton
     @Provides
-    Context provideContext(){
+    Context provideContext() {
         return application;
     }
 
     @Singleton
     @Provides
-    Handler providerHandler(){
+    Handler providerHandler() {
         return new Handler(Looper.getMainLooper());
     }
 }

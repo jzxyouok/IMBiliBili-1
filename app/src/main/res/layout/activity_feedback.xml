@@ -16,11 +16,11 @@
             android:id="@+id/feedback_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <!--<tv.danmaku.bili.ui.feedback.FeedbackCommentBar-->
-            <!--android:id="@id/comment_bar"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content" />-->
+        <!--android:id="@id/comment_bar"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content" />-->
     </LinearLayout>
 </LinearLayout>

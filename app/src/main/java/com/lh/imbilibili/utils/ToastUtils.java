@@ -11,10 +11,10 @@ import java.lang.ref.WeakReference;
 public class ToastUtils {
     private static WeakReference<Toast> toast;
 
-    public static void showToast(Context context,String msg,int duration){
-        if(toast == null||toast.get()==null){
-            toast = new WeakReference<>(Toast.makeText(context,msg,duration));
-        }else {
+    public static void showToast(Context context, String msg, int duration) {
+        if (toast == null || toast.get() == null) {
+            toast = new WeakReference<>(Toast.makeText(context, msg, duration));
+        } else {
             toast.get().setText(msg);
             toast.get().setDuration(duration);
         }

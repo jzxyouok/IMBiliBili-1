@@ -31,11 +31,11 @@ public class SeasonGroupItemDecoration extends RecyclerView.ItemDecoration {
         int position = viewHolder.getAdapterPosition();
         outRect.top = itemHalfSpace;
         outRect.bottom = itemHalfSpace;
-        if(adapter.getItemViewType(position) == SeasonGroupAdapter.SEASON_ITEM){
+        if (adapter.getItemViewType(position) == SeasonGroupAdapter.SEASON_ITEM) {
 //            outRect.left = itemSpace - itemSpace * spanIndex / spanCount;
             outRect.left = itemSpace * (spanCount - spanIndex) / spanCount;
             outRect.right = itemSpace * (spanIndex + 1) / spanCount;
-        }else {
+        } else {
             outRect.left = itemSpace;
             outRect.right = itemSpace;
         }

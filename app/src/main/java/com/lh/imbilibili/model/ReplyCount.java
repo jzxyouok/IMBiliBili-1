@@ -9,6 +9,9 @@ import android.os.Parcelable;
 public class ReplyCount implements Parcelable {
     private int count;
 
+    public ReplyCount() {
+    }
+
     public int getCount() {
         return count;
     }
@@ -27,14 +30,11 @@ public class ReplyCount implements Parcelable {
         dest.writeInt(this.count);
     }
 
-    public ReplyCount() {
-    }
-
     protected ReplyCount(Parcel in) {
         this.count = in.readInt();
     }
 
-    public static final Parcelable.Creator<ReplyCount> CREATOR = new Parcelable.Creator<ReplyCount>() {
+    public static final Creator<ReplyCount> CREATOR = new Creator<ReplyCount>() {
         @Override
         public ReplyCount createFromParcel(Parcel source) {
             return new ReplyCount(source);

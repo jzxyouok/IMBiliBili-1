@@ -59,14 +59,14 @@ public class FeedbackView extends FrameLayout implements View.OnClickListener {
     }
 
     private void init(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.feedback_item_include,this,false);
-        ButterKnife.bind(this,view);
+        View view = LayoutInflater.from(context).inflate(R.layout.feedback_item_include, this, false);
+        ButterKnife.bind(this, view);
         addView(view);
         ivMenu.setOnClickListener(this);
     }
 
     public void setData(Feedback feedback) {
-        if(feedback.getMember() !=null) {
+        if (feedback.getMember() != null) {
             Glide.with(getContext()).load(feedback.getMember().getAvatar()).transform(new CircleTransformation(getContext())).into(ivAvatar);
             tvNickName.setText(feedback.getMember().getUname());
         }
@@ -79,13 +79,13 @@ public class FeedbackView extends FrameLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.menu){
-            PopupWindow popupWindow =new PopupWindow(getContext());
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.txt_popup_view,this,false);
-            popupWindow.setWidth(getMeasuredWidth()/2);
+        if (v.getId() == R.id.menu) {
+            PopupWindow popupWindow = new PopupWindow(getContext());
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.txt_popup_view, this, false);
+            popupWindow.setWidth(getMeasuredWidth() / 2);
             popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setContentView(view);
-            popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.popup_round_shadow_bg));
+            popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.popup_round_shadow_bg));
             TextView tv = (TextView) view.findViewById(R.id.txt);
             tv.setText("举报");
             popupWindow.setOutsideTouchable(true);

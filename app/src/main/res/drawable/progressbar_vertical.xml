@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
             <solid android:color="@color/gray_trans" />
         </shape>
     </item>
     <item android:id="@android:id/secondaryProgress">
-        <clip android:gravity="bottom" android:clipOrientation="vertical">
+        <clip
+            android:clipOrientation="vertical"
+            android:gravity="bottom">
             <shape android:shape="rectangle">
                 <solid android:color="@color/colorPrimary" />
             </shape>
         </clip>
     </item>
     <item android:id="@android:id/progress">
-        <clip android:gravity="bottom" android:clipOrientation="vertical">
+        <clip
+            android:clipOrientation="vertical"
+            android:gravity="bottom">
             <shape android:shape="rectangle">
                 <solid android:color="@color/colorPrimaryDark" />
             </shape>

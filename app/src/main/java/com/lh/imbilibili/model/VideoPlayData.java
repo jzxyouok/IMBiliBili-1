@@ -94,7 +94,7 @@ public class VideoPlayData {
         this.durl = durl;
     }
 
-    public static class Durl{
+    public static class Durl {
         private int order;
         private long length;
         private long size;

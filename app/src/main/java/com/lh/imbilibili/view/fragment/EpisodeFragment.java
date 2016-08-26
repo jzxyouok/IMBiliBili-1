@@ -33,9 +33,9 @@ public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if(dialog == null) {
+        if (dialog == null) {
             BangumiDetail bangumiDetail = getArguments().getParcelable("data");
-            if(bangumiDetail!=null){
+            if (bangumiDetail != null) {
                 episodes = bangumiDetail.getEpisodes();
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -54,15 +54,15 @@ public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter
         return dialog;
     }
 
-    public int getSelectPosition(){
+    public int getSelectPosition() {
         return selectPosition;
     }
 
     @Override
     public void onEpClick(int position) {
         selectPosition = position;
-        FeedbackFragment fragment= (FeedbackFragment) getFragmentManager().findFragmentByTag(FeedbackFragment.TAG);
-        if(fragment!=null){
+        FeedbackFragment fragment = (FeedbackFragment) getFragmentManager().findFragmentByTag(FeedbackFragment.TAG);
+        if (fragment != null) {
             fragment.onEpisodeSelect(position);
         }
         dismiss();

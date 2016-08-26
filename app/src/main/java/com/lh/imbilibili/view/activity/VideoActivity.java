@@ -71,6 +71,7 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     private boolean mResumePlay = false;
     private boolean mIsFirstLoadVideo = true;
     private int mPrePlayerPosition;
+    private long firstBackPressTime = -1;
 
     public static void startVideoActivity(Context context, BangumiDetail.Episode episode, String title) {
         Intent intent = new Intent(context, VideoActivity.class);
@@ -191,7 +192,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         return videoPlayPath;
     }
 
-
     public void appendVideoMsg(@Nullable String orginMsg, String appendMsg, boolean newLine) {
         String str;
         String preStr = mPrePlayMsg.getText().toString();
@@ -261,8 +261,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         }
         return true;
     }
-
-    private long firstBackPressTime = -1;
 
     @Override
     public void onBackPressed() {

@@ -1,5 +1,7 @@
 package com.lh.imbilibili.view.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +21,7 @@ import butterknife.ButterKnife;
  */
 public class WebViewActivity extends BaseActivity {
 
-    public static final String EXTRA_DATA="url";
+    public static final String EXTRA_DATA = "url";
 
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
@@ -29,6 +31,12 @@ public class WebViewActivity extends BaseActivity {
     WebView webView;
 
     private String url;
+
+    public static void startActivity(Context context, String url) {
+        Intent intent = new Intent(context, WebViewActivity.class);
+        intent.putExtra(EXTRA_DATA, url);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,11 +55,11 @@ public class WebViewActivity extends BaseActivity {
         webView.loadUrl(url);
     }
 
-    public class MyWebViewClient extends WebChromeClient{
+    public class MyWebViewClient extends WebChromeClient {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
             super.onProgressChanged(view, newProgress);
-            progressBar.setVisibility(newProgress == 100? View.GONE:View.VISIBLE);
+            progressBar.setVisibility(newProgress == 100 ? View.GONE : View.VISIBLE);
             progressBar.setProgress(newProgress);
         }
 

@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class BangumiDetail implements Parcelable {
     @SerializedName("play_time")
     private String playTime;
     private Rank rank;
-//    @SerializedName("related_season")
+    //    @SerializedName("related_season")
 //    private Object relatedSeason;
     @SerializedName("season_id")
     private String seasonId;
@@ -69,6 +68,9 @@ public class BangumiDetail implements Parcelable {
     private int viewRank;
     private String watchingCount;
     private String weekday;
+
+    public BangumiDetail() {
+    }
 
     public List<Actor> getActor() {
         return actor;
@@ -359,10 +361,30 @@ public class BangumiDetail implements Parcelable {
     }
 
     public static class Actor implements Parcelable {
+        public static final Creator<Actor> CREATOR = new Creator<Actor>() {
+            @Override
+            public Actor createFromParcel(Parcel source) {
+                return new Actor(source);
+            }
+
+            @Override
+            public Actor[] newArray(int size) {
+                return new Actor[size];
+            }
+        };
         private String actor;
         @SerializedName("actor_id")
         private int actorId;
         private String role;
+
+        public Actor() {
+        }
+
+        protected Actor(Parcel in) {
+            this.actor = in.readString();
+            this.actorId = in.readInt();
+            this.role = in.readString();
+        }
 
         public String getActor() {
             return actor;
@@ -399,30 +421,20 @@ public class BangumiDetail implements Parcelable {
             dest.writeInt(this.actorId);
             dest.writeString(this.role);
         }
-
-        public Actor() {
-        }
-
-        protected Actor(Parcel in) {
-            this.actor = in.readString();
-            this.actorId = in.readInt();
-            this.role = in.readString();
-        }
-
-        public static final Creator<Actor> CREATOR = new Creator<Actor>() {
-            @Override
-            public Actor createFromParcel(Parcel source) {
-                return new Actor(source);
-            }
-
-            @Override
-            public Actor[] newArray(int size) {
-                return new Actor[size];
-            }
-        };
     }
 
     public static class Episode implements Parcelable {
+        public static final Creator<Episode> CREATOR = new Creator<Episode>() {
+            @Override
+            public Episode createFromParcel(Parcel source) {
+                return new Episode(source);
+            }
+
+            @Override
+            public Episode[] newArray(int size) {
+                return new Episode[size];
+            }
+        };
         @SerializedName("av_id")
         private String avId;
         private String coins;
@@ -441,6 +453,24 @@ public class BangumiDetail implements Parcelable {
         private String page;
         @SerializedName("update_time")
         private String updateTime;
+
+        public Episode() {
+        }
+
+        protected Episode(Parcel in) {
+            this.avId = in.readString();
+            this.coins = in.readString();
+            this.cover = in.readString();
+            this.danmaku = in.readString();
+            this.episodeId = in.readString();
+            this.index = in.readString();
+            this.indexTitle = in.readString();
+            this.isNew = in.readString();
+            this.isWebplay = in.readString();
+            this.mid = in.readString();
+            this.page = in.readString();
+            this.updateTime = in.readString();
+        }
 
         public String getAvId() {
             return avId;
@@ -558,44 +588,35 @@ public class BangumiDetail implements Parcelable {
             dest.writeString(this.page);
             dest.writeString(this.updateTime);
         }
-
-        public Episode() {
-        }
-
-        protected Episode(Parcel in) {
-            this.avId = in.readString();
-            this.coins = in.readString();
-            this.cover = in.readString();
-            this.danmaku = in.readString();
-            this.episodeId = in.readString();
-            this.index = in.readString();
-            this.indexTitle = in.readString();
-            this.isNew = in.readString();
-            this.isWebplay = in.readString();
-            this.mid = in.readString();
-            this.page = in.readString();
-            this.updateTime = in.readString();
-        }
-
-        public static final Creator<Episode> CREATOR = new Creator<Episode>() {
-            @Override
-            public Episode createFromParcel(Parcel source) {
-                return new Episode(source);
-            }
-
-            @Override
-            public Episode[] newArray(int size) {
-                return new Episode[size];
-            }
-        };
     }
 
     public static class Rank implements Parcelable {
+        public static final Creator<Rank> CREATOR = new Creator<Rank>() {
+            @Override
+            public Rank createFromParcel(Parcel source) {
+                return new Rank(source);
+            }
+
+            @Override
+            public Rank[] newArray(int size) {
+                return new Rank[size];
+            }
+        };
         private List<RankUser> list;
         @SerializedName("total_bp_count")
         private int totalBpCount;
         @SerializedName("week_bp_count")
         private int weekBpCount;
+
+        public Rank() {
+        }
+
+        protected Rank(Parcel in) {
+            this.list = new ArrayList<RankUser>();
+            in.readList(this.list, RankUser.class.getClassLoader());
+            this.totalBpCount = in.readInt();
+            this.weekBpCount = in.readInt();
+        }
 
         public List<RankUser> getList() {
             return list;
@@ -621,10 +642,42 @@ public class BangumiDetail implements Parcelable {
             this.weekBpCount = weekBpCount;
         }
 
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeList(this.list);
+            dest.writeInt(this.totalBpCount);
+            dest.writeInt(this.weekBpCount);
+        }
+
         public static class RankUser implements Parcelable {
+            public static final Creator<RankUser> CREATOR = new Creator<RankUser>() {
+                @Override
+                public RankUser createFromParcel(Parcel source) {
+                    return new RankUser(source);
+                }
+
+                @Override
+                public RankUser[] newArray(int size) {
+                    return new RankUser[size];
+                }
+            };
             private String face;
             private String uid;
             private String uname;
+
+            public RankUser() {
+            }
+
+            protected RankUser(Parcel in) {
+                this.face = in.readString();
+                this.uid = in.readString();
+                this.uname = in.readString();
+            }
 
             public String getFace() {
                 return face;
@@ -661,62 +714,7 @@ public class BangumiDetail implements Parcelable {
                 dest.writeString(this.uid);
                 dest.writeString(this.uname);
             }
-
-            public RankUser() {
-            }
-
-            protected RankUser(Parcel in) {
-                this.face = in.readString();
-                this.uid = in.readString();
-                this.uname = in.readString();
-            }
-
-            public static final Creator<RankUser> CREATOR = new Creator<RankUser>() {
-                @Override
-                public RankUser createFromParcel(Parcel source) {
-                    return new RankUser(source);
-                }
-
-                @Override
-                public RankUser[] newArray(int size) {
-                    return new RankUser[size];
-                }
-            };
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeList(this.list);
-            dest.writeInt(this.totalBpCount);
-            dest.writeInt(this.weekBpCount);
-        }
-
-        public Rank() {
-        }
-
-        protected Rank(Parcel in) {
-            this.list = new ArrayList<RankUser>();
-            in.readList(this.list, RankUser.class.getClassLoader());
-            this.totalBpCount = in.readInt();
-            this.weekBpCount = in.readInt();
-        }
-
-        public static final Creator<Rank> CREATOR = new Creator<Rank>() {
-            @Override
-            public Rank createFromParcel(Parcel source) {
-                return new Rank(source);
-            }
-
-            @Override
-            public Rank[] newArray(int size) {
-                return new Rank[size];
-            }
-        };
     }
 
     @Override
@@ -726,7 +724,7 @@ public class BangumiDetail implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.actor);
+        dest.writeTypedList(this.actor);
         dest.writeString(this.alias);
         dest.writeString(this.allowBp);
         dest.writeString(this.allowDownload);
@@ -739,7 +737,7 @@ public class BangumiDetail implements Parcelable {
         dest.writeString(this.copyright);
         dest.writeString(this.cover);
         dest.writeString(this.danmakuCount);
-        dest.writeList(this.episodes);
+        dest.writeTypedList(this.episodes);
         dest.writeString(this.evaluate);
         dest.writeString(this.favorites);
         dest.writeString(this.isFinish);
@@ -755,8 +753,7 @@ public class BangumiDetail implements Parcelable {
         dest.writeString(this.shareUrl);
         dest.writeString(this.squareCover);
         dest.writeString(this.staff);
-        //dest.writeParcelable(this.tag2s, flags);
-        dest.writeList(this.tags);
+        dest.writeTypedList(this.tags);
         dest.writeString(this.title);
         dest.writeString(this.totalCount);
         dest.writeInt(this.viewRank);
@@ -764,12 +761,8 @@ public class BangumiDetail implements Parcelable {
         dest.writeString(this.weekday);
     }
 
-    public BangumiDetail() {
-    }
-
     protected BangumiDetail(Parcel in) {
-        this.actor = new ArrayList<Actor>();
-        in.readList(this.actor, Actor.class.getClassLoader());
+        this.actor = in.createTypedArrayList(Actor.CREATOR);
         this.alias = in.readString();
         this.allowBp = in.readString();
         this.allowDownload = in.readString();
@@ -782,8 +775,7 @@ public class BangumiDetail implements Parcelable {
         this.copyright = in.readString();
         this.cover = in.readString();
         this.danmakuCount = in.readString();
-        this.episodes = new ArrayList<Episode>();
-        in.readList(this.episodes, Episode.class.getClassLoader());
+        this.episodes = in.createTypedArrayList(Episode.CREATOR);
         this.evaluate = in.readString();
         this.favorites = in.readString();
         this.isFinish = in.readString();
@@ -799,9 +791,7 @@ public class BangumiDetail implements Parcelable {
         this.shareUrl = in.readString();
         this.squareCover = in.readString();
         this.staff = in.readString();
-        //this.tag2s = in.readParcelable(Object.class.getClassLoader());
-        this.tags = new ArrayList<Tag>();
-        in.readList(this.tags, Tag.class.getClassLoader());
+        this.tags = in.createTypedArrayList(Tag.CREATOR);
         this.title = in.readString();
         this.totalCount = in.readString();
         this.viewRank = in.readInt();
@@ -809,7 +799,7 @@ public class BangumiDetail implements Parcelable {
         this.weekday = in.readString();
     }
 
-    public static final Parcelable.Creator<BangumiDetail> CREATOR = new Parcelable.Creator<BangumiDetail>() {
+    public static final Creator<BangumiDetail> CREATOR = new Creator<BangumiDetail>() {
         @Override
         public BangumiDetail createFromParcel(Parcel source) {
             return new BangumiDetail(source);

@@ -62,8 +62,6 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     @BindView(R.id.scroll_view)
     NestedScrollView nestedScrollView;
 
-    @BindView(R.id.status_bar_view)
-    View statusBarView;
     @BindView(R.id.nav_top_bar)
     Toolbar toolbar;
 
@@ -147,11 +145,9 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        } else {
-            statusBarView.setVisibility(View.GONE);
+            toolbar.setPadding(0, getResources().getDimensionPixelSize(R.dimen.status_bar_height),0,0);
         }
         toolbar.getBackground().mutate().setAlpha(0);
-        statusBarView.getBackground().mutate().setAlpha(0);
         toolbar.setTitle("番剧详情");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +167,6 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
                     iAlpha = 255;
                 }
                 toolbar.getBackground().mutate().setAlpha(iAlpha);
-                statusBarView.getBackground().mutate().setAlpha(iAlpha);
             }
         });
     }

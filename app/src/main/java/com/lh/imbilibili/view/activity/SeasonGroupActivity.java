@@ -177,15 +177,15 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         CallUtils.cancelCall(mSeasonGroupCall);
     }
 
-    @Override
-    protected void initStatusBar() {
-        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
-        View view = new View(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
-        view.setBackgroundColor(Color.parseColor("#20000000"));
-        viewGroup.addView(view, params);
-    }
+//    @Override
+//    protected void initStatusBar() {
+//        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
+//        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+//        View view = new View(this);
+//        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
+//        view.setBackgroundColor(Color.parseColor("#20000000"));
+//        viewGroup.addView(view, params);
+//    }
 
     @Override
     public void onYearItemClick(int year) {

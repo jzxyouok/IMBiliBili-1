@@ -20,6 +20,9 @@ public class Constant {
     public static final String APPKEY = "9326043312df4201";
     public static final String SECRETKEY = "af97f9c667f1bbb47752d4fedbe27842";
 
+    public static final String PLAYER_APPKEY = "6f90a59ac58a4123";
+    public static final String PLAYER_SECRETKEY = "0bfd84cc3940035173f35e6777508326";
+
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";
     public static final String INTERFACE_URL = "http://interface.bilibili.com";

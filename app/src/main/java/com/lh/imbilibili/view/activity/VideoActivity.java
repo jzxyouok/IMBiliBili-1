@@ -117,8 +117,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                     mSourceDatas = response.body().getResult();
                     SourceData sourceData = mSourceDatas.get(0);
                     appendVideoMsg("正在解析视频信息...", StringUtils.format("成功(av_id=%s cid=%s)", sourceData.getAvId(), sourceData.getCid()), false);
-                    loadPlayInfo(sourceData.getAvId(), sourceData.getCid(), 2);
-                    mVideoControlView.setCurrentVideoQuality(2);
+                    loadPlayInfo(sourceData.getAvId(),sourceData.getCid(), 3);
+                    mVideoControlView.setCurrentVideoQuality(3);
                 }
             }
 
@@ -129,10 +129,9 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         });
     }
 
-    // TODO: 2016/8/26 视频质量接口
-    private void loadPlayInfo(String aid, String cid, final int quality) {
-//        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(aid, 0, 3, 0, cid, quality, "json", "86385cdc024c0f6c", "mp4");
-        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.APPKEY, cid, "json", "mp4");
+    private void loadPlayInfo(String aid,String cid, final int quality) {
+        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLATFORM,Constant.BUILD,Constant.PLATFORM,aid, 0, Integer.valueOf(mEpisode.getIndex())-1, 0, cid, quality, "json", Constant.PLAYER_APPKEY);
+//        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLAYER_APPKEY, cid, "json", quality, "mp4");
         playInfoCall.enqueue(new Callback<VideoPlayData>() {
             @Override
             public void onResponse(Call<VideoPlayData> call, Response<VideoPlayData> response) {
@@ -287,7 +286,7 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         mPrePlayerPosition = mIjkVideoView.getCurrentPosition();
         mTvBuffering.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
-        loadPlayInfo(mSourceDatas.get(0).getAvId(), mSourceDatas.get(0).getCid(), quality);
+        loadPlayInfo(mSourceDatas.get(0).getAvId(),mSourceDatas.get(0).getCid(), quality);
     }
 
     @Override

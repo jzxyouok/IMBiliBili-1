@@ -1,7 +1,8 @@
 <?xml version="1" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
     android:id="@+id/frame"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -25,7 +26,7 @@
                     android:id="@+id/background"
                     android:layout_width="match_parent"
                     android:layout_height="178dp"
-                    android:background="@color/gray_light" />
+                    android:background="@color/gray_light"/>
 
                 <com.lh.imbilibili.widget.ScalableImageView
                     android:id="@+id/cover"
@@ -36,7 +37,7 @@
                     android:background="@drawable/ic_bangumi_cover_background"
                     android:scaleType="fitXY"
                     app:aspectRadioHeight="4"
-                    app:aspectRadioWidth="3" />
+                    app:aspectRadioWidth="3"/>
 
                 <TextView
                     android:id="@+id/title"
@@ -53,7 +54,7 @@
                     android:shadowRadius="2"
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.App.Headline"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/text1"
@@ -65,7 +66,7 @@
                     android:layout_marginTop="4dp"
                     android:shadowColor="@color/black_light"
                     android:textAppearance="@style/TextAppearance.App.Subtitle"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/text2"
@@ -75,7 +76,7 @@
                     android:layout_below="@+id/text1"
                     android:layout_marginTop="4dp"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small" />
+                    android:textSize="@dimen/text_size_small"/>
 
                 <TextView
                     android:id="@+id/text3"
@@ -85,9 +86,9 @@
                     android:layout_marginLeft="@dimen/item_spacing"
                     android:layout_toRightOf="@+id/text2"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small" />
+                    android:textSize="@dimen/text_size_small"/>
 
-                <include layout="@layout/bangumi_details_header_actions" />
+                <include layout="@layout/bangumi_details_header_actions"/>
             </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
@@ -98,7 +99,7 @@
                 android:clipToPadding="false"
                 android:paddingLeft="@dimen/item_spacing"
                 android:paddingRight="@dimen/item_spacing"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/content_layout"
@@ -126,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="选集"
-                        android:textAppearance="@style/TextAppearance.App.Title" />
+                        android:textAppearance="@style/TextAppearance.App.Title"/>
                 </FrameLayout>
 
                 <android.support.v7.widget.RecyclerView
@@ -134,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/item_spacing"
-                    android:paddingRight="@dimen/item_spacing" />
+                    android:paddingRight="@dimen/item_spacing"/>
 
                 <View
                     android:id="@+id/pay_bp_layout"
@@ -143,7 +144,7 @@
                     android:layout_marginLeft="@dimen/item_spacing"
                     android:layout_marginRight="@dimen/item_spacing"
                     android:layout_marginTop="@dimen/item_spacing"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <!--<com.lh.imbilibili.widget.ScalableImageView-->
                 <!--android:id="@+id/activity_cover"-->
@@ -160,7 +161,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginTop="@dimen/item_spacing"
-                    android:background="@color/theme_color_dividing_line" />
+                    android:background="@color/theme_color_dividing_line"/>
 
                 <FrameLayout
                     android:id="@+id/desc_layout"
@@ -179,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="简介"
-                        android:textAppearance="@style/TextAppearance.App.Title" />
+                        android:textAppearance="@style/TextAppearance.App.Title"/>
 
                     <TextView
                         android:id="@+id/season_desc_more"
@@ -192,7 +193,7 @@
                         android:padding="5dp"
                         android:text="更多"
                         android:textAppearance="@style/TextAppearance.App.Subtitle"
-                        android:textColor="?android:textColorSecondary" />
+                        android:textColor="?android:textColorSecondary"/>
                 </FrameLayout>
 
                 <TextView
@@ -205,7 +206,7 @@
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:textAppearance="@style/TextAppearance.App.Subtitle"
-                    android:textColor="?android:textColorSecondary" />
+                    android:textColor="?android:textColorSecondary"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/tags"
@@ -216,13 +217,13 @@
                     android:orientation="horizontal"
                     android:paddingLeft="@dimen/item_spacing"
                     android:paddingRight="@dimen/item_spacing"
-                    app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginTop="@dimen/item_spacing"
-                    android:background="@color/theme_color_dividing_line" />
+                    android:background="@color/theme_color_dividing_line"/>
 
                 <LinearLayout
                     android:id="@+id/comments"
@@ -248,7 +249,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:textAppearance="@style/TextAppearance.App.Title" />
+                            android:textAppearance="@style/TextAppearance.App.Title"/>
 
                         <TextView
                             android:id="@+id/season_comment_more"
@@ -261,7 +262,7 @@
                             android:padding="5dp"
                             android:text="更多评论"
                             android:textAppearance="@style/TextAppearance.App.Subtitle"
-                            android:textColor="@color/theme_color_secondary" />
+                            android:textColor="@color/theme_color_secondary"/>
                     </FrameLayout>
 
                     <com.lh.imbilibili.widget.FeedbackView
@@ -270,13 +271,13 @@
                         android:layout_height="wrap_content"
                         android:foreground="?selectableItemBackground"
                         android:paddingBottom="@dimen/item_half_spacing"
-                        android:paddingTop="@dimen/item_half_spacing" />
+                        android:paddingTop="@dimen/item_half_spacing"/>
 
                     <View
                         android:id="@+id/divider1"
                         android:layout_width="match_parent"
                         android:layout_height="1px"
-                        android:background="@color/theme_color_dividing_line" />
+                        android:background="@color/theme_color_dividing_line"/>
 
                     <com.lh.imbilibili.widget.FeedbackView
                         android:id="@+id/feedback2"
@@ -284,13 +285,13 @@
                         android:layout_height="wrap_content"
                         android:foreground="?selectableItemBackground"
                         android:paddingBottom="@dimen/item_half_spacing"
-                        android:paddingTop="@dimen/item_half_spacing" />
+                        android:paddingTop="@dimen/item_half_spacing"/>
 
                     <View
                         android:id="@+id/divider2"
                         android:layout_width="match_parent"
                         android:layout_height="1px"
-                        android:background="@color/theme_color_dividing_line" />
+                        android:background="@color/theme_color_dividing_line"/>
 
                     <com.lh.imbilibili.widget.FeedbackView
                         android:id="@+id/feedback3"
@@ -298,7 +299,7 @@
                         android:layout_height="wrap_content"
                         android:foreground="?selectableItemBackground"
                         android:paddingBottom="@dimen/item_half_spacing"
-                        android:paddingTop="@dimen/item_half_spacing" />
+                        android:paddingTop="@dimen/item_half_spacing"/>
 
                     <TextView
                         android:id="@+id/emptyView"
@@ -309,9 +310,9 @@
                         android:minHeight="80dp"
                         android:text="什么都没有~"
                         android:textColor="@color/gray_dark"
-                        android:visibility="gone" />
+                        android:visibility="gone"/>
 
-                    <include layout="@layout/bangumi_season_comment_footer" />
+                    <include layout="@layout/bangumi_season_comment_footer"/>
 
                     <TextView
                         android:id="@+id/recommend_bangumi_header"
@@ -323,7 +324,7 @@
                         android:paddingTop="@dimen/item_spacing"
                         android:text="番剧推荐"
                         android:textAppearance="@style/TextAppearance.App.Title"
-                        android:visibility="gone" />
+                        android:visibility="gone"/>
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/recommend_bangumi_content"
@@ -331,7 +332,7 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/item_spacing"
                         android:paddingRight="@dimen/item_spacing"
-                        android:visibility="gone" />
+                        android:visibility="gone"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -340,29 +341,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="36dp" />
+                android:layout_marginTop="36dp"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
-            android:id="@+id/status_bar_view"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:background="?attr/colorPrimary" />
-
-        <include layout="@layout/navigation_top_bar" />
-    </LinearLayout>
-
+    <include
+        layout="@layout/navigation_top_bar"/>
 
     <TextView
         android:id="@+id/bottom_tips"
@@ -374,7 +363,7 @@
         android:padding="@dimen/item_spacing"
         android:textAppearance="@style/TextAppearance.App.Title"
         android:textColor="@color/white"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
-    <include layout="@layout/download_snack" />
+    <include layout="@layout/download_snack"/>
 </FrameLayout>

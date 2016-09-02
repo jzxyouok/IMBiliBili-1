@@ -24,6 +24,7 @@ import retrofit2.http.Query;
 
 /**
  * Created by liuhui on 2016/7/5.
+ * biliapi
  */
 public interface BilibiliApi {
     @GET(Constant.SPLASH_URL)
@@ -108,23 +109,6 @@ public interface BilibiliApi {
                                     @Query("otype")String otype,
                                     @Query(Constant.QUERY_APP_KEY)String appkey);
 
-//    @GET(Constant.INTERFACE_URL + Constant.PLAY_URL)
-//    Call<VideoPlayData> getPlayData(@Query("_aid") String aid,
-//                                    @Query("_tid") int tid,
-//                                    @Query("_p") int p,
-//                                    @Query("_down") int down,
-//                                    @Query("cid") String cid,
-//                                    @Query("quality") int quality,
-//                                    @Query("otype") String otype,
-//                                    @Query(Constant.QUERY_APP_KEY) String appkey,
-//                                    @Query("type") String type);
-
-//    @GET(Constant.INTERFACE_URL + Constant.PLAY_URL)
-//    Call<VideoPlayData> getPlayData(@Query(Constant.QUERY_APP_KEY) String appkey,
-//                                    @Query("cid") String cid,
-//                                    @Query("otype") String otype,
-//                                    @Query("quality") int quality,
-//                                    @Query("type") String type);
 
     @GET(Constant.SEASON_GROUP)
     Call<BiliBiliResultResponse<List<SeasonGroup>>> getSeasonGroup(@Query(Constant.QUERY_APP_KEY) String appKey,
@@ -150,19 +134,8 @@ public interface BilibiliApi {
                                                                @Query(Constant.QUERY_TS) long ts,
                                                                @Query("update_period") int updatePeriod,
                                                                @Query("version") int version);
+
+    @GET(Constant.COMMENT_URL+Constant.DANMAKU)
+    Call<String> getDanmaku(@Path("cid")String cid);
 }
-//    @GET(Constant.INTERFACE_URL+Constant.PLAY_URL)
-//    Call<VideoPlayData> getPlayData(@Query(Constant.QUERY_PLATFORM)String platform,
-//                                    @Query("_appver")String build,
-//                                    @Query("_device")String device,
-//                                    @Query("_aid")String aid,
-//                                    @Query("_tid")int tid,
-//                                    @Query("_p")int p,
-//                                    @Query("_down")int down,
-//                                    @Query("cid")String cid,
-//                                    @Query("quality")int quality,
-//                                    @Query("otype")String otype,
-//                                    @Query(Constant.QUERY_APP_KEY)String appkey,
-//                                    @Query("type")String type);
-//}
 

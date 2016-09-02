@@ -26,6 +26,7 @@ public class Constant {
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";
     public static final String INTERFACE_URL = "http://interface.bilibili.com";
+    public static final String COMMENT_URL = "http://comment.bilibili.com";
 
     public static final String BANGUMI_RECOMMEND = "/api/bangumi_recommend";
     public static final String INDEX_PAGE = "/api/app_index_page_v4";
@@ -40,6 +41,8 @@ public class Constant {
     public static final String SEASON_RECOMMEND = "/api/season/recommend/{season_id}.json";
 
     public static final String PLAY_URL = "/playurl";
+
+    public static final String DANMAKU = "/{cid}.xml";
 
     public static final String SPLASH_URL = "http://app.bilibili.com/x/splash";
 

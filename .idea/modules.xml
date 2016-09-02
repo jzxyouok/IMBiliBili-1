@@ -5,10 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/IMBiliBili.iml" filepath="$PROJECT_DIR$/IMBiliBili.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ijkplayer/ijkplayer.iml" filepath="$PROJECT_DIR$/ijkplayer/ijkplayer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer-arm64/ijkplayer-arm64.iml" filepath="$PROJECT_DIR$/ijkplayer-arm64/ijkplayer-arm64.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer-armv7a/ijkplayer-armv7a.iml" filepath="$PROJECT_DIR$/ijkplayer-armv7a/ijkplayer-armv7a.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer-java/ijkplayer-java.iml" filepath="$PROJECT_DIR$/ijkplayer-java/ijkplayer-java.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer-x86/ijkplayer-x86.iml" filepath="$PROJECT_DIR$/ijkplayer-x86/ijkplayer-x86.iml" />
     </modules>
   </component>
 </project>

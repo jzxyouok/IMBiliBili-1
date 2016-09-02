@@ -1,5 +1,6 @@
 package com.lh.imbilibili.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -35,6 +36,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  * Created by lh on 2016/8/6.
  * 视频播放界面
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarChangeListener, IMediaPlayer.OnBufferingUpdateListener, View.OnClickListener {
 
     public static final int MSG_HIDE_UI = 1;
@@ -105,35 +107,6 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         this(context, attrs, 0);
     }
 
-//    private void initPrePlayView(Context context) {
-//        mPrePlayMessage = new TextView(context);
-//        mPrePlayProgressBar = new ProgressBar(context);
-//        mPrePlayMessage.setTextColor(ContextCompat.getColor(context, R.color.gray_light));
-//        LayoutParams preMsgParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-//        LayoutParams prePbParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-//        prePbParams.gravity = Gravity.CENTER;
-//        preMsgParams.gravity = Gravity.LEFT | Gravity.BOTTOM;
-//        addView(mPrePlayMessage, preMsgParams);
-//        addView(mPrePlayProgressBar, prePbParams);
-//    }
-//
-//    private void initVideoView(Context context) {
-//        mIjkVideoView = new IjkVideoView(context);
-//        mIjkVideoView.setVisibility(GONE);
-//        mIjkVideoView.setClickable(false);
-//        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-//        addView(mIjkVideoView, params);
-//        mIjkVideoView.setOnPreparedListener(this);
-//        mIjkVideoView.setOnInfoListener(this);
-//    }
-//
-//    private void initBufferingView(Context context, LayoutInflater inflater) {
-//        View view = inflater.inflate(R.layout.player_buffering_view, this, false);
-//        view.setClickable(false);
-//        mBufferingGroup = (LinearLayout) view.findViewById(R.id.buffering_grop);
-//        addView(mBufferingGroup);
-//    }
-
     public VideoControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mShowing = false;
@@ -141,16 +114,13 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mCurrentBufferPercentage = 0;
         setClickable(true);
         LayoutInflater inflater = LayoutInflater.from(context);
-//        initPrePlayView(context);
-//        initVideoView(context);
-//        initBufferingView(context, inflater);
-        initMediaControlView(context, inflater);
+        initMediaControlView(inflater);
         initMediaLevelView(context, inflater);
-        initGestureInfoView(context, inflater);
+        initGestureInfoView(inflater);
         initGesture(context);
     }
 
-    private void initMediaControlView(Context context, LayoutInflater inflater) {
+    private void initMediaControlView(LayoutInflater inflater) {
         mMediaControlView = inflater.inflate(R.layout.player_control_view, this, false);
         mSeekBar = (SeekBar) mMediaControlView.findViewById(R.id.seekbar);
         mIvPlayPause = (ImageView) mMediaControlView.findViewById(R.id.play_pause_toggle);
@@ -160,7 +130,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mTvQualitySelect = (TextView) mMediaControlView.findViewById(R.id.quality_select);
         mIvBack = (ImageView) mMediaControlView.findViewById(R.id.back);
         mTvVideoInfo = (TextView) mMediaControlView.findViewById(R.id.video_info);
-        ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view, null);
+        @SuppressLint("InflateParams") ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view, null);
         for (int i = 0; i < popuView.getChildCount(); i++) {
             popuView.getChildAt(i).setOnClickListener(this);
         }
@@ -191,7 +161,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         addView(mediaLevelView);
     }
 
-    private void initGestureInfoView(Context context, LayoutInflater inflater) {
+    private void initGestureInfoView(LayoutInflater inflater) {
         mGestureInfoGroup = (LinearLayout) inflater.inflate(R.layout.player_gesture_info, this, false);
         mGestureInfoText = (TextView) mGestureInfoGroup.findViewById(R.id.text);
         mGestureInfoText1 = (TextView) mGestureInfoGroup.findViewById(R.id.text1);
@@ -277,12 +247,12 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mIvPlayPause.setImageLevel(mIjkVideoView.isPlaying() ? 1 : 0);
         int total = mIjkVideoView.getDuration();
         int currentPosition = mIjkVideoView.getCurrentPosition();
-//        float percent = 100f * currentPosition / total;
         mTvCurrentTime.setText(stringForTime(currentPosition));
         mTvTotalTime.setText(stringForTime(total));
         mSeekBar.setProgress(currentPosition);
         mSeekBar.setMax(total);
-        mSeekBar.setSecondaryProgress(mCurrentBufferPercentage);
+        int secondProgress = mCurrentBufferPercentage * total / 100;
+        mSeekBar.setSecondaryProgress(secondProgress);
     }
 
     private void playOrPause() {
@@ -413,7 +383,6 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (mIjkVideoView != null && mScrollingSeekBar) {
-//            float percent = progress / 100f;
             int totalTime = mIjkVideoView.getDuration();
             setFastBackwardForwardGestureInfo(progress, mBeforeScrollPosition, totalTime);
         }
@@ -437,7 +406,6 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
             mHandler.sendEmptyMessageDelayed(MSG_HIDE_MEDIA_CONTROL, MEDIA_CONTROL_TIME_OUT);
         }
         if (mIjkVideoView != null) {
-//            float percent = seekBar.getProgress() / 100f;
             int pos = seekBar.getProgress();
             mIjkVideoView.seekTo(pos);
         }

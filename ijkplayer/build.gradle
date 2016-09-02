@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
     buildTypes {
         release {
@@ -22,8 +22,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile project(':ijkplayer-arm64')
-    compile project(':ijkplayer-armv7a')
-    compile project(':ijkplayer-java')
-    compile project(':ijkplayer-x86')
+    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.6.1'
+    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.6.1'
+    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.6.1'
+    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.6.1'
 }

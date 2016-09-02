@@ -23,7 +23,9 @@ task clean(type: Delete) {
 }
 
 ext {
-    compileSdkVersion = 23       // depending on your sdk version
-    buildToolsVersion = "23.0.0" // depending on your build tools version
-    targetSdkVersion = 23        // depending on your sdk version
+    compileSdkVersion = 23
+    buildToolsVersion = "23.0.3"
+    targetSdkVersion = 23
+    versionCode = 601000
+    versionName = "0.6.1"
 }

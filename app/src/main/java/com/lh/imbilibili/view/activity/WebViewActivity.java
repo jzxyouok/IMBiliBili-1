@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 
 import butterknife.BindView;
@@ -43,12 +44,18 @@ public class WebViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
         ButterKnife.bind(this);
-        initStatusBar();
+        StatusBarUtils.setSimpleToolbarLayout(this,toolbar);
         initView();
     }
 
     private void initView() {
         toolbar.setTitle("加载中");
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         url = getIntent().getStringExtra(EXTRA_DATA);
         webView.setWebChromeClient(new MyWebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);

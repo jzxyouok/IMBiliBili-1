@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.BangumiDetail;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.fragment.FeedbackFragment;
 
@@ -41,7 +42,7 @@ public class FeedbackActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
         ButterKnife.bind(this);
-        initStatusBar();
+        StatusBarUtils.setSimpleToolbarLayout(this,mToolbar);
         initToolbar();
         initFragment();
     }

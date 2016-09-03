@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.fragment.BangumiIndexFragment;
 
@@ -38,7 +39,6 @@ public class BangumiIndexActivity extends BaseActivity {
         ButterKnife.bind(this);
         mYear = getIntent().getIntExtra("year", 2016);
         mMonth = getIntent().getIntExtra("month", 3);
-        initStatusBar();
         initView();
     }
 

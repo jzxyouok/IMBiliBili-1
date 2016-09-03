@@ -2,6 +2,7 @@ package com.lh.imbilibili.view.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.MainViewPagerAdapter;
 
@@ -27,6 +29,9 @@ import butterknife.ButterKnife;
 public class MainFragment extends BaseFragment {
 
     public static final String TAG = "MainFragment";
+
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.viewpager)
     ViewPager viewPager;
     @BindView(R.id.tabs)
@@ -57,6 +62,7 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        StatusBarUtils.setDrawerToolbarTabLayout(getActivity(),coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);

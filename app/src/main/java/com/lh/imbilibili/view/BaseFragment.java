@@ -9,6 +9,4 @@ public class BaseFragment extends Fragment {
     public String getTitle() {
         return "";
     }
-
-    ;
 }

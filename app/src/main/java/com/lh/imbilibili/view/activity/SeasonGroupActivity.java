@@ -2,7 +2,6 @@ package com.lh.imbilibili.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +19,7 @@ import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
 import com.lh.imbilibili.view.adapter.seasongroupactivity.SeasonGroupAdapter;
@@ -53,7 +53,7 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @BindView(R.id.drawer)
-    LinearLayout mDrawer;
+    ViewGroup mDrawer;
 
     private SeasonGroupAdapter mSeasonGroupAdapter;
     private SeasonYearAdapter mSeasonYearAdapter;
@@ -73,7 +73,7 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_season_group);
         ButterKnife.bind(this);
-        initStatusBar();
+        StatusBarUtils.setDrawerToolbarLayout(this,mToolbar,mDrawer);
         initView();
         initRecyclerView();
         loadData();

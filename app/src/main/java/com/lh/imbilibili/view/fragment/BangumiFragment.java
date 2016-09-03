@@ -201,14 +201,9 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onClick(int itemType, int position) {
-//        Intent intent = new Intent();
         if (itemType == BangumiAdapter.SERIALIZING_GRID_ITEM) {
-//            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getSerializing().get(position).getSeasonId());
-//            intent.setClass(getContext(), BangumiDetailActivity.class);
             BangumiDetailActivity.startActivity(getContext(), indexData.getSerializing().get(position).getSeasonId());
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_ITEM) {
-//            intent.putExtra(Constant.QUERY_SEASON_ID, indexData.getPrevious().getList().get(position).getSeasonId());
-//            intent.setClass(getContext(), BangumiDetailActivity.class);
             BangumiDetailActivity.startActivity(getContext(), indexData.getPrevious().getList().get(position).getSeasonId());
         } else if (itemType == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
                 itemType == BangumiAdapter.BANNER) {
@@ -222,22 +217,16 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             }
             if (link.contains("anime")) {
                 String[] temp = link.split("anime/");
-//                intent.putExtra(Constant.QUERY_SEASON_ID, temp[temp.length - 1]);
-//                intent.setClass(getContext(), BangumiDetailActivity.class);
                 BangumiDetailActivity.startActivity(getContext(), temp[temp.length - 1]);
             } else {
-//                intent.putExtra(WebViewActivity.EXTRA_DATA, link);
-//                intent.setClass(getContext(), WebViewActivity.class);
                 WebViewActivity.startActivity(getContext(), link);
             }
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_HEAD) {
-//            intent.setClass(getContext(), SeasonGroupActivity.class);
             SeasonGroupActivity.startActivity(getContext());
         } else {
             // TODO: 2016/8/9
             return;
         }
-//        startActivity(intent);
     }
 
     @Override

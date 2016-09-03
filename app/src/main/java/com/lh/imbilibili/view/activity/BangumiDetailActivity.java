@@ -25,12 +25,14 @@ import com.bumptech.glide.Glide;
 import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
+import com.lh.imbilibili.model.Bangumi;
 import com.lh.imbilibili.model.BangumiDetail;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.model.SeasonRecommend;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.BlurTransformation;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
@@ -142,11 +144,12 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     }
 
     private void initToolBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            toolbar.setPadding(0, getResources().getDimensionPixelSize(R.dimen.status_bar_height),0,0);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            toolbar.setPadding(0, getResources().getDimensionPixelSize(R.dimen.status_bar_height),0,0);
+//        }
+        StatusBarUtils.setImageTransparent(this,toolbar);
         toolbar.getBackground().mutate().setAlpha(0);
         toolbar.setTitle("番剧详情");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -235,7 +238,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
             public void onResponse(Call<BiliBiliResultResponse<SeasonRecommend>> call, Response<BiliBiliResultResponse<SeasonRecommend>> response) {
                 if (response.body().getCode() == 0) {
                     recommendSeasons = response.body().getResult();
-                    if (response.body().getResult().getList().size() > 0) {
+                    if (recommendSeasons!=null&&recommendSeasons.getList().size() > 0) {
                         setBangumiRecommendDate();
                     }
                 }

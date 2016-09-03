@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BangumiIndex;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
@@ -102,6 +104,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        StatusBarUtils.setDrawerToolbarLayout(getActivity(),(Toolbar) getActivity().findViewById(R.id.nav_top_bar),(ViewGroup) getActivity().findViewById(R.id.drawer));
         mCurrentPage = 1;
         mYear = getArguments().getInt("year");
         mQuarter = getArguments().getInt("quarter");

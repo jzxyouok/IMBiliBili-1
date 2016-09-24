@@ -73,7 +73,7 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_season_group);
         ButterKnife.bind(this);
-        StatusBarUtils.setDrawerToolbarLayout(this,mToolbar,mDrawer);
+        StatusBarUtils.setDrawerToolbarLayout(this, mToolbar, mDrawer);
         initView();
         initRecyclerView();
         loadData();
@@ -177,16 +177,6 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         CallUtils.cancelCall(mSeasonGroupCall);
     }
 
-//    @Override
-//    protected void initStatusBar() {
-//        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-//        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
-//        View view = new View(this);
-//        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
-//        view.setBackgroundColor(Color.parseColor("#20000000"));
-//        viewGroup.addView(view, params);
-//    }
-
     @Override
     public void onYearItemClick(int year) {
         mTvYear.setText(String.valueOf(year));
@@ -198,13 +188,10 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
     public void onItemClick(int type, RecyclerView.ViewHolder viewHolder) {
         if (type == SeasonGroupAdapter.SEASON_ITEM) {
             SeasonGroupAdapter.SeasonItemHolder seasonItemHolder = (SeasonGroupAdapter.SeasonItemHolder) viewHolder;
-//            Intent i =new Intent(this, BangumiDetailActivity.class);
-//            i.putExtra(Constant.QUERY_SEASON_ID,seasonItemHolder.getSeasonId());
-//            startActivity(i);
             BangumiDetailActivity.startActivity(this, seasonItemHolder.getSeasonId());
         } else if (type == SeasonGroupAdapter.SEASON_HEAD) {
             SeasonGroupAdapter.SeasonHeadHolder seasonHeadHolder = (SeasonGroupAdapter.SeasonHeadHolder) viewHolder;
-            BangumiIndexActivity.startActivity(this, seasonHeadHolder.getYear(), seasonHeadHolder.getMonth());
+            BangumiIndexActivity.startActivity(this, seasonHeadHolder.getYear(), seasonHeadHolder.getMonth(),new ArrayList<Integer>(mYears));
         }
     }
 }

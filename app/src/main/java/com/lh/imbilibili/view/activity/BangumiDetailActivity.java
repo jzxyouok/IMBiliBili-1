@@ -3,7 +3,6 @@ package com.lh.imbilibili.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
@@ -15,7 +14,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,7 +23,6 @@ import com.bumptech.glide.Glide;
 import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
-import com.lh.imbilibili.model.Bangumi;
 import com.lh.imbilibili.model.BangumiDetail;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.BilibiliDataResponse;
@@ -149,7 +146,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
 //            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 //            toolbar.setPadding(0, getResources().getDimensionPixelSize(R.dimen.status_bar_height),0,0);
 //        }
-        StatusBarUtils.setImageTransparent(this,toolbar);
+        StatusBarUtils.setImageTransparent(this, toolbar);
         toolbar.getBackground().mutate().setAlpha(0);
         toolbar.setTitle("番剧详情");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -238,7 +235,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
             public void onResponse(Call<BiliBiliResultResponse<SeasonRecommend>> call, Response<BiliBiliResultResponse<SeasonRecommend>> response) {
                 if (response.body().getCode() == 0) {
                     recommendSeasons = response.body().getResult();
-                    if (recommendSeasons!=null&&recommendSeasons.getList().size() > 0) {
+                    if (recommendSeasons != null && recommendSeasons.getList().size() > 0) {
                         setBangumiRecommendDate();
                     }
                 }

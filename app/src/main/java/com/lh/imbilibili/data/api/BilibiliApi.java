@@ -3,6 +3,7 @@ package com.lh.imbilibili.data.api;
 import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BangumiDetail;
 import com.lh.imbilibili.model.BangumiIndex;
+import com.lh.imbilibili.model.BangumiIndexCond;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
@@ -96,18 +97,18 @@ public interface BilibiliApi {
                                                              @Query(Constant.QUERY_TS) long ts);
 
 
-    @GET(Constant.INTERFACE_URL+Constant.PLAY_URL)
-    Call<VideoPlayData> getPlayData(@Query(Constant.QUERY_PLATFORM)String platform,
-                                    @Query("_appver")String build,
-                                    @Query("_device")String device,
-                                    @Query("_aid")String aid,
-                                    @Query("_tid")int tid,
-                                    @Query("_p")int p,
-                                    @Query("_down")int down,
-                                    @Query("cid")String cid,
-                                    @Query("quality")int quality,
-                                    @Query("otype")String otype,
-                                    @Query(Constant.QUERY_APP_KEY)String appkey);
+    @GET(Constant.INTERFACE_URL + Constant.PLAY_URL)
+    Call<VideoPlayData> getPlayData(@Query(Constant.QUERY_PLATFORM) String platform,
+                                    @Query("_appver") String build,
+                                    @Query("_device") String device,
+                                    @Query("_aid") String aid,
+                                    @Query("_tid") int tid,
+                                    @Query("_p") int p,
+                                    @Query("_down") int down,
+                                    @Query("cid") String cid,
+                                    @Query("quality") int quality,
+                                    @Query("otype") String otype,
+                                    @Query(Constant.QUERY_APP_KEY) String appkey);
 
 
     @GET(Constant.SEASON_GROUP)
@@ -123,7 +124,7 @@ public interface BilibiliApi {
                                                                @Query("index_sort") int indexSort,
                                                                @Query("index_type") int indexType,
                                                                @Query("initial") String initial,
-                                                               @Query("is_finish") int isFinish,
+                                                               @Query("is_finish") String isFinish,
                                                                @Query(Constant.QUERY_MOBI_APP) String mobiApp,
                                                                @Query("page") int page,
                                                                @Query("page_size") int pageSize,
@@ -133,9 +134,14 @@ public interface BilibiliApi {
                                                                @Query("tag_id") String tagId,
                                                                @Query(Constant.QUERY_TS) long ts,
                                                                @Query("update_period") int updatePeriod,
-                                                               @Query("version") int version);
+                                                               @Query("version") String version);
 
-    @GET(Constant.COMMENT_URL+Constant.DANMAKU)
-    Call<String> getDanmaku(@Path("cid")String cid);
+    @GET(Constant.BANGUMI_INDEX_COND)
+    Call<BiliBiliResultResponse<BangumiIndexCond>> getBangumiIndexCond(@Query(Constant.QUERY_APP_KEY) String appKey,
+                                                                       @Query(Constant.QUERY_BUILD)String build,
+                                                                       @Query(Constant.QUERY_MOBI_APP) String mobiApp,
+                                                                       @Query(Constant.QUERY_PLATFORM) String platform,
+                                                                       @Query(Constant.QUERY_TS) long ts,
+                                                                       @Query(Constant.QUERY_TYPE)int type);
 }
 

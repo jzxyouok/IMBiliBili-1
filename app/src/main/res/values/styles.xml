@@ -39,13 +39,13 @@
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="TextAppearance.App.Headline" parent="@style/TextAppearance.App.XLarge" />
+    <style name="TextAppearance.App.Headline" parent="@style/TextAppearance.App.XLarge"/>
 
     <style name="TextAppearance.App.Title" parent="@style/TextAppearance.App.Large">
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="TextAppearance.App.Subtitle" parent="@style/TextAppearance.App.Medium" />
+    <style name="TextAppearance.App.Subtitle" parent="@style/TextAppearance.App.Medium"/>
 
     <style name="TextAppearance.App.Body" parent="@style/TextAppearance.App.Small">
         <item name="android:textColor">?android:textColorSecondary</item>

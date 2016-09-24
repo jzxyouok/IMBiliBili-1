@@ -16,7 +16,7 @@ public class IndexPage {
 //        return banners;
 //    }
 //
-//    public void setBanners(List<Banner> banners) {
+//    public void setmBanners(List<Banner> banners) {
 //        this.banners = banners;
 //    }
 //

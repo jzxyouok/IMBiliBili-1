@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/item_spacing"
-    android:paddingRight="@dimen/item_spacing"
-    android:paddingTop="@dimen/item_spacing">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/item_spacing"
+                android:paddingRight="@dimen/item_spacing"
+                android:paddingTop="@dimen/item_spacing">
 
     <TextView
         android:id="@+id/name"
@@ -14,7 +14,7 @@
         android:maxLines="1"
         android:maxWidth="100dp"
         android:textAppearance="@style/TextAppearance.App.Title"
-        android:textColor="?android:textColorSecondary" />
+        android:textColor="?android:textColorSecondary"/>
 
     <TextView
         android:id="@+id/pub_time"
@@ -24,7 +24,7 @@
         android:layout_toRightOf="@id/name"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.App.Medium"
-        android:textColor="?android:textColorTertiary" />
+        android:textColor="?android:textColorTertiary"/>
 
     <TextView
         android:id="@+id/message"
@@ -35,12 +35,12 @@
         android:layout_toRightOf="@id/avatar"
         android:paddingBottom="@dimen/item_spacing"
         android:textAppearance="@style/TextAppearance.App.Title"
-        android:textColor="?android:textColorPrimary" />
+        android:textColor="?android:textColorPrimary"/>
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignParentBottom="true"
-        android:background="@color/theme_color_dividing_line" />
+        android:background="@color/theme_color_dividing_line"/>
 </RelativeLayout>

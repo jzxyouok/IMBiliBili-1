@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.lh.imbilibili.model.Banner;
+import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.widget.BannerView;
 import com.lh.imbilibili.widget.ScalableImageView;
 
@@ -16,31 +17,41 @@ import java.util.List;
  */
 public class BannerAdapter extends BannerView.Adaper {
 
-    private List<Banner> banners;
-
-    public BannerAdapter(List<Banner> banners) {
-        this.banners = banners;
-    }
+    private List<Banner> mBanners;
 
     @Override
     public int getBannerCount() {
-        if (banners == null) {
+        if (mBanners == null) {
             return 0;
         } else {
-            return banners.size();
+            return mBanners.size();
         }
     }
 
+    public void setData(List<Banner> banners){
+        mBanners = banners;
+    }
+
     @Override
-    public Object getItemView(ViewGroup container, int position) {
+    public Object getItemView(final ViewGroup container, final int position) {
         ScalableImageView imageView = new ScalableImageView(container.getContext());
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         imageView.setWidthRatio(960);
         imageView.setHeightRatio(300);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageView.setLayoutParams(layoutParams);
-        Glide.with(container.getContext()).load(banners.get(position).getImg()).into(imageView);
+        Glide.with(container.getContext()).load(mBanners.get(position).getImg()).into(imageView);
         container.addView(imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String link = mBanners.get(position).getLink();
+                if (link.contains("anime")) {
+                    String[] temp = link.split("anime/");
+                    BangumiDetailActivity.startActivity(container.getContext(), temp[temp.length - 1]);
+                }
+            }
+        });
         return imageView;
     }
 
@@ -53,7 +64,7 @@ public class BannerAdapter extends BannerView.Adaper {
         return view == object;
     }
 
-    public void setBanners(List<Banner> banners) {
-        this.banners = banners;
+    public void setmBanners(List<Banner> mBanners) {
+        this.mBanners = mBanners;
     }
 }

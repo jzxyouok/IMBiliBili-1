@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 
 import com.lh.imbilibili.R;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by liuhui on 2016/7/8.
  */
@@ -23,7 +25,6 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
 
     private Adaper adaper;
     private int currentPosition = 0;
-    //private Handler handler;
     private boolean isLoop = false;
     private boolean isTouch = false;
 
@@ -113,6 +114,7 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
             isLoop = true;
             postDelayed(loopRunnable, loopTime);
         }
+        postInvalidate();
     }
 
     public void stopLoop() {
@@ -126,7 +128,6 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
     }
 
     @Override
@@ -223,6 +224,13 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
         public void run() {
             if (!isTouch) {
                 currentPosition++;
+                try {
+                    Field mFirstLayout = ViewPager.class.getDeclaredField("mFirstLayout");
+                    mFirstLayout.setAccessible(true);
+                    mFirstLayout.set(viewPager, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 viewPager.setCurrentItem(currentPosition, true);
                 postDelayed(this, loopTime);
             }

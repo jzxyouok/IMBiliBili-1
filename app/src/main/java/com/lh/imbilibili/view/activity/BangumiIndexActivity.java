@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.fragment.BangumiIndexFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,11 +27,13 @@ public class BangumiIndexActivity extends BaseActivity {
     Toolbar mToolbar;
     private int mYear;
     private int mMonth;
+    private ArrayList<Integer> mYears;
 
-    public static void startActivity(Context context, int year, int month) {
+    public static void startActivity(Context context, int year, int month, ArrayList<Integer> years) {
         Intent i = new Intent(context, BangumiIndexActivity.class);
         i.putExtra("year", year);
         i.putExtra("month", month);
+        i.putIntegerArrayListExtra("years",years);
         context.startActivity(i);
     }
 
@@ -39,6 +44,7 @@ public class BangumiIndexActivity extends BaseActivity {
         ButterKnife.bind(this);
         mYear = getIntent().getIntExtra("year", 2016);
         mMonth = getIntent().getIntExtra("month", 3);
+        mYears = getIntent().getIntegerArrayListExtra("years");
         initView();
     }
 
@@ -52,7 +58,7 @@ public class BangumiIndexActivity extends BaseActivity {
         });
         BangumiIndexFragment bangumiIndexFragment = (BangumiIndexFragment) getSupportFragmentManager().findFragmentByTag(BangumiIndexFragment.TAG);
         if (bangumiIndexFragment == null) {
-            bangumiIndexFragment = BangumiIndexFragment.newInstance(mYear, mMonth);
+            bangumiIndexFragment = BangumiIndexFragment.newInstance(mYear, mMonth,mYears);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.container, bangumiIndexFragment, BangumiIndexFragment.TAG).commit();
     }

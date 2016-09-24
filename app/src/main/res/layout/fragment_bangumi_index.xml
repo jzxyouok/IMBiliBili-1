@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -38,11 +39,11 @@
                         android:gravity="center"
                         android:text="追番人数"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"/>
 
                     <android.support.v4.widget.Space
                         android:layout_width="4dp"
-                        android:layout_height="0dp" />
+                        android:layout_height="0dp"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -53,17 +54,17 @@
                             android:id="@+id/iv_hit_up"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_up" />
+                            android:src="@drawable/ic_bangumi_index_sort_up"/>
 
                         <android.support.v4.widget.Space
                             android:layout_width="0dp"
-                            android:layout_height="1dp" />
+                            android:layout_height="1dp"/>
 
                         <ImageView
                             android:id="@+id/iv_hit_down"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_down" />
+                            android:src="@drawable/ic_bangumi_index_sort_down"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -81,11 +82,11 @@
                         android:gravity="center"
                         android:text="更新时间"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"/>
 
                     <android.support.v4.widget.Space
                         android:layout_width="4dp"
-                        android:layout_height="0dp" />
+                        android:layout_height="0dp"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -96,17 +97,17 @@
                             android:id="@+id/iv_recent_up"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_up" />
+                            android:src="@drawable/ic_bangumi_index_sort_up"/>
 
                         <android.support.v4.widget.Space
                             android:layout_width="0dp"
-                            android:layout_height="1dp" />
+                            android:layout_height="1dp"/>
 
                         <ImageView
                             android:id="@+id/iv_recent_down"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_down" />
+                            android:src="@drawable/ic_bangumi_index_sort_down"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -124,11 +125,11 @@
                         android:gravity="center"
                         android:text="开播日期"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"/>
 
                     <android.support.v4.widget.Space
                         android:layout_width="4dp"
-                        android:layout_height="0dp" />
+                        android:layout_height="0dp"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -139,17 +140,17 @@
                             android:id="@+id/iv_day_up"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_up" />
+                            android:src="@drawable/ic_bangumi_index_sort_up"/>
 
                         <android.support.v4.widget.Space
                             android:layout_width="0dp"
-                            android:layout_height="1dp" />
+                            android:layout_height="1dp"/>
 
                         <ImageView
                             android:id="@+id/iv_day_down"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_bangumi_index_sort_down" />
+                            android:src="@drawable/ic_bangumi_index_sort_down"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -179,7 +180,7 @@
                     android:singleLine="true"
                     android:text="类型"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -201,7 +202,7 @@
                     android:singleLine="true"
                     android:text="风格"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -223,7 +224,7 @@
                     android:singleLine="true"
                     android:text="状态"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -243,7 +244,7 @@
                     android:gravity="center"
                     android:text="筛选"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </LinearLayout>
         </LinearLayout>
     </android.support.design.widget.AppBarLayout>
@@ -253,7 +254,8 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.lh.imbilibili.widget.LoadMoreRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.lh.imbilibili.widget.LoadMoreRecyclerView
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -261,21 +263,21 @@
             android:orientation="vertical"
             android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical"
-            android:verticalSpacing="14dp" />
+            android:verticalSpacing="14dp"/>
 
         <ImageView
             android:id="@+id/loading_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="-40dp"
-            android:gravity="center" />
+            android:gravity="center"/>
 
         <View
             android:id="@+id/mask"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bangumi_index_mask"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <GridView
             android:id="@+id/grid_menu"
@@ -285,9 +287,9 @@
             android:background="@color/theme_color_window_background"
             android:horizontalSpacing="0dp"
             android:numColumns="5"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:verticalSpacing="0dp"
-            android:visibility="gone" />
+            android:paddingTop="@dimen/item_spacing"
+            android:paddingBottom="@dimen/item_spacing"
+            android:verticalSpacing="@dimen/item_medium_spacing"
+            android:visibility="gone"/>
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

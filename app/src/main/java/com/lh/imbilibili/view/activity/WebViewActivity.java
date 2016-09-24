@@ -44,7 +44,7 @@ public class WebViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
         ButterKnife.bind(this);
-        StatusBarUtils.setSimpleToolbarLayout(this,toolbar);
+        StatusBarUtils.setSimpleToolbarLayout(this, toolbar);
         initView();
     }
 

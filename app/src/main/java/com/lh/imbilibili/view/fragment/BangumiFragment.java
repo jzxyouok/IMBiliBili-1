@@ -205,16 +205,10 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             BangumiDetailActivity.startActivity(getContext(), indexData.getSerializing().get(position).getSeasonId());
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_ITEM) {
             BangumiDetailActivity.startActivity(getContext(), indexData.getPrevious().getList().get(position).getSeasonId());
-        } else if (itemType == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
-                itemType == BangumiAdapter.BANNER) {
+        } else if (itemType == BangumiAdapter.BANGUMI_RECOMMEND_ITEM) {
             String link = null;
-            if (itemType == BangumiAdapter.BANNER) {
-                Banner banner = indexData.getAd().getHead().get(position);
-                link = banner.getLink();
-            } else {
-                IndexBangumiRecommend bangumi = bangumis.get(position);
-                link = bangumi.getLink();
-            }
+            IndexBangumiRecommend bangumi = bangumis.get(position);
+            link = bangumi.getLink();
             if (link.contains("anime")) {
                 String[] temp = link.split("anime/");
                 BangumiDetailActivity.startActivity(getContext(), temp[temp.length - 1]);

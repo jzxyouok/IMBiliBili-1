@@ -62,7 +62,7 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        StatusBarUtils.setDrawerToolbarTabLayout(getActivity(),coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
+        StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);

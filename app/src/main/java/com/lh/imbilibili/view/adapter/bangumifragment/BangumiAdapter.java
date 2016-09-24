@@ -15,10 +15,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.Bangumi;
+import com.lh.imbilibili.model.Banner;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
+import com.lh.imbilibili.widget.BannerView;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 import com.lh.imbilibili.widget.ScalableImageView;
 
@@ -118,9 +120,10 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
         if (getItemType(position) == BANNER) {
             BannerHolder bannerHolder = (BannerHolder) holder;
-            Glide.with(context)
-                    .load(indexPage.getAd().getHead().get(position).getImg())
-                    .into(bannerHolder.bannerView);
+
+//            Glide.with(context)
+//                    .load(indexPage.getAd().getHead().get(position).getImg())
+//                    .into(bannerHolder.bannerView);
         } else if (getItemType(position) == SERIALIZING_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("新番连载");
@@ -210,19 +213,16 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
 
     public class BannerHolder extends RecyclerView.ViewHolder {
 
-        ScalableImageView bannerView;
+        BannerView bannerView;
+        BannerAdapter adapter;
 
         public BannerHolder(View itemView) {
             super(itemView);
-            bannerView = (ScalableImageView) itemView;
-            bannerView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (itemClickListener != null) {
-                        itemClickListener.onClick(BANNER, 0);
-                    }
-                }
-            });
+            bannerView = (BannerView) itemView;
+            adapter = new BannerAdapter();
+            adapter.setData(indexPage.getAd().getHead());
+            bannerView.setAdaper(adapter);
+
         }
     }
 

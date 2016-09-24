@@ -43,7 +43,9 @@ public class BangumiIndexAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     }
 
     public void clear() {
+        int size = mBangumis.size();
         mBangumis.clear();
+        notifyItemRangeRemoved(0,size);
     }
 
     public void setOnBangumiItemClickListener(OnBangumiItemClickListener l) {
@@ -81,9 +83,9 @@ public class BangumiIndexAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         if (mIndexSortType == 1) {
             bangumiHolder.tvFavourite.setText(StringUtils.format("%s人追番", StringUtils.formateNumber(bangumi.getFavorites())));
         } else if (mIndexSortType == 0) {
-            bangumiHolder.tvFavourite.setText(StringUtils.format("%s更新",timeToStr(bangumi.getUpdateTime())));
+            bangumiHolder.tvFavourite.setText(StringUtils.format("%s更新", timeToStr(bangumi.getUpdateTime())));
         } else if (mIndexSortType == 2) {
-            bangumiHolder.tvFavourite.setText(StringUtils.format("%s放送",timeToStr(bangumi.getPubTime())));
+            bangumiHolder.tvFavourite.setText(StringUtils.format("%s放送", timeToStr(bangumi.getPubTime())));
         }
     }
 

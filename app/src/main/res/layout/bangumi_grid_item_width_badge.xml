@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
 
     <com.lh.imbilibili.widget.ForegroundRelativeLayout
         android:id="@+id/feedback_container"
@@ -11,12 +11,12 @@
         android:foreground="?selectableItemBackgroundBorderless">
 
         <com.lh.imbilibili.widget.ScalableImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/cover"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            app:aspectRadioHeight="128"
-            app:aspectRadioWidth="96" />
+                                                    android:id="@+id/cover"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:scaleType="fitXY"
+                                                    app:aspectRadioHeight="128"
+                                                    app:aspectRadioWidth="96"/>
 
         <TextView
             android:id="@+id/favourites"
@@ -32,7 +32,7 @@
             android:paddingTop="@dimen/item_huge_spacing"
             android:textAppearance="@style/TextAppearance.App.Subtitle"
             android:textColor="@color/white"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/title"
@@ -44,7 +44,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textAppearance="@style/TextAppearance.App.Subtitle"
-            android:textColor="?android:textColorPrimary" />
+            android:textColor="?android:textColorPrimary"/>
 
         <TextView
             android:id="@+id/text1"
@@ -54,7 +54,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textAppearance="@style/TextAppearance.App.Subtitle"
-            android:textColor="@color/gray_dark" />
+            android:textColor="@color/gray_dark"/>
 
     </com.lh.imbilibili.widget.ForegroundRelativeLayout>
 
@@ -70,6 +70,6 @@
         android:padding="3dp"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.App.Body"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"/>
 
 </FrameLayout>

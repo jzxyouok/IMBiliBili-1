@@ -19,10 +19,7 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/drawer"
-        android:layout_width="320dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:fitsSystemWindows="true"/>
+    <include
+        layout="@layout/bangumi_index_filter"/>
+
 </android.support.v4.widget.DrawerLayout>

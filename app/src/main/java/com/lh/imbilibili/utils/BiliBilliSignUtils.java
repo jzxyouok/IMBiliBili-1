@@ -1,12 +1,8 @@
 package com.lh.imbilibili.utils;
 
-import com.lh.imbilibili.data.Constant;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,8 +10,8 @@ import java.util.List;
  * Created by liuhui on 2016/7/8.
  */
 public class BiliBilliSignUtils {
-//    platform=android&_appver=421000&_device=android&_aid=6117792&_tid=0&_p=8&_down=0&cid=9932979&quality=2&otype=json&appkey=6f90a59ac58a4123&type=mp4
-    public static String getSign(String params,String secret) {
+    //    platform=android&_appver=421000&_device=android&_aid=6117792&_tid=0&_p=8&_down=0&cid=9932979&quality=2&otype=json&appkey=6f90a59ac58a4123&type=mp4
+    public static String getSign(String params, String secret) {
         try {
             params = sortQueryParams(params);
             params += secret;
@@ -35,14 +31,14 @@ public class BiliBilliSignUtils {
         return null;
     }
 
-    public static String sortQueryParams(String params){
-        if(params!=null){
+    private static String sortQueryParams(String params) {
+        if (params != null) {
             List<String> paramsList = Arrays.asList(params.split("&"));
             Collections.sort(paramsList);
             StringBuilder stringBuilder = new StringBuilder();
-            for (int i=0;i<paramsList.size();i++){
+            for (int i = 0; i < paramsList.size(); i++) {
                 stringBuilder.append(paramsList.get(i));
-                if(i != paramsList.size()-1){
+                if (i != paramsList.size() - 1) {
                     stringBuilder.append("&");
                 }
             }

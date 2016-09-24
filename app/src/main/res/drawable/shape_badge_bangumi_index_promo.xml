@@ -4,9 +4,9 @@
         android:bottomLeftRadius="6.0dip"
         android:bottomRightRadius="6.0dip"
         android:topLeftRadius="0.0px"
-        android:topRightRadius="0.0px" />
+        android:topRightRadius="0.0px"/>
     <stroke
         android:width="2.0dip"
-        android:color="@color/theme_color_window_background" />
-    <solid android:color="@color/colorPrimary" />
+        android:color="@color/theme_color_window_background"/>
+    <solid android:color="@color/colorPrimary"/>
 </shape>

@@ -22,10 +22,10 @@ public class BiliSignInterceptor implements Interceptor {
                 || oldlRequest.url().host().equals("interface.bilibili.com")) {
             HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
             String sign;
-            if(oldlRequest.url().host().equals("interface.bilibili.com")){
-               sign = BiliBilliSignUtils.getSign(oldlRequest.url().query(),Constant.PLAYER_SECRETKEY);
-            }else {
-                sign = BiliBilliSignUtils.getSign(oldlRequest.url().query(),Constant.SECRETKEY);
+            if (oldlRequest.url().host().equals("interface.bilibili.com")) {
+                sign = BiliBilliSignUtils.getSign(oldlRequest.url().query(), Constant.PLAYER_SECRETKEY);
+            } else {
+                sign = BiliBilliSignUtils.getSign(oldlRequest.url().query(), Constant.SECRETKEY);
             }
             urlBuilder.addQueryParameter(Constant.QUERY_SIGN, sign);
             finalRequest = oldlRequest.newBuilder().url(urlBuilder.build()).build();

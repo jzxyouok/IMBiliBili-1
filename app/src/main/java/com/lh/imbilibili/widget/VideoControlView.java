@@ -259,13 +259,13 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         if (mIjkVideoView.isPlaying()) {
             mIvPlayPause.setImageLevel(0);
             mIjkVideoView.pause();
-            if(mOnPlayControlListener!=null){
+            if (mOnPlayControlListener != null) {
                 mOnPlayControlListener.onVideoPause();
             }
         } else {
             mIvPlayPause.setImageLevel(1);
             mIjkVideoView.start();
-            if(mOnPlayControlListener!=null){
+            if (mOnPlayControlListener != null) {
                 mOnPlayControlListener.onVideoStart();
             }
         }
@@ -461,9 +461,11 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         DoubleTap
     }
 
-    public interface OnPlayControlListener{
+    public interface OnPlayControlListener {
         void onVideoPause();
+
         void onVideoStart();
+
         void onQualitySelect(int quality);
     }
 

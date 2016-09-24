@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/frame"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:id="@+id/frame"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/splash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerInside" />
+        android:scaleType="centerInside"/>
 
     <ImageView
         android:id="@+id/splash_icon"
@@ -17,7 +17,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/item_half_spacing"
         android:scaleType="fitCenter"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/skip_layout"
@@ -37,6 +37,6 @@
             android:background="@drawable/shape_black_transparent40_round_bg"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"/>
     </FrameLayout>
 </FrameLayout>

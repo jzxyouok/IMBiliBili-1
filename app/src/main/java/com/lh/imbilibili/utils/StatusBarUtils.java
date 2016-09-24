@@ -13,22 +13,24 @@ import com.lh.imbilibili.R;
 
 /**
  * Created by liuhui on 2016/9/3.
+ * StatusCompact
  */
+@SuppressWarnings("unused")
 public class StatusBarUtils {
 
-    public static void setDrawerToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout,ViewGroup drawer){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity,R.color.statusBar));
-        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT){
+    public static void setDrawerToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout, ViewGroup drawer) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             coordinatorLayout.setFitsSystemWindows(true);
-            drawer.setPadding(0,getStatusBarHeight(activity),0,0);
+            drawer.setPadding(0, getStatusBarHeight(activity), 0, 0);
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
 
-    public static void setImageTranslucent(Activity activity,Toolbar toolbar) {
+    public static void setImageTranslucent(Activity activity, Toolbar toolbar) {
         toolbar.setFitsSystemWindows(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -38,26 +40,26 @@ public class StatusBarUtils {
         }
     }
 
-    public static void setImageTransparent(Activity activity, Toolbar toolbar){
+    public static void setImageTransparent(Activity activity, Toolbar toolbar) {
         toolbar.setFitsSystemWindows(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
     }
 
-    public static void setDrawerToolbarLayout(Activity activity,Toolbar toolbar,ViewGroup drawer){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity,R.color.statusBar));
-        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT){
+    public static void setDrawerToolbarLayout(Activity activity, Toolbar toolbar, ViewGroup drawer) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             toolbar.setFitsSystemWindows(true);
-            drawer.setPadding(0,getStatusBarHeight(activity),0,0);
-            setKKStatusBar(activity,R.color.colorPrimaryDark);
+            drawer.setPadding(0, getStatusBarHeight(activity), 0, 0);
+            setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
 
-    public static void setSimpleToolbarLayout(Activity activity,Toolbar toolbar){
+    public static void setSimpleToolbarLayout(Activity activity, Toolbar toolbar) {
         toolbar.setFitsSystemWindows(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));

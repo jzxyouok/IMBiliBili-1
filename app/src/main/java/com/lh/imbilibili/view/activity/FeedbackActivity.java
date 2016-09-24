@@ -42,7 +42,7 @@ public class FeedbackActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
         ButterKnife.bind(this);
-        StatusBarUtils.setSimpleToolbarLayout(this,mToolbar);
+        StatusBarUtils.setSimpleToolbarLayout(this, mToolbar);
         initToolbar();
         initFragment();
     }

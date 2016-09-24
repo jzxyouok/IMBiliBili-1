@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.lh.imbilibili.widget.ScalableImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.lh.imbilibili.widget.BannerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="94dp"
     android:clickable="true"
-    android:foreground="?selectableItemBackground"
-    app:aspectRadioHeight="280"
-    app:aspectRadioWidth="960"></com.lh.imbilibili.widget.ScalableImageView>
+    android:foreground="?selectableItemBackground"/>

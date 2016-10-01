@@ -6,7 +6,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -51,12 +50,14 @@ public class MainFragment extends BaseFragment {
         return new MainFragment();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main_home, container, false);
+    protected void initView(View view) {
         ButterKnife.bind(this, view);
-        return view;
+    }
+
+    @Override
+    protected int getContentView() {
+        return R.layout.fragment_main_home;
     }
 
     @Override
@@ -65,6 +66,7 @@ public class MainFragment extends BaseFragment {
         StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
+        fragments.add(CategoryFragment.newInstance());
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         tabs.setupWithViewPager(viewPager);

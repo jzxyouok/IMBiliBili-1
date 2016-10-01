@@ -172,7 +172,8 @@ public class LoadMoreRecyclerView extends RecyclerView {
             View view = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
             if (newState == RecyclerView.SCROLL_STATE_IDLE &&
                     !isLoading && mOnLoadMoreLinstener != null &&
-                    mEnableLoadMore && recyclerView.getChildViewHolder(view) instanceof LoadMoreViewHolder) {
+                    mEnableLoadMore && recyclerView.getChildViewHolder(view) instanceof LoadMoreViewHolder &&
+                    mAdapter != null && mAdapter.getRealItemCount() > 0) {
                 isLoading = true;
                 mOnLoadMoreLinstener.onLoadMore();
             }

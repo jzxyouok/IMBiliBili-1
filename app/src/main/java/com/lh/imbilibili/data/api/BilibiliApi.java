@@ -9,6 +9,8 @@ import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
+import com.lh.imbilibili.model.PartionHome;
+import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.model.ReplyCount;
 import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.model.SeasonRecommend;
@@ -138,10 +140,42 @@ public interface BilibiliApi {
 
     @GET(Constant.BANGUMI_INDEX_COND)
     Call<BiliBiliResultResponse<BangumiIndexCond>> getBangumiIndexCond(@Query(Constant.QUERY_APP_KEY) String appKey,
-                                                                       @Query(Constant.QUERY_BUILD)String build,
+                                                                       @Query(Constant.QUERY_BUILD) String build,
                                                                        @Query(Constant.QUERY_MOBI_APP) String mobiApp,
                                                                        @Query(Constant.QUERY_PLATFORM) String platform,
                                                                        @Query(Constant.QUERY_TS) long ts,
-                                                                       @Query(Constant.QUERY_TYPE)int type);
+                                                                       @Query(Constant.QUERY_TYPE) int type);
+
+    @GET(Constant.APP_URL + Constant.PARTION_INFO)
+    Call<BilibiliDataResponse<PartionHome>> getPartionInfo(@Query("rid") int rid,
+                                                           @Query("channel") String channel,
+                                                           @Query(Constant.QUERY_APP_KEY) String appKey,
+                                                           @Query(Constant.QUERY_BUILD) String build,
+                                                           @Query(Constant.QUERY_MOBI_APP) String mobiApp);
+
+    @GET(Constant.APP_URL + Constant.PARTION_DYNAMIC)
+    Call<BilibiliDataResponse<List<PartionVideo>>> getPartionDynamic(@Query("rid") int rid,
+                                                                     @Query("pn") int pn,
+                                                                     @Query("ps") int ps,
+                                                                     @Query(Constant.QUERY_APP_KEY) String appKey,
+                                                                     @Query(Constant.QUERY_BUILD) String build,
+                                                                     @Query(Constant.QUERY_MOBI_APP) String mobiApp);
+
+    @GET(Constant.APP_URL + Constant.PARTION_CHILD)
+    Call<BilibiliDataResponse<PartionHome>> getPartionChild(@Query("rid") int rid,
+                                                            @Query("channel") String channel,
+                                                            @Query(Constant.QUERY_APP_KEY) String appKey,
+                                                            @Query(Constant.QUERY_BUILD) String build,
+                                                            @Query(Constant.QUERY_MOBI_APP) String mobiApp);
+
+    @GET(Constant.APP_URL + Constant.PARTION_CHILD_LIST)
+    Call<BilibiliDataResponse<List<PartionVideo>>> getPartionChildList(@Query("rid") int rid,
+                                                                       @Query("pn") int pn,
+                                                                       @Query("ps") int ps,
+                                                                       @Query("order") String order,
+                                                                       @Query(Constant.QUERY_APP_KEY) String appKey,
+                                                                       @Query(Constant.QUERY_BUILD) String build,
+                                                                       @Query(Constant.QUERY_MOBI_APP) String mobiApp);
+
 }
 

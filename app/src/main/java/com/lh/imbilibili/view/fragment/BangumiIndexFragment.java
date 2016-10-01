@@ -7,8 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -16,7 +14,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,7 +24,6 @@ import com.lh.imbilibili.model.BangumiIndex;
 import com.lh.imbilibili.model.BangumiIndexCond;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.utils.CallUtils;
-import com.lh.imbilibili.utils.DisplayUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
@@ -141,12 +137,14 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bangumi_index, container, false);
+    protected void initView(View view) {
         ButterKnife.bind(this, view);
-        return view;
+    }
+
+    @Override
+    protected int getContentView() {
+        return R.layout.fragment_bangumi_index;
     }
 
     @Override

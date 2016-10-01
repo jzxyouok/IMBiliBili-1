@@ -10,7 +10,6 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
@@ -29,19 +28,16 @@ import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.SourceData;
 import com.lh.imbilibili.model.VideoPlayData;
 import com.lh.imbilibili.utils.CallUtils;
-import com.lh.imbilibili.utils.CompressUtils;
-import com.lh.imbilibili.utils.StorageUtils;
+import com.lh.imbilibili.utils.DanmakuUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.ToastUtils;
+import com.lh.imbilibili.utils.VideoUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.widget.VideoControlView;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -49,8 +45,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,11 +55,11 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  */
 public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoListener, IMediaPlayer.OnErrorListener, VideoControlView.OnPlayControlListener, IMediaPlayer.OnPreparedListener {
 
-    public static final int MSG_SYNC = 1;
-    public static final int MSG_DANMAKU_DOWNLOAD_FINISH = 2;
-    public static final int MSG_DANMAKU_DOWNLOAD_FAILED = 3;
-    public static final int MSG_LOAD_PLAYINFO = 4;
-    public static final int MSG_SYNC_AT_TIME = 5;
+    private static final int MSG_SYNC_NOW = 1;
+    private static final int MSG_SYNC_AT_TIME = 2;
+    private static final int MSG_LOAD_VIDEO = 3;
+    private static final int MSG_LOAD_DANMAKU = 4;
+    private static final int MSG_START_PLAYING = 5;
 
     @BindView(R.id.pre_play_msg)
     TextView mPrePlayMsg;
@@ -87,20 +81,23 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
 
     private ArrayList<Danmaku> mDanmakus;
     private BiliBiliDanmakuParser mParser;
+    private DanmakuUtils mDanmakuUtils;
 
     private Call<BiliBiliResultResponse<List<SourceData>>> sourceInfoCall;
-    private okhttp3.Call danmakuCall;
     private Call<VideoPlayData> playInfoCall;
 
     private UpdatePrePlayMsgReceiver mPrePlayMsgReceiver;
 
     private VideoHandler mHandler;
 
-    private boolean mPlayerChanged = false;
     private boolean mResumePlay = false;
     private boolean mIsFirstLoadVideo = true;
 
+    private boolean mIsDanmakuLoadFinish = false;
+    private boolean mIsVideoLoadFinish = false;
+
     private int mPrePlayerPosition;
+    private int mCurrentQuality = 3;
     private long firstBackPressTime = -1;
 
     public static void startVideoActivity(Context context, BangumiDetail.Episode episode, String title) {
@@ -114,22 +111,22 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoview);
-        mHandler = new VideoHandler(new WeakReference<VideoActivity>(this));
+        mHandler = new VideoHandler(new WeakReference<>(this));
         mPrePlayMsgReceiver = new UpdatePrePlayMsgReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(mPrePlayMsgReceiver, new IntentFilter(IjkVideoView.ACTION));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         ButterKnife.bind(this);
         mDanmakuView.setShowDebugInfo(true);
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(getString(com.example.ijkplayer.R.string.pref_key_using_media_codec), true).commit();
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(getString(com.example.ijkplayer.R.string.pref_key_using_media_codec), true).apply();
         mEpisode = getIntent().getParcelableExtra("data");
         mBangumiTitle = getIntent().getStringExtra("title");
+        mDanmakuUtils = new DanmakuUtils();
         initIjkPlayer();
         appendVideoMsg(null, StringUtils.format("正在载入(id=%s)", mEpisode.getEpisodeId()), false);
         appendVideoMsg(null, "正在解析视频信息...", true);
         appendVideoMsg(null, "正在解析弹幕...", true);
         appendVideoMsg(null, "正在解析播放地址...", true);
         mVideoControlView.setVideoView(mIjkVideoView);
-//        initDanmakuView();
         loadSourceInfo();
     }
 
@@ -151,7 +148,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                     mSourceDatas = response.body().getResult();
                     SourceData sourceData = mSourceDatas.get(0);
                     appendVideoMsg("正在解析视频信息...", StringUtils.format("成功(av_id=%s cid=%s)", sourceData.getAvId(), sourceData.getCid()), false);
-                    downloadDanmaku(sourceData.getCid());
+                    mHandler.sendEmptyMessage(MSG_LOAD_DANMAKU);
+                    mHandler.sendEmptyMessage(MSG_LOAD_VIDEO);
                 }
             }
 
@@ -162,15 +160,14 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         });
     }
 
-    private void loadPlayInfo(String aid, String cid, final int quality) {
-        int index = 0;
+    private void loadVideoInfo(String aid, String cid) {
+        int index;
         try {
             index = Integer.valueOf(mEpisode.getIndex()) - 1;
         } catch (NumberFormatException e) {
             index = 0;
         }
-        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLATFORM, Constant.BUILD, Constant.PLATFORM, aid, 0, index, 0, cid, quality, "json", Constant.PLAYER_APPKEY);
-//        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLAYER_APPKEY, cid, "json", quality, "mp4");
+        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLATFORM, Constant.BUILD, Constant.PLATFORM, aid, 0, index, 0, cid, mCurrentQuality, "json", Constant.PLAYER_APPKEY);
         playInfoCall.enqueue(new Callback<VideoPlayData>() {
             @Override
             public void onResponse(Call<VideoPlayData> call, Response<VideoPlayData> response) {
@@ -179,12 +176,13 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                     mVideoPlayData = response.body();
                     if (mIsFirstLoadVideo) {
                         mIsFirstLoadVideo = false;
-                        mIjkVideoView.setVideoPath(concatVideo(mVideoPlayData.getDurl()));
+                        mIjkVideoView.setVideoPath(VideoUtils.concatVideo(getApplicationContext(), mVideoPlayData.getDurl()));
                     } else {
-                        mIjkVideoView.changeVideoPath(concatVideo(mVideoPlayData.getDurl()));
+                        mIjkVideoView.changeVideoPath(VideoUtils.concatVideo(getApplicationContext(), mVideoPlayData.getDurl()));
                     }
-                    mVideoControlView.setCurrentVideoQuality(quality);
-                    startPlaying();
+                    mVideoControlView.setCurrentVideoQuality(mCurrentQuality);
+                    mIsVideoLoadFinish = true;
+                    mHandler.sendEmptyMessage(MSG_START_PLAYING);
                 } else {
                     appendVideoMsg("正在解析播放地址...", "失败", false);
                 }
@@ -195,43 +193,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                 appendVideoMsg("正在解析播放地址...", "失败", false);
             }
         });
-    }
-
-    public String concatVideo(List<VideoPlayData.Durl> durls) {
-        String videoPlayPath = null;
-        if (durls.size() > 1) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("ffconcat version 1.0\n");
-            for (int i = 0; i < durls.size(); i++) {
-                stringBuilder.append("file ");
-                stringBuilder.append(durls.get(i).getUrl());
-                stringBuilder.append("\n");
-                stringBuilder.append("duration ");
-                stringBuilder.append(durls.get(i).getLength() / 1000);
-                stringBuilder.append("\n");
-            }
-            File file = StorageUtils.getAppCache(getApplicationContext(), "video.cancat");
-            FileWriter fileWriter = null;
-            try {
-                fileWriter = new FileWriter(file);
-                fileWriter.write(stringBuilder.toString());
-                fileWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (fileWriter != null) {
-                        fileWriter.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            videoPlayPath = file.getAbsolutePath();
-        } else if (durls.size() == 1) {
-            videoPlayPath = durls.get(0).getUrl();
-        }
-        return videoPlayPath;
     }
 
     public void appendVideoMsg(@Nullable String orginMsg, String appendMsg, boolean newLine) {
@@ -248,71 +209,26 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         }
     }
 
-//    private void initDanmakuView() {
-//        mDanmakuContext = DanmakuContext.create();
-//        HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
-//        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 14); // 滚动弹幕最大显示5行
-//        // 设置是否禁止重叠
-//        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
-//        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
-//        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
-//        mDanmakuContext.setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
-////                .setCacheStuffer(new SpannedCacheStuffer(), mCacheStufferAdapter) // 图文混排使用SpannedCacheStuffer
-////        .setCacheStuffer(new BackgroundCacheStuffer())  // 绘制背景使用BackgroundCacheStuffer
-////                .setMaximumLines(maxLinesPair)
-//                .preventOverlapping(overlappingEnablePair);
-//    }
 
-    private void downloadDanmaku(String cid) {
-        OkHttpClient okHttpClient = IMBilibiliApplication.getApplication().getBilibiliComponent().getOkhttpClient();
-        final Request request = new Request.Builder().url(Constant.COMMENT_URL + "/" + cid + ".xml")
-                .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                .addHeader("Accept-Encoding", "deflate")
-                .addHeader("Accept-Language", "zh-CN,zh;q=0.8").build();
-        danmakuCall = okHttpClient.newCall(request);
-        danmakuCall.enqueue(new okhttp3.Callback() {
+    private void loadDanmaku(String cid) {
+        mDanmakuUtils.downLoadDanmaku(getApplicationContext(), cid, new DanmakuUtils.OnDanmakuDownloadListener() {
             @Override
-            public void onResponse(okhttp3.Call call, final okhttp3.Response response){
-//                InputStream inputStream = new InflaterInputStream(response.body().byteStream(),new Inflater(true));
-                ByteArrayInputStream inputStream = null;
-                File file = StorageUtils.getAppCache(VideoActivity.this,"danmaku.xml");
-                FileOutputStream fileOutputStream = null;
+            public void onSuccess(File file) {
+                mIsDanmakuLoadFinish = true;
                 try {
-//                    inputStream = new InflaterInputStream(response.body().byteStream(),new Inflater(true));
-                    inputStream = new ByteArrayInputStream(CompressUtils.decompressXML(response.body().bytes()));
-                    fileOutputStream = new FileOutputStream(file,false);
-                    byte[] bytes = new byte[2048];
-                    int length;
-                    while ((length = inputStream.read(bytes))>0){
-                        fileOutputStream.write(bytes,0,length);
-                    }
-                    mHandler.sendMessage(mHandler.obtainMessage(MSG_DANMAKU_DOWNLOAD_FINISH, new FileInputStream(file)));
-                } catch (IOException e) {
+                    preparDanmaku(new FileInputStream(file));
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                    mHandler.sendEmptyMessage(MSG_DANMAKU_DOWNLOAD_FAILED);
-                    mHandler.sendMessage(mHandler.obtainMessage(MSG_LOAD_PLAYINFO,3));
-                }finally {
-                    if(fileOutputStream!=null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if(inputStream !=null) {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    appendVideoMsg("正在解析弹幕...", "失败", false);
+                } finally {
+                    mHandler.sendEmptyMessage(MSG_START_PLAYING);
                 }
             }
 
             @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-                mHandler.sendEmptyMessage(MSG_DANMAKU_DOWNLOAD_FAILED);
-                mHandler.sendMessage(mHandler.obtainMessage(MSG_LOAD_PLAYINFO,3));
+            public void onFail() {
+                mIsDanmakuLoadFinish = true;
+                appendVideoMsg("正在解析弹幕...", "失败", false);
             }
         });
     }
@@ -325,55 +241,18 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(mDanmakus!=null){
+            if (mDanmakus != null) {
                 mDanmakuView.setDanmakuSource(mDanmakus);
+                appendVideoMsg("正在解析弹幕...", "成功", false);
             }
-            mHandler.sendMessage(mHandler.obtainMessage(MSG_LOAD_PLAYINFO,3));
-//            mParser = createParser(stream);
-//            mDanmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
-//                @Override
-//                public void updateTimer(DanmakuTimer timer) {
-//                }
-//
-//                @Override
-//                public void drawingFinished() {
-//
-//                }
-//
-//                @Override
-//                public void danmakuShown(BaseDanmaku danmaku) {
-////                    Log.d("DFM", "danmakuShown(): text=" + danmaku.text);
-//                }
-//
-//                @Override
-//                public void prepared() {
-//                    mHandler.sendMessage(mHandler.obtainMessage(MSG_LOAD_PLAYINFO,3));
-//                }
-//            });
-//            mDanmakuView.setOnDanmakuClickListener(new IDanmakuView.OnDanmakuClickListener() {
-//                @Override
-//                public void onDanmakuClick(BaseDanmaku latest) {
-//                    Log.d("DFM", "onDanmakuClick text:" + latest.text);
-//                }
-//
-//                @Override
-//                public void onDanmakuClick(IDanmakus danmakus) {
-//                    Log.d("DFM", "onDanmakuClick danmakus size:" + danmakus.size());
-//                }
-//            });
-//            mDanmakuView.prepare(mParser, DanmakuContext.create());
-//            mDanmakuView.showFPS(false);
-//            mDanmakuView.enableDanmakuDrawingCache(false);
         }
     }
 
-    private void  startPlaying(){
-        if(mDanmakuView.isShown()&&mDanmakuView.isPrepared()){
-            mHandler.removeMessages(MSG_SYNC);
-            mIjkVideoView.start();
-            mHandler.sendEmptyMessage(MSG_SYNC);
-            mHandler.sendEmptyMessage(MSG_SYNC_AT_TIME);
-        }
+    private void startPlaying() {
+        mHandler.removeMessages(MSG_SYNC_NOW);
+        mIjkVideoView.start();
+        mHandler.sendEmptyMessage(MSG_SYNC_NOW);
+        mHandler.sendEmptyMessage(MSG_SYNC_AT_TIME);
     }
 
     @Override
@@ -383,9 +262,9 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
             mIjkVideoView.start();
         }
         if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
-            mHandler.removeMessages(MSG_SYNC);
+            mHandler.removeMessages(MSG_SYNC_NOW);
             mDanmakuView.resume();
-            mHandler.sendEmptyMessage(MSG_SYNC);
+            mHandler.sendEmptyMessage(MSG_SYNC_NOW);
         }
     }
 
@@ -407,11 +286,9 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         mHandler.removeCallbacksAndMessages(null);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mPrePlayMsgReceiver);
         CallUtils.cancelCall(sourceInfoCall, playInfoCall);
-        if (danmakuCall != null && !danmakuCall.isCanceled()) {
-            danmakuCall.cancel();
-        }
         mIjkVideoView.stopPlayback();
         mIjkVideoView.release(true);
+        mDanmakuUtils.cancel();
         if (mDanmakuView != null) {
             mDanmakuView.stop();
             mDanmakuView = null;
@@ -433,10 +310,10 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                 mProgressBar.setVisibility(View.VISIBLE);
                 break;
             case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                System.out.println("ijk"+mIjkVideoView.getCurrentPosition());
-                mHandler.removeMessages(MSG_SYNC);
+                System.out.println("ijk" + mIjkVideoView.getCurrentPosition());
+                mHandler.removeMessages(MSG_SYNC_NOW);
                 mDanmakuView.resume();
-                mHandler.sendEmptyMessage(MSG_SYNC);
+                mHandler.sendEmptyMessage(MSG_SYNC_NOW);
                 mProgressBar.setVisibility(View.GONE);
                 mTvBuffering.setVisibility(View.GONE);
                 mPrePlayMsg.setVisibility(View.GONE);
@@ -447,10 +324,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
 
     @Override
     public boolean onError(IMediaPlayer mp, int what, int extra) {
-        if (!mPlayerChanged) {
-            mIjkVideoView.togglePlayer();
-            startPlaying();
-        }
+        mIjkVideoView.togglePlayer();
+        startPlaying();
         return true;
     }
 
@@ -464,7 +339,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
             if (secondBackPressTime - firstBackPressTime < 2000) {
                 super.onBackPressed();
                 if (mDanmakuView != null) {
-                    // dont forget release!
                     mDanmakuView.stop();
                     mDanmakuView = null;
                 }
@@ -477,11 +351,21 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
 
     @Override
     public void onQualitySelect(int quality) {
+        mCurrentQuality = quality;
         mPrePlayerPosition = mIjkVideoView.getCurrentPosition();
         mTvBuffering.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
-        mHandler.sendMessage(mHandler.obtainMessage(MSG_LOAD_PLAYINFO,quality));
-//        loadPlayInfo(mSourceDatas.get(0).getAvId(), mSourceDatas.get(0).getCid(), quality);
+        mDanmakuView.pause();
+        mHandler.sendEmptyMessage(MSG_LOAD_VIDEO);
+    }
+
+    @Override
+    public void onDanamkuShowOrHideClick() {
+        if (mDanmakuView.isShow()) {
+            mDanmakuView.hide();
+        } else {
+            mDanmakuView.show();
+        }
     }
 
     @Override
@@ -491,27 +375,19 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
 
     @Override
     public void onVideoStart() {
-        mHandler.removeMessages(MSG_SYNC);
-        if(mDanmakuView.isPaused()) {
+        mHandler.removeMessages(MSG_SYNC_NOW);
+        if (mDanmakuView.isPaused()) {
             mDanmakuView.resume();
         }
-        mHandler.sendEmptyMessage(MSG_SYNC);
+        mHandler.sendEmptyMessage(MSG_SYNC_NOW);
     }
 
     @Override
     public void onPrepared(IMediaPlayer mp) {
         if (!mIsFirstLoadVideo) {
-            mHandler.removeMessages(MSG_SYNC);
+            mHandler.removeMessages(MSG_SYNC_NOW);
             mIjkVideoView.seekTo(mPrePlayerPosition);
-            mHandler.sendEmptyMessage(MSG_SYNC);
-        }
-    }
-
-    public class UpdatePrePlayMsgReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            appendVideoMsg(null, intent.getStringExtra("msg"), true);
+            mHandler.sendEmptyMessage(MSG_SYNC_NOW);
         }
     }
 
@@ -526,49 +402,56 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (mActivity.get() != null) {
-                switch (msg.what){
-                    case MSG_SYNC:
-                        if(mActivity.get().mDanmakuView.isPrepared()){
-                            long videoCurrentPosition = mActivity.get().mIjkVideoView.getCurrentPosition();
-                            long danmakuCurrentPosition = mActivity.get().mDanmakuView.getCurrentTime();
-                            long diff = danmakuCurrentPosition - videoCurrentPosition;
-                            System.out.println("syn:"+diff);
-                            if(diff > 500&&diff < 1000){
-                                System.out.println("pause");
-                                mActivity.get().mDanmakuView.pause();
-                                sendEmptyMessageDelayed(MSG_SYNC,diff);
-                            }else if (diff > 1000 || diff <-500){
-                                System.out.println("seekTo");
-                                mActivity.get().mDanmakuView.seekTo(videoCurrentPosition);
-                                sendEmptyMessage(MSG_SYNC);
-                            }else {
-                                if(mActivity.get().mDanmakuView.isPaused()) {
-                                    mActivity.get().mDanmakuView.resume();
-                                }
+            if (mActivity.get() == null) {
+                return;
+            }
+            switch (msg.what) {
+                case MSG_SYNC_NOW:
+                    if (mActivity.get().mDanmakuView.isPrepared()) {
+                        long videoCurrentPosition = mActivity.get().mIjkVideoView.getCurrentPosition();
+                        long danmakuCurrentPosition = mActivity.get().mDanmakuView.getCurrentTime();
+                        long diff = danmakuCurrentPosition - videoCurrentPosition;
+                        if (diff > 500 && diff < 1000) {
+                            mActivity.get().mDanmakuView.pause();
+                            sendEmptyMessageDelayed(MSG_SYNC_NOW, diff);
+                        } else if (diff > 1000 || diff < -500) {
+                            mActivity.get().mDanmakuView.seekTo(videoCurrentPosition);
+                            sendEmptyMessage(MSG_SYNC_NOW);
+                        } else {
+                            if (mActivity.get().mIjkVideoView.isPlaying()) {
+                                mActivity.get().mDanmakuView.resume();
                             }
                         }
-                        break;
-                    case MSG_DANMAKU_DOWNLOAD_FINISH:
-                        InputStream is = (InputStream) msg.obj;
-                        mActivity.get().appendVideoMsg("正在解析弹幕...", "成功", false);
-                        mActivity.get().preparDanmaku(is);
-                        break;
-                    case MSG_DANMAKU_DOWNLOAD_FAILED:
-                        mActivity.get().appendVideoMsg("正在解析弹幕...", "失败", false);
-                        break;
-                    case MSG_LOAD_PLAYINFO:
-                        SourceData sourceData = mActivity.get().mSourceDatas.get(0);
-                        int quality = (int) msg.obj;
-                        mActivity.get().loadPlayInfo(sourceData.getAvId(),sourceData.getCid(),quality);
-                        break;
-                    case MSG_SYNC_AT_TIME:
-                        removeMessages(MSG_SYNC_AT_TIME);
-                        sendEmptyMessage(MSG_SYNC);
-                        sendEmptyMessageDelayed(MSG_SYNC_AT_TIME,1000*60);
-                        break;
-                }
+                    }
+                    break;
+                case MSG_SYNC_AT_TIME:
+                    removeMessages(MSG_SYNC_AT_TIME);
+                    sendEmptyMessage(MSG_SYNC_NOW);
+                    sendEmptyMessageDelayed(MSG_SYNC_AT_TIME, 1000 * 60);
+                    break;
+                case MSG_LOAD_VIDEO:
+                    SourceData sourceData = mActivity.get().mSourceDatas.get(0);
+                    mActivity.get().mIsVideoLoadFinish = false;
+                    mActivity.get().loadVideoInfo(sourceData.getAvId(), sourceData.getCid());
+                    break;
+                case MSG_LOAD_DANMAKU:
+                    mActivity.get().mIsDanmakuLoadFinish = false;
+                    mActivity.get().loadDanmaku(mActivity.get().mSourceDatas.get(0).getCid());
+                    break;
+                case MSG_START_PLAYING:
+                    if (mActivity.get().mIsDanmakuLoadFinish && mActivity.get().mIsVideoLoadFinish) {
+                        mActivity.get().startPlaying();
+                    }
+                    break;
             }
+        }
+    }
+
+    public class UpdatePrePlayMsgReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            appendVideoMsg(null, intent.getStringExtra("msg"), true);
         }
     }
 }

@@ -1,17 +1,12 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
-import com.lh.imbilibili.model.Banner;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
@@ -56,17 +51,14 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
         return new BangumiFragment();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bangumi, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+    protected int getContentView() {
+        return R.layout.fragment_bangumi;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void initView(View view) {
+        ButterKnife.bind(this, view);
         initRecyclerView();
         loadAllData(false);
     }
@@ -127,12 +119,6 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void loadIndexData() {
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-            }
-        });
         indexCall = IMBilibiliApplication.getApplication().getApi()
                 .getIndexPage(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP,
                         Constant.MOBI_APP, System.currentTimeMillis());

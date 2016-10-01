@@ -30,6 +30,17 @@ public class StatusBarUtils {
         }
     }
 
+    public static void setToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
+            contentLayout.getChildAt(0).setFitsSystemWindows(false);
+            coordinatorLayout.setFitsSystemWindows(true);
+            setKKStatusBar(activity, R.color.colorPrimaryDark);
+        }
+    }
+
     public static void setImageTranslucent(Activity activity, Toolbar toolbar) {
         toolbar.setFitsSystemWindows(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -20,6 +20,7 @@ public class Danmaku implements Comparable<Danmaku> {
     public void setTime(long time) {
         this.time = time;
     }
+
     public int getType() {
         return type;
     }
@@ -52,18 +53,18 @@ public class Danmaku implements Comparable<Danmaku> {
         this.content = content;
     }
 
-    public static Danmaku parse(String str){
+    public static Danmaku parse(String str) {
         Danmaku danmaku = new Danmaku();
-        String[] strs =  str.split(",");
-        danmaku.setTime((long) (Float.parseFloat(strs[0])* 1000L));
+        String[] strs = str.split(",");
+        danmaku.setTime((long) (Float.parseFloat(strs[0]) * 1000L));
         danmaku.setType(Integer.parseInt(strs[1]));
-        danmaku.setTextSize((int) (Integer.parseInt(strs[2])*0.7));
+        danmaku.setTextSize(Integer.parseInt(strs[2]));
         danmaku.setTextColor(Integer.parseInt(strs[3]) | 0xFF000000);
         return danmaku;
     }
 
     @Override
     public int compareTo(@NonNull Danmaku another) {
-        return time<another.getTime()?-1:1;
+        return time < another.getTime() ? -1 : 1;
     }
 }

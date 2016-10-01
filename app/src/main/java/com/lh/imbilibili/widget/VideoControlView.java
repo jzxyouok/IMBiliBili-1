@@ -64,6 +64,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private TextView mTvTitle;
     private TextView mTvQualitySelect;
     private TextView mTvVideoInfo;
+    private TextView mTvDanmakuShowHide;
     private ImageView mIvBack;
 
     private LinearLayout mGestureInfoGroup;
@@ -130,6 +131,8 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mTvQualitySelect = (TextView) mMediaControlView.findViewById(R.id.quality_select);
         mIvBack = (ImageView) mMediaControlView.findViewById(R.id.back);
         mTvVideoInfo = (TextView) mMediaControlView.findViewById(R.id.video_info);
+        mTvDanmakuShowHide = (TextView) mMediaControlView.findViewById(R.id.show_hide_danmaku);
+
         @SuppressLint("InflateParams") ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view, null);
         for (int i = 0; i < popuView.getChildCount(); i++) {
             popuView.getChildAt(i).setOnClickListener(this);
@@ -143,6 +146,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mIvPlayPause.setOnClickListener(this);
         mIvBack.setOnClickListener(this);
         mTvQualitySelect.setOnClickListener(this);
+        mTvDanmakuShowHide.setOnClickListener(this);
     }
 
     private void initMediaLevelView(Context context, LayoutInflater inflater) {
@@ -188,6 +192,10 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     public void setCurrentVideoQuality(int quality) {
         mCurrentQuality = quality;
         mTvQualitySelect.setText(qualityCodeForString(mCurrentQuality));
+    }
+
+    public void setCurrentDanmakuState(boolean isShow) {
+        mTvDanmakuShowHide.setText(isShow ? "隐藏" : "显示");
     }
 
     @Override
@@ -444,6 +452,10 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
                 System.out.println("show");
                 mQualityPopuWindow.showAsDropDown(v);
                 break;
+            case R.id.show_hide_danmaku:
+                if (mOnPlayControlListener != null) {
+                    mOnPlayControlListener.onDanamkuShowOrHideClick();
+                }
         }
     }
 
@@ -467,6 +479,8 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         void onVideoStart();
 
         void onQualitySelect(int quality);
+
+        void onDanamkuShowOrHideClick();
     }
 
     private static class ControlHandler extends Handler {

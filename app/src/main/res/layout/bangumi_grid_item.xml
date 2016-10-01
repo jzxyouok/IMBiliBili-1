@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.lh.imbilibili.widget.ForegroundRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   android:id="@+id/feedback_container"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="wrap_content"
-                                                   android:layout_marginRight="1.5dp"
-                                                   android:foreground="?selectableItemBackgroundBorderless">
+<com.lh.imbilibili.widget.ForegroundRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/feedback_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="1.5dp"
+    android:foreground="?selectableItemBackgroundBorderless">
 
-    <com.lh.imbilibili.widget.ScalableImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                android:id="@+id/cover"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:scaleType="fitXY"
-                                                app:aspectRadioHeight="128"
-                                                app:aspectRadioWidth="96"/>
+    <com.lh.imbilibili.widget.ScalableImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        app:aspectRadioHeight="128"
+        app:aspectRadioWidth="96"/>
 
     <TextView
         android:id="@+id/favourites"

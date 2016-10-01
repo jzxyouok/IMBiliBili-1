@@ -18,8 +18,10 @@ public class StringUtils {
         } else {
             if (value >= 10000) {
                 return format("%.1f万", value / 10000f);
-            } else {
+            } else if (value > 0) {
                 return format("%d", value);
+            } else {
+                return "-";
             }
         }
     }

@@ -3,6 +3,7 @@ package com.lh.imbilibili.view.adapter.categoryfragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
@@ -41,5 +42,10 @@ public class PartionViewPagerAdapter extends FragmentPagerAdapter {
         } else {
             return mPartionModel.getPartions().get(position - 1).getName();
         }
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container, position, object);
     }
 }

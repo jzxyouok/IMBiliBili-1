@@ -26,6 +26,7 @@ public class Constant {
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";
     public static final String APP_URL = "http://app.bilibili.com";
+    public static final String APP_URLS = "https://app.bilibili.com";
     public static final String INTERFACE_URL = "http://interface.bilibili.com";
     public static final String COMMENT_URL = "http://comment.bilibili.com";
 
@@ -45,6 +46,11 @@ public class Constant {
     public static final String PARTION_CHILD = "/x/v2/region/show/child";
     public static final String PARTION_CHILD_LIST = "/x/v2/region/show/child/list";
 
+    public static final String SEARCH = "/x/v2/search";
+    public static final String SEARCH_TYPE = SEARCH + "/type";
+
+    public static final String VIDEO_DETAIL = "/x/v2/view";
+
     public static final String PLAY_URL = "/playurl";
 
 
@@ -54,7 +60,7 @@ public class Constant {
 
     public static final String SPLASH_FILE = "splash.json";
 
-    public static final String PLAT = "0";
+    public static final int PLAT = 0;
     public static final String BUILD = "421000";
     public static final String CHANNEL = "xiaomi";
     public static final String MOBI_APP = "android";

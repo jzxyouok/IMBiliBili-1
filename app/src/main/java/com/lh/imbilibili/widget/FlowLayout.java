@@ -99,7 +99,8 @@ public class FlowLayout extends ViewGroup implements View.OnClickListener {
         }
     }
 
-    public void addTag(String text,int index) {
+    @SuppressWarnings("ResourceType")
+    public void addTag(String text, int index) {
         TextView textView = new TextView(getContext());
         MarginLayoutParams params = new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textView.setText(text);
@@ -108,6 +109,12 @@ public class FlowLayout extends ViewGroup implements View.OnClickListener {
         textView.setLayoutParams(params);
         textView.setOnClickListener(this);
         addView(textView,index);
+    }
+
+    public void addTag(View view, int index) {
+        view.setTag(index);
+        view.setOnClickListener(this);
+        addView(view, index);
     }
 
     public void selectTag(int position) {

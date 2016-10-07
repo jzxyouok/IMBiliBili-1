@@ -12,7 +12,8 @@ import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.utils.ToastUtils;
-import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.LazyLoadFragment;
+import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.categoryfragment.PartionChildRecyclerViewAdapter;
 import com.lh.imbilibili.view.adapter.categoryfragment.PartionListItemDecoration;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
@@ -30,7 +31,7 @@ import retrofit2.Response;
  * Created by liuhui on 2016/10/1.
  */
 
-public class PartionListFragment extends BaseFragment implements LoadMoreRecyclerView.onLoadMoreLinstener {
+public class PartionListFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, PartionChildRecyclerViewAdapter.OnVideoItemClickListener {
 
     private static final String EXTRA_DATA = "partion";
 
@@ -40,9 +41,8 @@ public class PartionListFragment extends BaseFragment implements LoadMoreRecycle
     private PartionModel.Partion mPartion;
 
     private PartionChildRecyclerViewAdapter mAdapter;
-    private int mCurrentPage;
 
-    private boolean shouldLoadData = true;
+    private int mCurrentPage;
 
     private Call<BilibiliDataResponse<PartionHome>> mPartionDataCall;
     private Call<BilibiliDataResponse<List<PartionVideo>>> mNewVideoDataCall;
@@ -64,29 +64,32 @@ public class PartionListFragment extends BaseFragment implements LoadMoreRecycle
     protected void initView(View view) {
         mPartion = getArguments().getParcelable(EXTRA_DATA);
         ButterKnife.bind(this, view);
-        shouldLoadData = true;
         mCurrentPage = 1;
         initRecyclerView();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (shouldLoadData) {
-            shouldLoadData = false;
-            loadData();
-            loadNewData(mCurrentPage);
-        }
+    protected void fetchData() {
+        loadData();
+        loadNewData(mCurrentPage);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     private void initRecyclerView() {
-        mAdapter = new PartionChildRecyclerViewAdapter(getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        if (mAdapter == null) {
+            mAdapter = new PartionChildRecyclerViewAdapter(getContext());
+        }
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         PartionListItemDecoration itemDecoration = new PartionListItemDecoration(getContext());
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setOnLoadMoreLinstener(this);
+        mAdapter.setOnVideoItemClickListener(this);
     }
 
     private void loadNewData(int page) {
@@ -138,5 +141,10 @@ public class PartionListFragment extends BaseFragment implements LoadMoreRecycle
     public void onLoadMore() {
         mCurrentPage++;
         loadNewData(mCurrentPage);
+    }
+
+    @Override
+    public void onVideoClick(String aid) {
+        VideoDetailActivity.startActivity(getContext(), aid);
     }
 }

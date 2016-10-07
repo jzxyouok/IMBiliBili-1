@@ -348,7 +348,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
             loadFeedbackDate(bangumiDetail.getEpisodes().get(position).getAvId(),
                     bangumiDetail.getEpisodes().get(position).getIndex());
         }
-        VideoActivity.startVideoActivity(this, bangumiDetail.getEpisodes().get(position), bangumiDetail.getTitle());
+        VideoActivity.startVideoActivity(this, bangumiDetail.getEpisodes().get(position).getEpisodeId(), null, bangumiDetail.getTitle());
     }
 
     @Override

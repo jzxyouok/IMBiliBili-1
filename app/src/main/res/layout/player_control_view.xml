@@ -1,11 +1,12 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="false"
-                android:visibility="gone">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:visibility="gone">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/top_contorol"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/black_60_alpha"
@@ -67,6 +68,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/bottom_control"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -116,6 +118,16 @@
             android:paddingRight="5dp"
             android:textColor="#ffffffff"
             android:textSize="13sp"/>
+
+        <ImageView
+            android:id="@+id/btn_full_screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="@dimen/item_spacing"
+            android:paddingRight="@dimen/item_spacing"
+            android:src="@drawable/ic_portrait_fullscreen"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

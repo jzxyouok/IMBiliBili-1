@@ -57,6 +57,8 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private ProgressBar mPbBrightnessLevel;
 
     private View mMediaControlView;
+    private ViewGroup mTopControlView;
+    private ViewGroup mBottomControlView;
     private SeekBar mSeekBar;
     private ImageView mIvPlayPause;
     private TextView mTvCurrentTime;
@@ -66,6 +68,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private TextView mTvVideoInfo;
     private TextView mTvDanmakuShowHide;
     private ImageView mIvBack;
+    private ImageView mIvFullScreen;
 
     private LinearLayout mGestureInfoGroup;
     private TextView mGestureInfoText;
@@ -97,6 +100,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
     private int mCurrentQuality;
 
     private OnPlayControlListener mOnPlayControlListener;
+    private OnMediaControlViewVisibleChangeListener mOnMediaControlViewVisibleChangeListener;
     private boolean mScrollingSeekBar = false;
     private int mBeforeScrollPosition;
 
@@ -123,6 +127,8 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
 
     private void initMediaControlView(LayoutInflater inflater) {
         mMediaControlView = inflater.inflate(R.layout.player_control_view, this, false);
+        mTopControlView = (ViewGroup) mMediaControlView.findViewById(R.id.top_contorol);
+        mBottomControlView = (ViewGroup) mMediaControlView.findViewById(R.id.bottom_control);
         mSeekBar = (SeekBar) mMediaControlView.findViewById(R.id.seekbar);
         mIvPlayPause = (ImageView) mMediaControlView.findViewById(R.id.play_pause_toggle);
         mTvCurrentTime = (TextView) mMediaControlView.findViewById(R.id.current_time);
@@ -132,6 +138,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mIvBack = (ImageView) mMediaControlView.findViewById(R.id.back);
         mTvVideoInfo = (TextView) mMediaControlView.findViewById(R.id.video_info);
         mTvDanmakuShowHide = (TextView) mMediaControlView.findViewById(R.id.show_hide_danmaku);
+        mIvFullScreen = (ImageView) mMediaControlView.findViewById(R.id.btn_full_screen);
 
         @SuppressLint("InflateParams") ViewGroup popuView = (ViewGroup) inflater.inflate(R.layout.popu_quality_select_view, null);
         for (int i = 0; i < popuView.getChildCount(); i++) {
@@ -147,6 +154,7 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mIvBack.setOnClickListener(this);
         mTvQualitySelect.setOnClickListener(this);
         mTvDanmakuShowHide.setOnClickListener(this);
+        mIvFullScreen.setOnClickListener(this);
     }
 
     private void initMediaLevelView(Context context, LayoutInflater inflater) {
@@ -189,6 +197,10 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mOnPlayControlListener = l;
     }
 
+    public void setOnMediaControlViewVisibleChangeListener(OnMediaControlViewVisibleChangeListener listener) {
+        mOnMediaControlViewVisibleChangeListener = listener;
+    }
+
     public void setCurrentVideoQuality(int quality) {
         mCurrentQuality = quality;
         mTvQualitySelect.setText(qualityCodeForString(mCurrentQuality));
@@ -198,9 +210,18 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mTvDanmakuShowHide.setText(isShow ? "隐藏" : "显示");
     }
 
+    public void setTopMediaControlViewVisible(boolean state) {
+        mTopControlView.setVisibility(state ? VISIBLE : GONE);
+    }
+
+    public void setFullScreenButtonVisible(boolean state) {
+        mIvFullScreen.setVisibility(state ? VISIBLE : GONE);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mGestureDetector.onTouchEvent(event);
+        getParent().requestDisallowInterceptTouchEvent(true);
         if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
             if (mGestureType == GestureType.Volume) {
                 mHandler.sendEmptyMessageDelayed(MSG_HIDE_VOLUME_BAR, TIME_OUT);
@@ -230,6 +251,9 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mHandler.sendEmptyMessageDelayed(MSG_HIDE_MEDIA_CONTROL, MEDIA_CONTROL_TIME_OUT);
         mMediaControlView.setVisibility(VISIBLE);
         mTvTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        if (mOnMediaControlViewVisibleChangeListener != null) {
+            mOnMediaControlViewVisibleChangeListener.onMediaControlViewVisibleChange(mShowing);
+        }
     }
 
     private void hideMediaControlView() {
@@ -237,6 +261,9 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         mHandler.removeMessages(MSG_UPDATE_MEDIA_CONTROL_VIEW);
         mMediaControlView.setVisibility(GONE);
         mTvTitle.setEllipsize(TextUtils.TruncateAt.END);
+        if (mOnMediaControlViewVisibleChangeListener != null) {
+            mOnMediaControlViewVisibleChangeListener.onMediaControlViewVisibleChange(mShowing);
+        }
     }
 
     private void hideGestureInfoView() {
@@ -440,6 +467,11 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
             case R.id.play_pause_toggle:
                 playOrPause();
                 break;
+            case R.id.btn_full_screen:
+                if (mOnPlayControlListener != null) {
+                    mOnPlayControlListener.onFullScreenClick();
+                }
+                break;
             case R.id.back:
                 ((Activity) getContext()).finish();
                 break;
@@ -481,6 +513,12 @@ public class VideoControlView extends FrameLayout implements SeekBar.OnSeekBarCh
         void onQualitySelect(int quality);
 
         void onDanamkuShowOrHideClick();
+
+        void onFullScreenClick();
+    }
+
+    public interface OnMediaControlViewVisibleChangeListener {
+        void onMediaControlViewVisibleChange(boolean isShow);
     }
 
     private static class ControlHandler extends Handler {

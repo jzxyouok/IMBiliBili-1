@@ -12,7 +12,6 @@ import com.lh.imbilibili.model.Feedback;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.widget.FeedbackView;
-import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,7 +19,7 @@ import butterknife.ButterKnife;
 /**
  * Created by home on 2016/8/2.
  */
-public class FeedbackAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
+public class FeedbackAdapter extends RecyclerView.Adapter {
 
     public static final int FEEDBACK_ITEM = 1;
     public static final int HOT_FEEDBACK_ITEM = 2;
@@ -42,21 +41,30 @@ public class FeedbackAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         this.feedbackData = feedbackData;
     }
 
-    @Override
-    public int getRealItemCount() {
-        if (feedbackData == null || feedbackData.getReplies() == null) {
-            return 0;
-        } else {
-            if (feedbackData.getHots() == null) {
-                return feedbackData.getReplies().size();
-            } else {
-                return feedbackData.getReplies().size() + feedbackData.getHots().size();
+
+    private void addReply(FeedbackHolder feedbackHolder, Feedback feedback) {
+        LayoutInflater inflater = LayoutInflater.from(feedbackHolder.itemView.getContext());
+        for (int i = 0; i < feedback.getReplies().size(); i++) {
+            Feedback reply = feedback.getReplies().get(i);
+            FeedbackHolder.ReplyHolder replyHolder = feedbackHolder.generateReplyHolder(inflater);
+            if (i == feedback.getReplies().size() - 1) {
+                replyHolder.divider.setVisibility(View.GONE);
             }
+            replyHolder.tvMessage.setText(reply.getContent().getMessage());
+            replyHolder.tvName.setText(reply.getMember().getUname());
+            replyHolder.tvPubTime.setText(StringUtils.formateDate(reply.getCtime()));
+            feedbackHolder.replyGroup.addView(replyHolder.itemView);
+        }
+    }
+
+    private void clickItem(int type, int position) {
+        if (onFeedbackItemClickListener != null) {
+            onFeedbackItemClickListener.onFeedbackItemClick(type, position);
         }
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         RecyclerView.ViewHolder holder = null;
         if (viewType == FEEDBACK_ITEM || viewType == HOT_FEEDBACK_ITEM) {
@@ -70,16 +78,16 @@ public class FeedbackAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     }
 
     @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
-        if (getItemType(position) == HOT_FEEDBACK_ITEM) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (getItemViewType(position) == HOT_FEEDBACK_ITEM) {
             FeedbackHolder feedbackHolder = (FeedbackHolder) holder;
             Feedback feedback = feedbackData.getHots().get(position);
             feedbackHolder.feedbackView.setData(feedback);
-        } else if (getItemType(position) == FEEDBACK_ITEM) {
+        } else if (getItemViewType(position) == FEEDBACK_ITEM) {
             FeedbackHolder feedbackHolder = (FeedbackHolder) holder;
             Feedback feedback;
             if (feedbackData.getHots() != null && feedbackData.getHots().size() > 0) {
-                feedback = feedbackData.getReplies().get(position - 4);
+                feedback = feedbackData.getReplies().get(position - feedbackData.getHots().size());
             } else {
                 feedback = feedbackData.getReplies().get(position);
             }
@@ -97,39 +105,31 @@ public class FeedbackAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         }
     }
 
-    private void addReply(FeedbackHolder feedbackHolder, Feedback feedback) {
-        LayoutInflater inflater = LayoutInflater.from(feedbackHolder.itemView.getContext());
-        for (int i = 0; i < feedback.getReplies().size(); i++) {
-            Feedback reply = feedback.getReplies().get(i);
-            FeedbackHolder.ReplyHolder replyHolder = feedbackHolder.generateReplyHolder(inflater);
-            if (i == feedback.getReplies().size() - 1) {
-                replyHolder.divider.setVisibility(View.GONE);
+    @Override
+    public int getItemCount() {
+        if (feedbackData == null || feedbackData.getReplies() == null) {
+            return 0;
+        } else {
+            if (feedbackData.getHots() == null) {
+                return feedbackData.getReplies().size();
+            } else {
+                return feedbackData.getReplies().size() + feedbackData.getHots().size();
             }
-            replyHolder.tvMessage.setText(reply.getContent().getMessage());
-            replyHolder.tvName.setText(reply.getMember().getUname());
-            replyHolder.tvPubTime.setText(StringUtils.formateDate(reply.getCtime()));
-            feedbackHolder.replyGroup.addView(replyHolder.itemView);
         }
     }
 
     @Override
-    public int getItemType(int position) {
+    public int getItemViewType(int position) {
         if (feedbackData.getHots() != null && feedbackData.getHots().size() != 0) {
-            if (position < 3) {
+            if (position < feedbackData.getHots().size()) {
                 return HOT_FEEDBACK_ITEM;
-            } else if (position == 3) {
+            } else if (position == feedbackData.getHots().size()) {
                 return HOT_FEEDBACK_FOOTER;
             } else {
                 return FEEDBACK_ITEM;
             }
         } else {
             return FEEDBACK_ITEM;
-        }
-    }
-
-    private void clickItem(int type, int position) {
-        if (onFeedbackItemClickListener != null) {
-            onFeedbackItemClickListener.onFeedbackItemClick(type, position);
         }
     }
 
@@ -150,7 +150,7 @@ public class FeedbackAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickItem(getItemType(getAdapterPosition()), getAdapterPosition());
+                    clickItem(getItemViewType(), getAdapterPosition());
                 }
             });
         }

@@ -19,7 +19,6 @@ import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
 import com.lh.imbilibili.widget.BannerView;
-import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ import butterknife.ButterKnife;
  * 分区首页
  */
 
-public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
+public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     public static final int TYPE_BANNER = 1;
     public static final int TYPE_SUB_PARTION = 2;
@@ -49,26 +48,28 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
     private PartionModel mPartionModel;
     private List<PartionVideo> mDynamicVideo;
 
+    private OnItemClickListener mOnItemClickListener;
+
     public PartionHomeRecyclerViewAdapter(Context context, PartionModel partionModel) {
         mContext = context;
         mPartionModel = partionModel;
         mDynamicVideo = new ArrayList<>();
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
+
     public void addDynamicVideo(List<PartionVideo> data) {
         mDynamicVideo.addAll(data);
     }
 
-    @Override
-    public int getRealItemCount() {
-        if (mPartionData == null) {
-            return 0;
-        }
-        return 13 + mDynamicVideo.size();
+    public void setPartionData(PartionHome partionData) {
+        this.mPartionData = partionData;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
@@ -102,7 +103,7 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
     }
 
     @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int type = getItemViewType(position);
         if (type == TYPE_HOT_RECOMMEND_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
@@ -117,6 +118,7 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
+            videoHolder.mAid = video.getParam();
         } else if (type == TYPE_NEW_VIDEO_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("最新视频");
@@ -130,6 +132,7 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
+            videoHolder.mAid = video.getParam();
         } else if (type == TYPE_PARTION_DYNAMIC_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("全区动态");
@@ -143,11 +146,20 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
+            videoHolder.mAid = video.getParam();
         }
     }
 
     @Override
-    public int getItemType(int position) {
+    public int getItemCount() {
+        if (mPartionData == null) {
+            return 0;
+        }
+        return 13 + mDynamicVideo.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
         switch (position) {
             case 0:
                 return TYPE_BANNER;
@@ -172,10 +184,6 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
             default:
                 return TYPE_PARTION_DYNAMIC_ITME;
         }
-    }
-
-    public void setPartionData(PartionHome partionData) {
-        this.mPartionData = partionData;
     }
 
     private class BannerHolder extends RecyclerView.ViewHolder {
@@ -227,7 +235,7 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
         }
     }
 
-    class VideoHolder extends RecyclerView.ViewHolder {
+    class VideoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.cover)
         ImageView mIvCover;
         @BindView(R.id.title)
@@ -237,6 +245,8 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
         @BindView(R.id.info_danmakus)
         TextView mTvInfoDanmakus;
 
+        String mAid;
+
         VideoHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -245,6 +255,22 @@ public class PartionHomeRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMor
             DrawableCompat.setTint(drawableCompat, tintColor);
             drawableCompat = DrawableCompat.wrap(mTvInfoDanmakus.getCompoundDrawables()[0]);
             DrawableCompat.setTint(drawableCompat, tintColor);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onVideoItemClick(mAid);
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onVideoItemClick(String aid);
+
+        void onSubPartionItemClick(int position);
+
+        void onHeadItemClick(int type);
     }
 }

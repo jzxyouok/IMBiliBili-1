@@ -35,6 +35,11 @@
         <activity android:name=".view.activity.SeasonGroupActivity"/>
         <activity android:name=".view.activity.BangumiIndexActivity"/>
         <activity android:name=".view.activity.PartitionMoreActivity"/>
+        <activity android:name=".view.activity.SearchActivity"/>
+
+        <activity
+            android:name=".view.activity.VideoDetailActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"/>
 
         <activity
             android:name=".view.activity.VideoActivity"

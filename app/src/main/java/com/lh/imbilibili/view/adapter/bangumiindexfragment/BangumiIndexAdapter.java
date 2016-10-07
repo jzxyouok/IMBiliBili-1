@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.Bangumi;
 import com.lh.imbilibili.utils.StringUtils;
-import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,7 +23,7 @@ import butterknife.ButterKnife;
 /**
  * Created by home on 2016/8/11.
  */
-public class BangumiIndexAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
+public class BangumiIndexAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<Bangumi> mBangumis;
@@ -56,39 +55,6 @@ public class BangumiIndexAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         mIndexSortType = indexSortType;
     }
 
-    @Override
-    public int getRealItemCount() {
-        if (mBangumis != null) {
-            return mBangumis.size();
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bangumi_grid_item, parent, false);
-        return new BangumiHolder(view);
-    }
-
-    @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
-        BangumiHolder bangumiHolder = (BangumiHolder) holder;
-        bangumiHolder.tvFavourite.setVisibility(View.VISIBLE);
-        Bangumi bangumi = mBangumis.get(position);
-        Glide.with(mContext).load(bangumi.getCover()).into(bangumiHolder.ivCover);
-        bangumiHolder.tvTitle.setText(bangumi.getTitle());
-        bangumiHolder.tv1.setText(StringUtils.format("更新至第%s话", bangumi.getNewestEpIndex()));
-        bangumiHolder.mSeasonId = bangumi.getSeasonId();
-        if (mIndexSortType == 1) {
-            bangumiHolder.tvFavourite.setText(StringUtils.format("%s人追番", StringUtils.formateNumber(bangumi.getFavorites())));
-        } else if (mIndexSortType == 0) {
-            bangumiHolder.tvFavourite.setText(StringUtils.format("%s更新", timeToStr(bangumi.getUpdateTime())));
-        } else if (mIndexSortType == 2) {
-            bangumiHolder.tvFavourite.setText(StringUtils.format("%s放送", timeToStr(bangumi.getPubTime())));
-        }
-    }
-
     private String timeToStr(long time) {
         String str;
         Calendar calendar = Calendar.getInstance();
@@ -116,8 +82,36 @@ public class BangumiIndexAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     }
 
     @Override
-    public int getItemType(int position) {
-        return 0;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bangumi_grid_item, parent, false);
+        return new BangumiHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        BangumiHolder bangumiHolder = (BangumiHolder) holder;
+        bangumiHolder.tvFavourite.setVisibility(View.VISIBLE);
+        Bangumi bangumi = mBangumis.get(position);
+        Glide.with(mContext).load(bangumi.getCover()).into(bangumiHolder.ivCover);
+        bangumiHolder.tvTitle.setText(bangumi.getTitle());
+        bangumiHolder.tv1.setText(StringUtils.format("更新至第%s话", bangumi.getNewestEpIndex()));
+        bangumiHolder.mSeasonId = bangumi.getSeasonId();
+        if (mIndexSortType == 1) {
+            bangumiHolder.tvFavourite.setText(StringUtils.format("%s人追番", StringUtils.formateNumber(bangumi.getFavorites())));
+        } else if (mIndexSortType == 0) {
+            bangumiHolder.tvFavourite.setText(StringUtils.format("%s更新", timeToStr(bangumi.getUpdateTime())));
+        } else if (mIndexSortType == 2) {
+            bangumiHolder.tvFavourite.setText(StringUtils.format("%s放送", timeToStr(bangumi.getPubTime())));
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mBangumis != null) {
+            return mBangumis.size();
+        } else {
+            return 0;
+        }
     }
 
     public interface OnBangumiItemClickListener {

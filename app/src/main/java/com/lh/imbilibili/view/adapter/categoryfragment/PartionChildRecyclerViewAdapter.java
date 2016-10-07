@@ -16,7 +16,6 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.utils.StringUtils;
-import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import butterknife.ButterKnife;
  * Created by liuhui on 2016/10/1.
  */
 
-public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
+public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private static final int TYPE_HOT_HEAD = 1;
     private static final int TYPE_HOT_ITEM = 2;
@@ -38,6 +37,8 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
     private PartionHome mPartionHomeData;
     private List<PartionVideo> mNewVideos;
 
+    private OnVideoItemClickListener mOnVideoItemClickListener;
+
     private Context mContext;
 
     public PartionChildRecyclerViewAdapter(Context context) {
@@ -45,16 +46,24 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
         mNewVideos = new ArrayList<>();
     }
 
-    @Override
-    public int getRealItemCount() {
-        if (mPartionHomeData == null) {
-            return 0;
+    public void setOnVideoItemClickListener(OnVideoItemClickListener listener) {
+        mOnVideoItemClickListener = listener;
+    }
+
+    public void addNewVideos(List<PartionVideo> newVideos) {
+        if (mNewVideos == null) {
+            mNewVideos = newVideos;
+        } else {
+            mNewVideos.addAll(newVideos);
         }
-        return 6 + mNewVideos.size();
+    }
+
+    public void setPartionHomeData(PartionHome partionHomeData) {
+        mPartionHomeData = partionHomeData;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
@@ -71,8 +80,8 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
     }
 
     @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
-        int type = getItemType(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        int type = getItemViewType(position);
         if (type == TYPE_HOT_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.mHeadName.setText("最热视频");
@@ -86,12 +95,18 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
             videoHolder.mTvPayBadge.setVisibility(View.GONE);
+            videoHolder.mAid = video.getParam();
         } else if (type == TYPE_NEW_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.mHeadName.setText("最新视频");
         } else if (type == TYPE_NEW_ITEM) {
             VideoHolder videoHolder = (VideoHolder) holder;
-            int partPosition = position - 6;
+            int partPosition;
+            if (mPartionHomeData != null && mPartionHomeData.getRecommend() != null && mPartionHomeData.getRecommend().size() != 0) {
+                partPosition = position - 6;
+            } else {
+                partPosition = position;
+            }
             PartionVideo video = mNewVideos.get(partPosition);
             Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
@@ -99,32 +114,45 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
             videoHolder.mTvPayBadge.setVisibility(View.GONE);
+            videoHolder.mAid = video.getParam();
         }
     }
 
     @Override
-    public int getItemType(int position) {
-        switch (position) {
-            case 0:
-                return TYPE_HOT_HEAD;
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                return TYPE_HOT_ITEM;
-            case 5:
-                return TYPE_NEW_HEAD;
-            default:
-                return TYPE_NEW_ITEM;
+    public int getItemCount() {
+        if (mPartionHomeData == null) {
+            return 0;
+        } else if (mPartionHomeData.getRecommend().size() == 0) {
+            return mNewVideos.size() + 1;
+        } else {
+            return 6 + mNewVideos.size();
         }
     }
 
-    public void addNewVideos(List<PartionVideo> newVideos) {
-        mNewVideos.addAll(newVideos);
-    }
-
-    public void setPartionHomeData(PartionHome partionHomeData) {
-        mPartionHomeData = partionHomeData;
+    @Override
+    public int getItemViewType(int position) {
+        if (mPartionHomeData != null && mPartionHomeData.getRecommend().size() != 0) {
+            switch (position) {
+                case 0:
+                    return TYPE_HOT_HEAD;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    return TYPE_HOT_ITEM;
+                case 5:
+                    return TYPE_NEW_HEAD;
+                default:
+                    return TYPE_NEW_ITEM;
+            }
+        } else {
+            switch (position) {
+                case 0:
+                    return TYPE_NEW_HEAD;
+                default:
+                    return TYPE_NEW_ITEM;
+            }
+        }
     }
 
     private class HeadHolder extends RecyclerView.ViewHolder {
@@ -137,7 +165,7 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
     }
 
     @SuppressWarnings("WeakerAccess")
-    class VideoHolder extends RecyclerView.ViewHolder {
+    class VideoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.cover)
         ImageView mIvCover;
@@ -154,6 +182,8 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
         @BindView(R.id.text2)
         TextView mTvSecond;
 
+        private String mAid;
+
         VideoHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -162,6 +192,18 @@ public class PartionChildRecyclerViewAdapter extends LoadMoreRecyclerView.LoadMo
             DrawableCompat.setTint(drawableCompat, tintColor);
             drawableCompat = DrawableCompat.wrap(mTvInfoDanmakus.getCompoundDrawables()[0]);
             DrawableCompat.setTint(drawableCompat, tintColor);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnVideoItemClickListener != null) {
+                mOnVideoItemClickListener.onVideoClick(mAid);
+            }
+        }
+    }
+
+    public interface OnVideoItemClickListener {
+        void onVideoClick(String aid);
     }
 }

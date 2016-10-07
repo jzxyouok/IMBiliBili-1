@@ -45,7 +45,7 @@ import retrofit2.Response;
 /**
  * Created by home on 2016/8/11.
  */
-public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecyclerView.onLoadMoreLinstener, BangumiIndexAdapter.OnBangumiItemClickListener, View.OnClickListener, AdapterView.OnItemClickListener {
+public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, BangumiIndexAdapter.OnBangumiItemClickListener, View.OnClickListener, AdapterView.OnItemClickListener {
     public static final String TAG = "BangumiIndexFragment";
 
     RelativeLayout mNavView;
@@ -229,7 +229,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (mAdapter.getItemViewType(position) == LoadMoreRecyclerView.LoadMoreAdapter.LOAD_MORE) {
+                if (mLoadMoreRecyclerView.getItemViewType(position) == LoadMoreRecyclerView.TYPE_LOAD_MORE) {
                     return 3;
                 } else {
                     return 1;

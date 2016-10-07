@@ -30,7 +30,7 @@ import retrofit2.Response;
 /**
  * Created by home on 2016/8/2.
  */
-public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerView.onLoadMoreLinstener, LoadMoreRecyclerView.onLoadMoreViewClickListener, View.OnClickListener {
+public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, LoadMoreRecyclerView.OnLoadMoreViewClickListener, View.OnClickListener {
 
     public static final String TAG = "FeedbackFragment";
     private final int pageSize = 20;
@@ -118,6 +118,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<FeedbackData>> call, Throwable t) {
+                currentPage--;
                 recyclerView.setEnableLoadMore(false);
                 recyclerView.setLoadView("点击重试", false);
                 recyclerView.setOnLoadMoreViewClickListener(FeedbackFragment.this);
@@ -159,12 +160,10 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
 
     @Override
     public void onLoadMoreViewClick() {
-        if (currentPage > 0) {
-            currentPage--;
-        }
         recyclerView.setEnableLoadMore(true);
         recyclerView.setLoadView("加载中", true);
         loadFeedbackData(bangumiDetail.getEpisodes().get(selectPosition).getAvId(), currentPage);
+        currentPage++;
     }
 
     @Override

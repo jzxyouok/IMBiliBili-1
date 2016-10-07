@@ -42,23 +42,34 @@ public class DanmakuUtils {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(CompressUtils.decompressXML(response.body().bytes()));
-                final File file = StorageUtils.getAppCache(context, "danmaku.xml");
-                FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-                byte[] bytes = new byte[2048];
-                int length;
-                while ((length = inputStream.read(bytes)) > 0) {
-                    fileOutputStream.write(bytes, 0, length);
-                }
-                fileOutputStream.close();
-                inputStream.close();
-                IMBilibiliApplication.getApplication().getHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onSuccess(file);
+            public void onResponse(Call call, Response response) {
+                try {
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(CompressUtils.decompressXML(response.body().bytes()));
+                    final File file = StorageUtils.getAppCache(context, "danmaku.xml");
+                    FileOutputStream fileOutputStream = null;
+                    fileOutputStream = new FileOutputStream(file, false);
+                    byte[] bytes = new byte[2048];
+                    int length;
+                    while ((length = inputStream.read(bytes)) > 0) {
+                        fileOutputStream.write(bytes, 0, length);
                     }
-                });
+                    fileOutputStream.close();
+                    inputStream.close();
+                    IMBilibiliApplication.getApplication().getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSuccess(file);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    IMBilibiliApplication.getApplication().getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFail();
+                        }
+                    });
+                }
             }
         });
     }
@@ -71,7 +82,6 @@ public class DanmakuUtils {
 
     public interface OnDanmakuDownloadListener {
         void onSuccess(File file);
-
         void onFail();
     }
 }

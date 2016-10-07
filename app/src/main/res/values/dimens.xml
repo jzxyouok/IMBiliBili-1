@@ -9,6 +9,8 @@
     <dimen name="item_spacing">8dp</dimen>
     <dimen name="item_half_spacing">4dp</dimen>
 
+    <dimen name="appbar_parallax_max_height">220dp</dimen>
+
     <dimen name="text_size_medium">12sp</dimen>
     <dimen name="text_size_small">10sp</dimen>
     <dimen name="text_size_large">14sp</dimen>

@@ -32,7 +32,7 @@ import retrofit2.Response;
 /**
  * Created by liuhui on 2016/7/6.
  */
-public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.onLoadMoreLinstener, BangumiAdapter.OnItemClickListener {
+public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnLoadMoreLinstener, BangumiAdapter.OnItemClickListener {
 
     @BindView(R.id.swiperefresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -82,14 +82,14 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    int type = adapter.getItemViewType(position);
+                    int type = recyclerView.getItemViewType(position);
                     if (type == BangumiAdapter.BANNER ||
                             type == BangumiAdapter.NAV ||
                             type == BangumiAdapter.SERIALIZING_HEAD ||
                             type == BangumiAdapter.SEASON_BANGUMI_HEAD ||
                             type == BangumiAdapter.BANGUMI_RECOMMEND_HEAD ||
                             type == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
-                            type == BangumiAdapter.LOAD_MORE) {
+                            type == LoadMoreRecyclerView.TYPE_LOAD_MORE) {
                         return 3;
                     } else {
                         return 1;

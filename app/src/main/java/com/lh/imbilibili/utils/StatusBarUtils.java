@@ -3,6 +3,8 @@ package com.lh.imbilibili.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -32,7 +34,7 @@ public class StatusBarUtils {
 
     public static void setToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
@@ -70,12 +72,34 @@ public class StatusBarUtils {
         }
     }
 
+
+    public static void setCollapsingToolbarLayout(Activity activity, Toolbar toolbar, AppBarLayout appBarLayout, CollapsingToolbarLayout collapsingToolbarLayout) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, android.R.color.transparent));
+            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+            params.topMargin = getStatusBarHeight(activity);
+            toolbar.setLayoutParams(params);
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+            params.topMargin = getStatusBarHeight(activity);
+            toolbar.setLayoutParams(params);
+        }
+    }
+
     public static void setSimpleToolbarLayout(Activity activity, Toolbar toolbar) {
         toolbar.setFitsSystemWindows(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             setKKStatusBar(activity, R.color.colorPrimaryDark);
+        }
+    }
+
+    public static void setSearchActivity(Activity activity) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
+            contentLayout.getChildAt(0).setFitsSystemWindows(true);
         }
     }
 

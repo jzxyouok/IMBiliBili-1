@@ -16,19 +16,25 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by liuhui on 2016/7/9.
+ * Created by liuhui on 2016/10/6.
  */
+
 public class LoadMoreRecyclerView extends RecyclerView {
 
-    private boolean isLoading = false;
+    public static final int TYPE_LOAD_MORE = -1;
+
+    private boolean mIsLoading = false;
     private boolean mEnableLoadMore = true;
+    private boolean mShowLoadingView = true;
 
     private LoadMoreAdapter mAdapter;
+    private String mLoadMoreViewText = "正在加载";
 
-    private onLoadMoreLinstener mOnLoadMoreLinstener;
-    private onLoadMoreViewClickListener mOnLoadMoreViewClickListener;
+    private boolean mShowProgressBar = true;
 
-    private LoadMoreViewHolder mLoadMoreViewHolder;
+    private OnLoadMoreLinstener mOnLoadMoreLinstener;
+    private OnLoadMoreViewClickListener mOnLoadMoreViewClickListener;
+    private boolean mShouldChangeLoadViewState;
 
     public LoadMoreRecyclerView(Context context) {
         super(context);
@@ -49,120 +55,186 @@ public class LoadMoreRecyclerView extends RecyclerView {
         addOnScrollListener(new LoadMoreScrollLinstener());
     }
 
-    @Override
+
+    @SuppressWarnings("unchecked")
     public void setAdapter(Adapter adapter) {
-        super.setAdapter(adapter);
-        if (!isInEditMode()) {
-            mAdapter = (LoadMoreAdapter) adapter;
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.recyclerview_load_more_item, this, false);
-            mLoadMoreViewHolder = new LoadMoreViewHolder(view);
-            mLoadMoreViewHolder.itemView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mOnLoadMoreViewClickListener != null) {
-                        mOnLoadMoreViewClickListener.onLoadMoreViewClick();
-                    }
-                }
-            });
-            setLoadMoreViewClickable(false);
-            mAdapter.setmLoadMoreViewHolder(mLoadMoreViewHolder);
+        if (adapter == null) {
+            return;
         }
+        mAdapter = new LoadMoreAdapter(adapter);
+        adapter.registerAdapterDataObserver(new AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onItemRangeChanged(int positionStart, int itemCount) {
+                mAdapter.notifyItemRangeChanged(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+                mAdapter.notifyItemRangeChanged(positionStart, itemCount, payload);
+            }
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                mAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                mAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                mAdapter.notifyItemMoved(fromPosition, toPosition);
+            }
+        });
+        super.setAdapter(mAdapter);
     }
 
-    public void setOnLoadMoreLinstener(onLoadMoreLinstener loadMoreLinstener) {
-        mOnLoadMoreLinstener = loadMoreLinstener;
-    }
-
-    public void setOnLoadMoreViewClickListener(onLoadMoreViewClickListener clickListener) {
-        setLoadMoreViewClickable(true);
-        mOnLoadMoreViewClickListener = clickListener;
-    }
-
-    public void setLoadMoreViewClickable(boolean clickable) {
-        mLoadMoreViewHolder.itemView.setClickable(clickable);
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
-
-    public void setEnableLoadMore(boolean enableLoadMore) {
-        mEnableLoadMore = enableLoadMore;
-        setLoadMoreViewClickable(!enableLoadMore);
+    public void setEnableLoadMore(boolean enable) {
+        if (mEnableLoadMore == enable) {
+            return;
+        }
+        mEnableLoadMore = enable;
+        if (getLayoutManager().getChildCount() == 0) {
+            return;
+        }
+        mShouldChangeLoadViewState = true;
     }
 
     public void setLoadView(String text, boolean showProgress) {
-        mLoadMoreViewHolder.progressBar.setVisibility(showProgress ? VISIBLE : GONE);
-        mLoadMoreViewHolder.textView.setText(text);
+        mLoadMoreViewText = text;
+        mShowProgressBar = showProgress;
+        if (getLayoutManager().getChildCount() == 0 || !mShowLoadingView || mAdapter == null) {
+            return;
+        }
+        mAdapter.notifyItemChanged(mAdapter.getItemCount() - 1);
     }
 
-    public interface onLoadMoreLinstener {
-        void onLoadMore();
-    }
-
-    public interface onLoadMoreViewClickListener {
-        void onLoadMoreViewClick();
-    }
-
-    public static class LoadMoreViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.progressbar)
-        ProgressBar progressBar;
-        @BindView(R.id.text)
-        TextView textView;
-
-        public LoadMoreViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+    public void setShowLoadingView(boolean show) {
+        if (mShowLoadingView == show) {
+            return;
+        }
+        mShowLoadingView = show;
+        if (getLayoutManager().getChildCount() == 0 || mAdapter == null) {
+            return;
+        }
+        if (mShowLoadingView) {
+            mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
+        } else {
+            mAdapter.notifyItemRemoved(mAdapter.getItemCount());
         }
     }
 
-    public static abstract class LoadMoreAdapter extends RecyclerView.Adapter {
+    public void setOnLoadMoreLinstener(OnLoadMoreLinstener linstener) {
+        mOnLoadMoreLinstener = linstener;
+    }
 
-        public static final int LOAD_MORE = -1;
+    public void setOnLoadMoreViewClickListener(OnLoadMoreViewClickListener listener) {
+        mOnLoadMoreViewClickListener = listener;
+        mShouldChangeLoadViewState = true;
+    }
 
-        private LoadMoreViewHolder mLoadMoreViewHolder;
+    public int getItemViewType(int position) {
+        if (mAdapter == null) {
+            return TYPE_LOAD_MORE;
+        } else {
+            return mAdapter.getItemViewType(position);
+        }
+    }
 
-        public abstract int getRealItemCount();
+    public void setLoading(boolean loading) {
+        mIsLoading = loading;
+    }
 
-        public abstract RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType);
+    public class LoadMoreAdapter extends Adapter<ViewHolder> {
 
-        public abstract void onBindHolder(ViewHolder holder, int position);
+        private Adapter<ViewHolder> mInternalAdapter;
 
-        public abstract int getItemType(int position);
+        LoadMoreAdapter(Adapter<ViewHolder> innerAdapter) {
+            mInternalAdapter = innerAdapter;
+        }
 
         @Override
-        public int getItemViewType(int position) {
-            if (getItemCount() - 1 == position) {
-                return LOAD_MORE;
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_LOAD_MORE) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_load_more_item, parent, false);
+                return new LoadMoreViewHolder(view);
             } else {
-                return getItemType(position);
+                return mInternalAdapter.onCreateViewHolder(parent, viewType);
             }
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == LOAD_MORE) {
-                return mLoadMoreViewHolder;
-            }
-            return onCreateHolder(parent, viewType);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if (getItemViewType(position) != LOAD_MORE) {
-                onBindHolder(holder, position);
+            if (getItemViewType(position) == TYPE_LOAD_MORE) {
+                LoadMoreViewHolder loadMoreViewHolder = (LoadMoreViewHolder) holder;
+                loadMoreViewHolder.textView.setText(mLoadMoreViewText);
+                loadMoreViewHolder.progressBar.setVisibility(mShowProgressBar ? VISIBLE : GONE);
+                if (mShouldChangeLoadViewState) {
+                    mShouldChangeLoadViewState = false;
+                    if (mOnLoadMoreViewClickListener != null && mEnableLoadMore) {
+                        loadMoreViewHolder.itemView.setClickable(true);
+                    } else {
+                        loadMoreViewHolder.itemView.setClickable(false);
+                    }
+                }
+            } else {
+                mInternalAdapter.onBindViewHolder(holder, position);
             }
         }
 
         @Override
         public int getItemCount() {
-            return getRealItemCount() + 1;
+            if (mShowLoadingView) {
+                return mInternalAdapter.getItemCount() + 1;
+            } else {
+                return mInternalAdapter.getItemCount();
+            }
         }
 
-        private void setmLoadMoreViewHolder(LoadMoreViewHolder holder) {
-            mLoadMoreViewHolder = holder;
+        @Override
+        public int getItemViewType(int position) {
+            if (mShowLoadingView && position == getItemCount() - 1) {
+                return TYPE_LOAD_MORE;
+            } else {
+                return mInternalAdapter.getItemViewType(position);
+            }
         }
+
+        class LoadMoreViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+
+            @BindView(R.id.progressbar)
+            ProgressBar progressBar;
+            @BindView(R.id.text)
+            TextView textView;
+
+            LoadMoreViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+                itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                if (mOnLoadMoreViewClickListener != null) {
+                    mOnLoadMoreViewClickListener.onLoadMoreViewClick();
+                }
+            }
+        }
+    }
+
+    public interface OnLoadMoreLinstener {
+        void onLoadMore();
+    }
+
+    public interface OnLoadMoreViewClickListener {
+        void onLoadMoreViewClick();
     }
 
     public class LoadMoreScrollLinstener extends RecyclerView.OnScrollListener {
@@ -170,11 +242,12 @@ public class LoadMoreRecyclerView extends RecyclerView {
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             LayoutManager layoutManager = recyclerView.getLayoutManager();
             View view = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
+            ViewHolder holder = recyclerView.getChildViewHolder(view);
             if (newState == RecyclerView.SCROLL_STATE_IDLE &&
-                    !isLoading && mOnLoadMoreLinstener != null &&
-                    mEnableLoadMore && recyclerView.getChildViewHolder(view) instanceof LoadMoreViewHolder &&
-                    mAdapter != null && mAdapter.getRealItemCount() > 0) {
-                isLoading = true;
+                    !mIsLoading && mOnLoadMoreLinstener != null &&
+                    mEnableLoadMore && holder instanceof LoadMoreRecyclerView.LoadMoreAdapter.LoadMoreViewHolder &&
+                    mAdapter != null && mAdapter.getItemCount() > 0) {
+                mIsLoading = true;
                 mOnLoadMoreLinstener.onLoadMore();
             }
         }

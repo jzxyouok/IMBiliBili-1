@@ -23,4 +23,7 @@ public class BilibiliDataResponse<T> {
         this.code = code;
     }
 
+    public boolean isSuccess() {
+        return code == 0 && data != null;
+    }
 }

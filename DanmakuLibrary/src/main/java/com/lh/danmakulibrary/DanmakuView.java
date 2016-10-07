@@ -50,6 +50,7 @@ public class DanmakuView extends View {
     private boolean mAvoidOverLapping; //是否允许弹幕重叠
 
     private boolean mShowDanmaku; //是否显示弹幕
+    private boolean mIsMeasureTrack;
 
     private TextPaint mDebugTextPaint;
     private int mDebugTextSize;
@@ -227,30 +228,49 @@ public class DanmakuView extends View {
         mScreenWidth = getMeasuredWidth();
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mScreenWidth = w;
+        mScreenHeight = h;
+        int preState = mDanmakuState;
+        pause();
+        clearAllDanamku();
+        measureTrack();
+        if (preState == PLAYING) {
+            resume();
+        }
+    }
+
+    private void measureTrack() {
+        mDanmakuTracks.clear();
+        TextPaint measureTextPaint = new TextPaint();
+        measureTextPaint.setAntiAlias(true);
+        measureTextPaint.setFakeBoldText(true);
+        measureTextPaint.setTextSize(dip2px(MAX_TEXT_SIZE) * mScaleTextRatio);
+        TextPaint.FontMetrics fontMetrics = measureTextPaint.getFontMetrics();
+        mPeerTrackHeight = fontMetrics.bottom - fontMetrics.top;
+        float trackTotalHeight = 0;
+        int currentTrackCount = 0;
+        while (trackTotalHeight + mPeerTrackHeight < mScreenHeight && currentTrackCount < mMaxDanmakuTrackCount) {
+            trackTotalHeight += mPeerTrackHeight;
+            currentTrackCount++;
+        }
+        mTrackMargin = (mScreenHeight - trackTotalHeight) / (currentTrackCount * 2);
+        float currentY = mTrackMargin;
+        for (int i = 0; i < currentTrackCount; i++) {
+            DanmakuTrack track = new DanmakuTrack();
+            track.y = currentY;
+            mDanmakuTracks.add(track);
+            currentY += (mPeerTrackHeight + 2 * mTrackMargin);
+        }
+    }
+
     //准备弹幕轨道
     private void prepareDanmakuTrack() {
         if (mDanmakuState == IDLE) {
             mDanmakuState = PREPARED;
-            TextPaint measureTextPaint = new TextPaint();
-            measureTextPaint.setAntiAlias(true);
-            measureTextPaint.setFakeBoldText(true);
-            measureTextPaint.setTextSize(dip2px(MAX_TEXT_SIZE) * mScaleTextRatio);
-            TextPaint.FontMetrics fontMetrics = measureTextPaint.getFontMetrics();
-            mPeerTrackHeight = fontMetrics.bottom - fontMetrics.top;
-            float trackTotalHeight = 0;
-            int currentTrackCount = 0;
-            while (trackTotalHeight + mPeerTrackHeight < mScreenHeight && currentTrackCount < mMaxDanmakuTrackCount) {
-                trackTotalHeight += mPeerTrackHeight;
-                currentTrackCount++;
-            }
-            mTrackMargin = (mScreenHeight - trackTotalHeight) / (currentTrackCount * 2);
-            float currentY = mTrackMargin;
-            for (int i = 0; i < currentTrackCount; i++) {
-                DanmakuTrack track = new DanmakuTrack();
-                track.y = currentY;
-                mDanmakuTracks.add(track);
-                currentY += (mPeerTrackHeight + 2 * mTrackMargin);
-            }
+            measureTrack();
         }
     }
 
@@ -312,7 +332,6 @@ public class DanmakuView extends View {
                 mScrapDanmakus.add(track.mWaitToAddScrollDanamku);
                 track.mWaitToAddScrollDanamku = null;
             }
-            track.lastScrollDanmaku = null;
             track.clear();
             mCurrentDanmakuCount = 0;
         }
@@ -333,7 +352,7 @@ public class DanmakuView extends View {
     }
 
     //寻找一条可用的滚动弹幕轨道
-    private int findAvaliableScrollTrack() {
+    private synchronized int findAvaliableScrollTrack() {
         for (int i = 0; i < mDanmakuTracks.size(); i++) {
             DanmakuTrack track = mDanmakuTracks.get(i);
             if (track.canAddScrollDanmaku()) {
@@ -344,7 +363,7 @@ public class DanmakuView extends View {
     }
 
     //寻找一条可用的滚动弹幕轨道(避免重叠)
-    private int findAvaliableScrollTrackAvoidOverLapping(DanmakuWrapped danmakuWrapped) {
+    private synchronized int findAvaliableScrollTrackAvoidOverLapping(DanmakuWrapped danmakuWrapped) {
         for (int i = 0; i < mDanmakuTracks.size(); i++) {
             DanmakuTrack track = mDanmakuTracks.get(i);
             if (track.canAddScrollDanmakuAvoidOverLapping(danmakuWrapped)) {
@@ -355,7 +374,7 @@ public class DanmakuView extends View {
     }
 
     //寻找一条可用的顶部居中弹幕轨道
-    private int findAvaliableTopCenterTrack() {
+    private synchronized int findAvaliableTopCenterTrack() {
         for (int i = 0; i < mDanmakuTracks.size(); i++) {
             DanmakuTrack track = mDanmakuTracks.get(i);
             if (track.canAddcenterDanmaku()) {
@@ -366,7 +385,7 @@ public class DanmakuView extends View {
     }
 
     //寻找一条可用的底部居中弹幕轨道
-    private int findAvaliableBottomCenterTrack() {
+    private synchronized int findAvaliableBottomCenterTrack() {
         for (int i = mDanmakuTracks.size() - 1; i >= 0; i--) {
             DanmakuTrack track = mDanmakuTracks.get(i);
             if (track.canAddcenterDanmaku()) {
@@ -388,7 +407,9 @@ public class DanmakuView extends View {
         if (mShowDebugInfo) {
             drawDebugInfo(canvas);
         }
-        refreshDanmakuView();
+        if (mDanmakuState == PLAYING) {
+            postInvalidate();
+        }
     }
 
     private void drawDebugInfo(Canvas canvas) {
@@ -404,38 +425,6 @@ public class DanmakuView extends View {
         float textHeight = (float) Math.ceil(fontMetrics.descent - fontMetrics.ascent);
         canvas.drawText(String.format(Locale.getDefault(), "fps:%d count:%d/%d/%d time:%.1fs", mFps, mCurrentDanmakuCount, mScrapDanmakus.size(), mNewCount, mCurrentTime / 1000f), 0, mScreenHeight - textHeight - fontMetrics.bottom, mDebugTextPaint);
         canvas.drawText(String.format(Locale.getDefault(), "trackCount:%d/%d trackHeight:%.1f trackMargin:%.1f screenSize:%d/%d", mDanmakuTracks.size(), mMaxDanmakuTrackCount, mPeerTrackHeight, mTrackMargin, mScreenWidth, mScreenHeight), 0, mScreenHeight - fontMetrics.bottom, mDebugTextPaint);
-    }
-
-    private void refreshDanmakuView() {
-        for (int i = 0; i < mDanmakuTracks.size(); i++) {
-            refreshSingleTrackDanmaku(mDanmakuTracks.get(i));
-        }
-        if (mDanmakuState == PLAYING) {
-            postInvalidate();
-        }
-    }
-
-    private void refreshSingleTrackDanmaku(DanmakuTrack track) {
-        ListIterator<DanmakuWrapped> iterator = track.getFirstIterator();
-        while (iterator.hasNext()) {
-            DanmakuWrapped danmaku = iterator.next();
-            if (danmaku.danmaku.getType() == 1) {
-                if (danmaku.isDisAppear()) {
-                    mScrapDanmakus.add(danmaku);
-                    iterator.remove();
-                    mCurrentDanmakuCount--;
-                } else {
-                    danmaku.x -= danmaku.speed;
-                }
-            } else if (danmaku.getType() == 4 || danmaku.getType() == 5) {
-                if (System.currentTimeMillis() - danmaku.showTime > mCenterDanmakuShowTime) {
-                    mScrapDanmakus.add(danmaku);
-                    iterator.remove();
-                    track.haveCenterDanmaku = false;
-                    mCurrentDanmakuCount--;
-                }
-            }
-        }
     }
 
     /**
@@ -493,7 +482,6 @@ public class DanmakuView extends View {
         private float y;
 
         private boolean haveCenterDanmaku;
-        private DanmakuWrapped lastScrollDanmaku;
 
         private DanmakuTrack() {
             mDanmakus = new LinkedList<>();
@@ -505,7 +493,25 @@ public class DanmakuView extends View {
             return !haveCenterDanmaku && mWaitToAddCenterDanamku == null;
         }
 
+        private DanmakuWrapped findLastScrollDanmaku() {
+            DanmakuWrapped lastDanmaku = null;
+            if (mWaitToAddScrollDanamku != null) {
+                lastDanmaku = mWaitToAddScrollDanamku;
+            } else {
+                ListIterator<DanmakuWrapped> listIterator = getLastIterator();
+                while (listIterator.hasPrevious()) {
+                    DanmakuWrapped pre = listIterator.previous();
+                    if (pre.getType() == 1) {
+                        lastDanmaku = pre;
+                        break;
+                    }
+                }
+            }
+            return lastDanmaku;
+        }
+
         private boolean canAddScrollDanmaku() {
+            DanmakuWrapped lastScrollDanmaku = findLastScrollDanmaku();
             if (lastScrollDanmaku == null || lastScrollDanmaku.isDisAppear()) {
                 return true;
             } else {
@@ -517,7 +523,9 @@ public class DanmakuView extends View {
             }
         }
 
+
         private boolean canAddScrollDanmakuAvoidOverLapping(DanmakuWrapped addDanmaku) {
+            DanmakuWrapped lastScrollDanmaku = findLastScrollDanmaku();
             if (lastScrollDanmaku == null || lastScrollDanmaku.isDisAppear()) {
                 return true;
             } else {
@@ -535,7 +543,6 @@ public class DanmakuView extends View {
 
         private void addScrollDanmaku(DanmakuWrapped danmakuWrapped) {
             mWaitToAddScrollDanamku = danmakuWrapped;
-            lastScrollDanmaku = danmakuWrapped;
         }
 
         private void addCenterDanmaku(DanmakuWrapped danmakuWrapped) {
@@ -555,7 +562,24 @@ public class DanmakuView extends View {
             }
             ListIterator<DanmakuWrapped> listIterator = getFirstIterator();
             while (listIterator.hasNext()) {
-                listIterator.next().draw(canvas, y);
+                DanmakuWrapped danmaku = listIterator.next();
+                danmaku.draw(canvas, y);
+                if (danmaku.danmaku.getType() == 1) {
+                    if (danmaku.isDisAppear()) {
+                        mScrapDanmakus.add(danmaku);
+                        listIterator.remove();
+                        mCurrentDanmakuCount--;
+                    } else {
+                        danmaku.x -= danmaku.speed;
+                    }
+                } else if (danmaku.getType() == 4 || danmaku.getType() == 5) {
+                    if (System.currentTimeMillis() - danmaku.showTime > mCenterDanmakuShowTime) {
+                        mScrapDanmakus.add(danmaku);
+                        listIterator.remove();
+                        haveCenterDanmaku = false;
+                        mCurrentDanmakuCount--;
+                    }
+                }
             }
         }
 

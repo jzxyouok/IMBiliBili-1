@@ -15,14 +15,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.Bangumi;
-import com.lh.imbilibili.model.Banner;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.widget.BannerView;
-import com.lh.imbilibili.widget.LoadMoreRecyclerView;
-import com.lh.imbilibili.widget.ScalableImageView;
 
 import java.util.List;
 
@@ -33,7 +30,7 @@ import butterknife.ButterKnife;
 /**
  * Created by liuhui on 2016/7/6.
  */
-public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
+public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int BANNER = 0;
     public static final int NAV = 1;
@@ -63,29 +60,20 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         this.bangumis = bangumis;
     }
 
-    @Override
-    public int getItemType(int position) {
-        if (position == 0) {
-            return BANNER;
-        } else if (position == 1) {
-            return NAV;
-        } else if (position == 2) {
-            return SERIALIZING_HEAD;
-        } else if (position >= 3 && position <= 8) {
-            return SERIALIZING_GRID_ITEM;
-        } else if (position == 9) {
-            return SEASON_BANGUMI_HEAD;
-        } else if (position >= 10 && position <= 12) {
-            return SEASON_BANGUMI_ITEM;
-        } else if (position == 13) {
-            return BANGUMI_RECOMMEND_HEAD;
-        } else {
-            return BANGUMI_RECOMMEND_ITEM;
-        }
+    public void setIndexPage(IndexPage indexPage) {
+        this.indexPage = indexPage;
+    }
+
+    public void setBangumis(List<IndexBangumiRecommend> bangumis) {
+        this.bangumis = bangumis;
+    }
+
+    public void setItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder holder = null;
         LayoutInflater inflater = LayoutInflater.from(context);
         if (viewType == BANNER) {
@@ -117,14 +105,14 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     }
 
     @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, int position) {
-        if (getItemType(position) == BANNER) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (getItemViewType(position) == BANNER) {
             BannerHolder bannerHolder = (BannerHolder) holder;
 
 //            Glide.with(context)
 //                    .load(indexPage.getAd().getHead().get(position).getImg())
 //                    .into(bannerHolder.bannerView);
-        } else if (getItemType(position) == SERIALIZING_HEAD) {
+        } else if (getItemViewType(position) == SERIALIZING_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("新番连载");
             headHolder.setLeftDrawable(R.drawable.ic_lianzai);
@@ -153,7 +141,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
             }
             gridHolder.tv2.setBackground(drawable);
             gridHolder.tv2.setText(StringUtils.format("%s人在看", StringUtils.formateNumber(bangumi.getWatchingCount())));
-        } else if (getItemType(position) == SEASON_BANGUMI_HEAD) {
+        } else if (getItemViewType(position) == SEASON_BANGUMI_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText(StringUtils.format("%d月新番", mMonth[indexPage.getPrevious().getSeason() - 1]));
             headHolder.setLeftDrawable(mHeadImgs[indexPage.getPrevious().getSeason() - 1]);
@@ -169,7 +157,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
                     .into(seasonHolder.ivCover);
             seasonHolder.tvTitle.setText(bangumi.getTitle());
             seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));
-        } else if (getItemType(position) == BANGUMI_RECOMMEND_HEAD) {
+        } else if (getItemViewType(position) == BANGUMI_RECOMMEND_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("番剧推荐");
             headHolder.setLeftDrawable(R.drawable.ic_bangumi_recommend);
@@ -185,7 +173,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
     }
 
     @Override
-    public int getRealItemCount() {
+    public int getItemCount() {
         if (indexPage == null) {
             return 0;
         } else if (bangumis == null) {
@@ -195,16 +183,25 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
         }
     }
 
-    public void setIndexPage(IndexPage indexPage) {
-        this.indexPage = indexPage;
-    }
-
-    public void setBangumis(List<IndexBangumiRecommend> bangumis) {
-        this.bangumis = bangumis;
-    }
-
-    public void setItemClickListener(OnItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return BANNER;
+        } else if (position == 1) {
+            return NAV;
+        } else if (position == 2) {
+            return SERIALIZING_HEAD;
+        } else if (position >= 3 && position <= 8) {
+            return SERIALIZING_GRID_ITEM;
+        } else if (position == 9) {
+            return SEASON_BANGUMI_HEAD;
+        } else if (position >= 10 && position <= 12) {
+            return SEASON_BANGUMI_ITEM;
+        } else if (position == 13) {
+            return BANGUMI_RECOMMEND_HEAD;
+        } else {
+            return BANGUMI_RECOMMEND_ITEM;
+        }
     }
 
     public interface OnItemClickListener {
@@ -245,7 +242,7 @@ public class BangumiAdapter extends LoadMoreRecyclerView.LoadMoreAdapter {
                 @Override
                 public void onClick(View v) {
                     if (itemClickListener != null) {
-                        itemClickListener.onClick(getItemType(getAdapterPosition()), getAdapterPosition());
+                        itemClickListener.onClick(getItemViewType(), getAdapterPosition());
                     }
                 }
             });

@@ -12,7 +12,8 @@ import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.utils.CallUtils;
-import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.LazyLoadFragment;
+import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.categoryfragment.PartionHomeRecyclerViewAdapter;
 import com.lh.imbilibili.view.adapter.categoryfragment.PartionItemDecoration;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
@@ -30,7 +31,7 @@ import retrofit2.Response;
  * Created by liuhui on 2016/9/29.
  */
 
-public class PartionHomeFragment extends BaseFragment implements LoadMoreRecyclerView.onLoadMoreLinstener, SwipeRefreshLayout.OnRefreshListener {
+public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SwipeRefreshLayout.OnRefreshListener, PartionHomeRecyclerViewAdapter.OnItemClickListener {
     private static final String EXTRA_DATA = "partionModel";
 
     @BindView(R.id.swiperefresh_layout)
@@ -85,7 +86,7 @@ public class PartionHomeFragment extends BaseFragment implements LoadMoreRecycle
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {
                 mRecyclerView.setLoading(false);
-                if (response.body().getCode() == 0) {
+                if (response.body().isSuccess()) {
                     if (response.body().getData().size() == 0) {
                         mCurrentPage--;
                         mRecyclerView.setLoadView("没有更多了", false);
@@ -111,6 +112,10 @@ public class PartionHomeFragment extends BaseFragment implements LoadMoreRecycle
         ButterKnife.bind(this, view);
         initRecyclerView();
         mSwipeRefreshLayout.setOnRefreshListener(this);
+    }
+
+    @Override
+    protected void fetchData() {
         loadData();
         loadDynamicData(1);
     }
@@ -120,13 +125,13 @@ public class PartionHomeFragment extends BaseFragment implements LoadMoreRecycle
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                switch (mAdapter.getItemViewType(position)) {
-                    case PartionHomeRecyclerViewAdapter.LOAD_MORE:
+                switch (mRecyclerView.getItemViewType(position)) {
                     case PartionHomeRecyclerViewAdapter.TYPE_BANNER:
                     case PartionHomeRecyclerViewAdapter.TYPE_HOT_RECOMMEND_HEAD:
                     case PartionHomeRecyclerViewAdapter.TYPE_NEW_VIDEO_HEAD:
                     case PartionHomeRecyclerViewAdapter.TYPE_PARTION_DYNAMIC_HEAD:
                     case PartionHomeRecyclerViewAdapter.TYPE_SUB_PARTION:
+                    case LoadMoreRecyclerView.TYPE_LOAD_MORE:
                         return 2;
                     case PartionHomeRecyclerViewAdapter.TYPE_HOT_RECOMMEND_ITEM:
                     case PartionHomeRecyclerViewAdapter.TYPE_NEW_VIDEO_ITEM:
@@ -138,12 +143,15 @@ public class PartionHomeFragment extends BaseFragment implements LoadMoreRecycle
             }
         });
         PartionItemDecoration itemDecoration = new PartionItemDecoration(getContext());
-        mAdapter = new PartionHomeRecyclerViewAdapter(getContext(), mPartionModel);
+        if (mAdapter == null) {
+            mAdapter = new PartionHomeRecyclerViewAdapter(getContext(), mPartionModel);
+        }
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setEnableLoadMore(true);
         mRecyclerView.setOnLoadMoreLinstener(this);
+        mAdapter.setOnItemClickListener(this);
     }
 
     @Override
@@ -165,5 +173,20 @@ public class PartionHomeFragment extends BaseFragment implements LoadMoreRecycle
     public void onDestroy() {
         super.onDestroy();
         CallUtils.cancelCall(mPartionDynamicCall, mPartionHomeDataCall);
+    }
+
+    @Override
+    public void onVideoItemClick(String aid) {
+        VideoDetailActivity.startActivity(getContext(), aid);
+    }
+
+    @Override
+    public void onSubPartionItemClick(int position) {
+
+    }
+
+    @Override
+    public void onHeadItemClick(int type) {
+
     }
 }

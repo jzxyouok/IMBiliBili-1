@@ -6,6 +6,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,7 +15,10 @@ import android.widget.TextView;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.activity.SearchActivity;
+import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.MainViewPagerAdapter;
+import com.lh.imbilibili.widget.BiliBiliSearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,7 @@ import butterknife.ButterKnife;
 /**
  * Created by liuhui on 2016/7/6.
  */
-public class MainFragment extends BaseFragment {
+public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener, BiliBiliSearchView.OnSearchListener {
 
     public static final String TAG = "MainFragment";
 
@@ -45,6 +49,7 @@ public class MainFragment extends BaseFragment {
     TextView tvNickName;
     private List<BaseFragment> fragments;
     private MainViewPagerAdapter adapter;
+    private BiliBiliSearchView mSearchView;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -63,6 +68,11 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar.inflateMenu(R.menu.main_menu);
+        toolbar.setOnMenuItemClickListener(this);
+        mSearchView = BiliBiliSearchView.newInstance();
+        mSearchView.setHint("搜索视频、番剧、up主或av号");
+        mSearchView.setOnSearchListener(this);
         StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
@@ -75,5 +85,22 @@ public class MainFragment extends BaseFragment {
     @Override
     public String getTitle() {
         return null;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.app_bar_search) {
+            mSearchView.show(getChildFragmentManager(), "search");
+        }
+        return true;
+    }
+
+    @Override
+    public void onSearch(String keyWord) {
+        if (keyWord.matches("^av\\d+$")) {
+            VideoDetailActivity.startActivity(getContext(), keyWord.replaceAll("av", ""));
+        } else {
+            SearchActivity.startActivity(getContext(), keyWord);
+        }
     }
 }

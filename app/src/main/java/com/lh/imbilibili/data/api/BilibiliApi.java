@@ -16,7 +16,11 @@ import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.model.SeasonRecommend;
 import com.lh.imbilibili.model.SourceData;
 import com.lh.imbilibili.model.Splash;
+import com.lh.imbilibili.model.VideoDetail;
 import com.lh.imbilibili.model.VideoPlayData;
+import com.lh.imbilibili.model.search.BangumiSearchResult;
+import com.lh.imbilibili.model.search.SearchResult;
+import com.lh.imbilibili.model.search.UpSearchResult;
 
 import java.util.List;
 
@@ -176,6 +180,54 @@ public interface BilibiliApi {
                                                                        @Query(Constant.QUERY_APP_KEY) String appKey,
                                                                        @Query(Constant.QUERY_BUILD) String build,
                                                                        @Query(Constant.QUERY_MOBI_APP) String mobiApp);
+
+    @GET(Constant.APP_URLS + Constant.VIDEO_DETAIL)
+    Call<BilibiliDataResponse<VideoDetail>> getVideoDetail(@Query("aid") String aid,
+                                                           @Query(Constant.QUERY_APP_KEY) String appkey,
+                                                           @Query(Constant.QUERY_BUILD) String build,
+//                                                           @Query("from") int from,
+                                                           @Query(Constant.QUERY_MOBI_APP) String mobiApp,
+                                                           @Query("plat") int plat,
+                                                           @Query(Constant.QUERY_PLATFORM) String platform,
+                                                           @Query(Constant.QUERY_TS) long ts);
+
+    @GET(Constant.APP_URL + Constant.SEARCH)
+    Call<BilibiliDataResponse<SearchResult>> getSearchResult(@Query("duration") int duration,
+                                                             @Query("keyword") String keyword,
+                                                             @Query("pn") int pn,
+                                                             @Query("ps") int ps,
+                                                             @Query(Constant.QUERY_APP_KEY) String appkey,
+                                                             @Query(Constant.QUERY_BUILD) String build,
+                                                             @Query(Constant.QUERY_MOBI_APP) String mobiApp,
+                                                             @Query(Constant.QUERY_PLATFORM) String platform);
+
+
+    /**
+     * @param keyword 关键字
+     * @param pn      页码
+     * @param ps      每页包含的数据个数
+     * @param type    1 番剧 2 Up主
+     * @return 结果
+     */
+    @GET(Constant.APP_URL + Constant.SEARCH_TYPE)
+    Call<BilibiliDataResponse<BangumiSearchResult>> getBangumiSearchResult(@Query("keyword") String keyword,
+                                                                           @Query("pn") int pn,
+                                                                           @Query("ps") int ps,
+                                                                           @Query("type") int type,
+                                                                           @Query(Constant.QUERY_APP_KEY) String appkey,
+                                                                           @Query(Constant.QUERY_BUILD) String build,
+                                                                           @Query(Constant.QUERY_MOBI_APP) String mobiApp,
+                                                                           @Query(Constant.QUERY_PLATFORM) String platform);
+
+    @GET(Constant.APP_URL + Constant.SEARCH_TYPE)
+    Call<BilibiliDataResponse<UpSearchResult>> getUpSearchResult(@Query("keyword") String keyword,
+                                                                 @Query("pn") int pn,
+                                                                 @Query("ps") int ps,
+                                                                 @Query("type") int type,
+                                                                 @Query(Constant.QUERY_APP_KEY) String appkey,
+                                                                 @Query(Constant.QUERY_BUILD) String build,
+                                                                 @Query(Constant.QUERY_MOBI_APP) String mobiApp,
+                                                                 @Query(Constant.QUERY_PLATFORM) String platform);
 
 }
 

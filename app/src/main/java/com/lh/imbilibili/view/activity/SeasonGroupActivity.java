@@ -191,7 +191,7 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
             BangumiDetailActivity.startActivity(this, seasonItemHolder.getSeasonId());
         } else if (type == SeasonGroupAdapter.SEASON_HEAD) {
             SeasonGroupAdapter.SeasonHeadHolder seasonHeadHolder = (SeasonGroupAdapter.SeasonHeadHolder) viewHolder;
-            BangumiIndexActivity.startActivity(this, seasonHeadHolder.getYear(), seasonHeadHolder.getMonth(),new ArrayList<Integer>(mYears));
+            BangumiIndexActivity.startActivity(this, seasonHeadHolder.getYear(), seasonHeadHolder.getMonth(), new ArrayList<Integer>(mYears));
         }
     }
 }

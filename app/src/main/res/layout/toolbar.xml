@@ -54,6 +54,7 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="14dp"
                 android:layout_marginRight="4dp"/>
+
         </FrameLayout>
 
         <TextView

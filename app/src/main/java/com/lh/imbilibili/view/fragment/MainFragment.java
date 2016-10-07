@@ -8,13 +8,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.activity.IDrawerLayoutActivity;
 import com.lh.imbilibili.view.activity.SearchActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.MainViewPagerAdapter;
@@ -34,19 +34,24 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
     public static final String TAG = "MainFragment";
 
     @BindView(R.id.coordinator_layout)
-    CoordinatorLayout coordinatorLayout;
+    CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.viewpager)
-    ViewPager viewPager;
+    ViewPager mViewPager;
     @BindView(R.id.tabs)
-    TabLayout tabs;
+    TabLayout mTabs;
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    Toolbar mToolbar;
+    @BindView(R.id.avatar)
+    ImageView mIvAvatar;
     @BindView(R.id.account_badge)
-    ImageView ivAccountBadge;
+    ImageView mIvAccountBadge;
     @BindView(R.id.notice_badge)
-    ImageView ivNoticeBadge;
+    ImageView mIvNoticeBadge;
     @BindView(R.id.nick_name)
-    TextView tvNickName;
+    TextView mTvNickName;
+    @BindView(R.id.navigation)
+    View mDrawHome;
+
     private List<BaseFragment> fragments;
     private MainViewPagerAdapter adapter;
     private BiliBiliSearchView mSearchView;
@@ -68,18 +73,33 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        toolbar.inflateMenu(R.menu.main_menu);
-        toolbar.setOnMenuItemClickListener(this);
-        mSearchView = BiliBiliSearchView.newInstance();
-        mSearchView.setHint("搜索视频、番剧、up主或av号");
-        mSearchView.setOnSearchListener(this);
-        StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), coordinatorLayout, (ViewGroup) getActivity().findViewById(R.id.drawer));
+        mToolbar.inflateMenu(R.menu.main_menu);
+        mToolbar.setOnMenuItemClickListener(this);
+        StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), mCoordinatorLayout);
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         fragments.add(CategoryFragment.newInstance());
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);
-        viewPager.setAdapter(adapter);
-        tabs.setupWithViewPager(viewPager);
+        mViewPager.setAdapter(adapter);
+        mTabs.setupWithViewPager(mViewPager);
+        initToolbar();
+    }
+
+    private void initToolbar() {
+        mIvAvatar.setImageResource(R.drawable.bili_default_avatar);
+        mTvNickName.setText("未登录");
+        mIvAccountBadge.setVisibility(View.GONE);
+        mSearchView = BiliBiliSearchView.newInstance();
+        mSearchView.setHint("搜索视频、番剧、up主或av号");
+        mSearchView.setOnSearchListener(this);
+        mDrawHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof IDrawerLayoutActivity) {
+                    ((IDrawerLayoutActivity) getActivity()).openDrawer();
+                }
+            }
+        });
     }
 
     @Override

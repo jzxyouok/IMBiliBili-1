@@ -20,14 +20,13 @@ import com.lh.imbilibili.R;
 @SuppressWarnings("unused")
 public class StatusBarUtils {
 
-    public static void setDrawerToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout, ViewGroup drawer) {
+    public static void setDrawerToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             coordinatorLayout.setFitsSystemWindows(true);
-            drawer.setPadding(0, getStatusBarHeight(activity), 0, 0);
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
@@ -118,7 +117,7 @@ public class StatusBarUtils {
         decorView.addView(mStatusBarView, lp);
     }
 
-    private static int getStatusBarHeight(Context context) {
+    public static int getStatusBarHeight(Context context) {
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         return context.getResources().getDimensionPixelSize(resourceId);
     }

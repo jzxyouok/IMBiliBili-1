@@ -36,6 +36,9 @@
         <activity android:name=".view.activity.BangumiIndexActivity"/>
         <activity android:name=".view.activity.PartitionMoreActivity"/>
         <activity android:name=".view.activity.SearchActivity"/>
+        <activity
+            android:name=".view.activity.LoginActivity"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".view.activity.VideoDetailActivity"

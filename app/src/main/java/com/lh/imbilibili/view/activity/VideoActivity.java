@@ -323,7 +323,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                 mProgressBar.setVisibility(View.VISIBLE);
                 break;
             case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                System.out.println("ijk" + mIjkVideoView.getCurrentPosition());
                 mHandler.removeMessages(MSG_SYNC_NOW);
                 mDanmakuView.resume();
                 mHandler.sendEmptyMessage(MSG_SYNC_NOW);

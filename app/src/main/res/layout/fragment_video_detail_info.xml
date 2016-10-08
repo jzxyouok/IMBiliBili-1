@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:id="@+id/scroll_view"
-    android:overScrollMode="never">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="true"
         android:orientation="vertical"
         android:paddingEnd="@dimen/item_spacing"
         android:paddingStart="@dimen/item_spacing"
@@ -79,17 +81,17 @@
             android:id="@+id/page_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="@dimen/item_spacing"
             android:layout_marginBottom="@dimen/item_spacing"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/item_spacing"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_page_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/item_half_spacing"
                 android:layout_marginBottom="@dimen/item_half_spacing"
+                android:padding="@dimen/item_half_spacing"
                 android:text="分集"
                 android:textAppearance="@style/TextAppearance.App.Large"/>
 
@@ -157,8 +159,7 @@
             android:id="@+id/author_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerInParent="true"/>
+            app:itemSpace="@dimen/item_half_spacing"/>
 
 
         <android.support.v7.widget.RecyclerView
@@ -167,9 +168,7 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:scrollbars="none"/>
-
+            android:paddingTop="@dimen/activity_vertical_margin"/>
 
     </LinearLayout>
 

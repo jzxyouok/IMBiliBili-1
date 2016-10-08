@@ -64,8 +64,8 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:visibility="gone"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <ImageView
                             android:layout_width="30dp"
@@ -94,6 +94,8 @@
             android:layout_gravity="center_horizontal"
             android:background="@color/white"
             app:tabIndicatorColor="@color/colorPrimary"
+            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabTextColor="@color/black"
             app:tabMode="scrollable"/>
 
         <View
@@ -114,13 +116,13 @@
         app:borderWidth="0dp"
         app:fabSize="normal"
         app:layout_anchor="@id/video_pre_view"
-        app:layout_anchorGravity="right|end|bottom"/>
+        app:layout_anchorGravity="right|end|bottom"
+        app:layout_behavior="com.lh.imbilibili.utils.VideoPlayFabBehavior"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="ifContentScrolls"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

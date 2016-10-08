@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.utils.DrawableTintUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 
@@ -21,7 +22,7 @@ import butterknife.ButterKnife;
  * Created by liuhui on 2016/10/7.
  */
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     @BindView(R.id.nav_top_bar)
     Toolbar mToolbar;
@@ -58,18 +59,8 @@ public class LoginActivity extends BaseActivity {
                 finish();
             }
         });
-        mEdPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    mIv22.setImageResource(R.drawable.ic_22_hide);
-                    mIv33.setImageResource(R.drawable.ic_33_hide);
-                } else {
-                    mIv22.setImageResource(R.drawable.ic_22);
-                    mIv33.setImageResource(R.drawable.ic_33);
-                }
-            }
-        });
+        mEdUserName.setOnFocusChangeListener(this);
+        mEdPassword.setOnFocusChangeListener(this);
         mScrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -86,5 +77,24 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (v.getId() == R.id.password) {
+            if (hasFocus) {
+                mIv22.setImageResource(R.drawable.ic_22_hide);
+                mIv33.setImageResource(R.drawable.ic_33_hide);
+                DrawableTintUtils.tintDrawable(getApplicationContext(), mEdPassword.getCompoundDrawables()[0], R.color.colorAccent);
+            } else {
+                mIv22.setImageResource(R.drawable.ic_22);
+                mIv33.setImageResource(R.drawable.ic_33);
+                DrawableTintUtils.tintDrawable(getApplicationContext(), mEdPassword.getCompoundDrawables()[0], R.color.gray_dark);
+            }
+        } else if (v.getId() == R.id.username) {
+            if (hasFocus) {
+                DrawableTintUtils.tintDrawable(getApplicationContext(), mEdUserName.getCompoundDrawables()[0], R.color.colorAccent);
+            } else {
+                DrawableTintUtils.tintDrawable(getApplicationContext(), mEdUserName.getCompoundDrawables()[0], R.color.gray_dark);
+            }
+        }
+    }
 }

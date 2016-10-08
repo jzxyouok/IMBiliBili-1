@@ -21,7 +21,7 @@ public class VideoPageRecyclerViewAdapter extends RecyclerView.Adapter<VideoPage
 
     private OnPageClickListener listener;
 
-    public VideoPageRecyclerViewAdapter(List<VideoDetail.Page> pages) {
+    public void setData(List<VideoDetail.Page> pages) {
         mPages = pages;
     }
 
@@ -44,6 +44,9 @@ public class VideoPageRecyclerViewAdapter extends RecyclerView.Adapter<VideoPage
 
     @Override
     public int getItemCount() {
+        if (mPages == null) {
+            return 0;
+        }
         return mPages.size();
     }
 

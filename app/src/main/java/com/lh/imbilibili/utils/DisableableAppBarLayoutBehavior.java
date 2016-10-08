@@ -15,9 +15,6 @@ public class DisableableAppBarLayoutBehavior extends AppBarLayout.Behavior {
 
     private boolean isEnableScroll = true;
 
-    public DisableableAppBarLayoutBehavior() {
-    }
-
     public DisableableAppBarLayoutBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -38,5 +35,22 @@ public class DisableableAppBarLayoutBehavior extends AppBarLayout.Behavior {
     @Override
     public boolean onInterceptTouchEvent(CoordinatorLayout parent, AppBarLayout child, MotionEvent ev) {
         return isEnableScroll && super.onInterceptTouchEvent(parent, child, ev);
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, AppBarLayout child, View dependency) {
+        return isEnableScroll && super.onDependentViewChanged(parent, child, dependency);
+    }
+
+    @Override
+    public boolean onTouchEvent(CoordinatorLayout parent, AppBarLayout child, MotionEvent ev) {
+        return isEnableScroll && super.onTouchEvent(parent, child, ev);
+    }
+
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, AppBarLayout abl, View target) {
+        if (isEnableScroll) {
+            super.onStopNestedScroll(coordinatorLayout, abl, target);
+        }
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +12,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -155,23 +153,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragments);
         mViewPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.setTabTextColors(Color.BLACK, ContextCompat.getColor(this, R.color.colorPrimary));
-        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (!mIsAppLayoutDisable) {
-                    if (Math.abs(verticalOffset) >= appBarLayout.getTotalScrollRange()) {
-                        mTitleLayout.setVisibility(View.VISIBLE);
-                        mToolbar.setTitle("");
-                        hidFab();
-                    } else if (Math.abs(verticalOffset) > 0) {
-                        mTitleLayout.setVisibility(View.GONE);
-                        mToolbar.setTitle(StringUtils.format("av%s", mAid));
-                        showFab();
-                    }
-                }
-            }
-        });
     }
 
     private void loadVideoDetail() {
@@ -206,14 +187,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         mFloatingActionButton.setEnabled(true);
         mTvPlayer.setEnabled(true);
         Glide.with(this).load(mVideoDetail.getPic()).centerCrop().into(mIvPreView);
-    }
-
-    private void showFab() {
-        if (!mIsFabShow) {
-            mIsFabShow = true;
-            mFloatingActionButton.setClickable(true);
-            mFloatingActionButton.animate().scaleX(1).scaleY(1).setDuration(500).start();
-        }
     }
 
     private void hidFab() {

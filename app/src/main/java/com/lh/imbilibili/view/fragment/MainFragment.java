@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -79,6 +80,7 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         fragments.add(CategoryFragment.newInstance());
+        mTabs.setTabTextColors(ContextCompat.getColor(getContext(), R.color.gray_light), ContextCompat.getColor(getContext(), R.color.white));
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);
         mViewPager.setAdapter(adapter);
         mTabs.setupWithViewPager(mViewPager);

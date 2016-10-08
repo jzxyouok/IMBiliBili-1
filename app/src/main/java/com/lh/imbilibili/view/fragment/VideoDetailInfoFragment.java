@@ -20,6 +20,7 @@ import com.lh.imbilibili.model.VideoDetail;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.activity.SearchActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.videodetailactivity.RelatesVideoItemDecoration;
 import com.lh.imbilibili.view.adapter.videodetailactivity.VideoPageRecyclerViewAdapter;
@@ -33,7 +34,7 @@ import butterknife.ButterKnife;
  * Created by liuhui on 2016/10/2.
  */
 
-public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.onItemClickListener, VideoDetailActivity.OnVideoStartPlayingListener, VideoPageRecyclerViewAdapter.OnPageClickListener, VideoRelatesRecyclerViewAdapter.OnVideoItemClickListener {
+public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.onItemClickListener, VideoPageRecyclerViewAdapter.OnPageClickListener, VideoRelatesRecyclerViewAdapter.OnVideoItemClickListener {
 
     public static final String EXTRA_DATA = "videoDetail";
 
@@ -84,13 +85,23 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
 
     private void initRecyclerView() {
         mAdapter = new VideoRelatesRecyclerViewAdapter(getContext());
+        mVideoPageAdapter = new VideoPageRecyclerViewAdapter();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         RelatesVideoItemDecoration itemDecoration = new RelatesVideoItemDecoration(getContext());
+        linearLayoutManager.setAutoMeasureEnabled(true);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
         mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnVideoItemClickListener(this);
+        mPageRecyclerView.setNestedScrollingEnabled(false);
+        LinearLayoutManager pageLayoutManager = new LinearLayoutManager(getContext());
+        pageLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mPageRecyclerView.setLayoutManager(pageLayoutManager);
+        mPageRecyclerView.setAdapter(mVideoPageAdapter);
+        mVideoPageAdapter.setOnPageClickListener(this);
     }
 
     private void bindViewWithData() {
@@ -104,13 +115,7 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         if (mVideoDetail.getPages().size() > 1) {
             mPageLayout.setVisibility(View.VISIBLE);
             mTvPageCount.setText(StringUtils.format("分集(%d)", mVideoDetail.getPages().size()));
-            mVideoPageAdapter = new VideoPageRecyclerViewAdapter(mVideoDetail.getPages());
-            LinearLayoutManager pageLayoutManager = new LinearLayoutManager(getContext());
-            pageLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-            mPageRecyclerView.setLayoutManager(pageLayoutManager);
-            mPageRecyclerView.setAdapter(mVideoPageAdapter);
-            mPageRecyclerView.setNestedScrollingEnabled(false);
-            mVideoPageAdapter.setOnPageClickListener(this);
+            mVideoPageAdapter.setData(mVideoDetail.getPages());
         } else {
             mPageLayout.setVisibility(View.GONE);
         }
@@ -143,13 +148,10 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         return "简介";
     }
 
+    //tagclick
     @Override
     public void onItemClick(ViewGroup parent, int position, View view) {
-    }
-
-    @Override
-    public void onVideoStart() {
-        mScrollView.setNestedScrollingEnabled(false);
+        SearchActivity.startActivity(getContext(), mVideoDetail.getTags()[position]);
     }
 
     @Override

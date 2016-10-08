@@ -12,7 +12,6 @@ import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.BaseFragment;
-import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackAdapter;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackItemDecoration;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
@@ -27,7 +26,7 @@ import retrofit2.Response;
  * Created by liuhui on 2016/10/2.
  */
 
-public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreViewClickListener, LoadMoreRecyclerView.OnLoadMoreLinstener, VideoDetailActivity.OnVideoStartPlayingListener {
+public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreViewClickListener, LoadMoreRecyclerView.OnLoadMoreLinstener {
 
     private static final String EXTRA_ID = "id";
 
@@ -124,10 +123,5 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
     public void onLoadMore() {
         mCurrentPage++;
         loadFeedbackData(mId, mCurrentPage);
-    }
-
-    @Override
-    public void onVideoStart() {
-        mRecyclerView.setNestedScrollingEnabled(false);
     }
 }

@@ -43,6 +43,7 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
     View mDivider;
 
     private String mHint;
+    private String mKeyWord;
 
     private OnSearchListener mOnSearchListener;
 
@@ -57,6 +58,10 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
 
     public void setHint(String hint) {
         mHint = hint;
+    }
+
+    public void setKeyWord(String keyWord) {
+        mKeyWord = keyWord;
     }
 
     @Nullable
@@ -87,6 +92,7 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
         mBack.setOnClickListener(this);
         mSearch.setOnClickListener(this);
         mEdSearchBar.setHint(mHint);
+        mEdSearchBar.setText(mKeyWord);
         getDialog().setOnKeyListener(this);
         mEdSearchBar.post(new Runnable() {
             @Override

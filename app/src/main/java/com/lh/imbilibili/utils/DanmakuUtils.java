@@ -24,7 +24,7 @@ public class DanmakuUtils {
     private Call call;
 
     public void downLoadDanmaku(final Context context, String cid, final OnDanmakuDownloadListener listener) {
-        OkHttpClient okHttpClient = IMBilibiliApplication.getApplication().getBilibiliComponent().getOkhttpClient();
+        OkHttpClient okHttpClient = RetrofitHelper.getInstance().getOkhttpClient();
         final Request request = new Request.Builder().url(Constant.COMMENT_URL + "/" + cid + ".xml")
                 .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                 .addHeader("Accept-Encoding", "deflate")

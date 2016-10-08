@@ -23,12 +23,17 @@ public class Constant {
     public static final String PLAYER_APPKEY = "6f90a59ac58a4123";
     public static final String PLAYER_SECRETKEY = "0bfd84cc3940035173f35e6777508326";
 
+    public static final String LOGIN_SECRETKEY = "c2ed53a74eeefe3cf99fbd01d8c9c375";
+    public static final String LOGIN_APPKEY = "27eb53fc9058f8c3";
+
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";
+    public static final String API_URLS = "https://api.bilibili.com";
     public static final String APP_URL = "http://app.bilibili.com";
     public static final String APP_URLS = "https://app.bilibili.com";
     public static final String INTERFACE_URL = "http://interface.bilibili.com";
     public static final String COMMENT_URL = "http://comment.bilibili.com";
+    public static final String ACCOUNT_URL = "https://account.bilibili.com";
 
     public static final String BANGUMI_RECOMMEND = "/api/bangumi_recommend";
     public static final String INDEX_PAGE = "/api/app_index_page_v4";
@@ -41,6 +46,7 @@ public class Constant {
     public static final String FEEDBACK = "/x/reply";
     public static final String REPLY_COUNT = "/x/reply/count";
     public static final String SEASON_RECOMMEND = "/api/season/recommend/{season_id}.json";
+
     public static final String PARTION_INFO = "/x/v2/region/show";
     public static final String PARTION_DYNAMIC = "/x/v2/region/show/dynamic";
     public static final String PARTION_CHILD = "/x/v2/region/show/child";
@@ -48,6 +54,11 @@ public class Constant {
 
     public static final String SEARCH = "/x/v2/search";
     public static final String SEARCH_TYPE = SEARCH + "/type";
+    public static final String HISTORY_ADD = "/x/v2/history/add";
+
+    public static final String LOGIN = "/api/login/v2";
+
+    public static final String MY_INFO = "/api/myinfo/v2";
 
     public static final String VIDEO_DETAIL = "/x/v2/view";
 

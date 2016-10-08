@@ -3,8 +3,7 @@ package com.lh.imbilibili;
 import android.app.Application;
 import android.os.Handler;
 
-import com.lh.imbilibili.data.api.BilibiliApi;
-import com.lh.imbilibili.data.api.BilibiliApiModule;
+import com.lh.imbilibili.utils.UserManagerUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -13,9 +12,7 @@ import com.squareup.leakcanary.LeakCanary;
 public class IMBilibiliApplication extends Application {
 
     private static IMBilibiliApplication application;
-    private IMBilibiliComponent bilibiliComponent;
 
-    private BilibiliApi mApi;
     private Handler mHandler;
 
     public static IMBilibiliApplication getApplication() {
@@ -27,27 +24,11 @@ public class IMBilibiliApplication extends Application {
         super.onCreate();
         application = this;
         LeakCanary.install(this);
-        initComponent();
-    }
-
-    private void initComponent() {
-        bilibiliComponent = DaggerIMBilibiliComponent.builder()
-                .bilibiliApiModule(new BilibiliApiModule())
-                .iMBilibiliModule(new IMBilibiliModule(this))
-                .build();
-        mApi = bilibiliComponent.getBiliApi();
-        mHandler = bilibiliComponent.getHandler();
-    }
-
-    public BilibiliApi getApi() {
-        return mApi;
+        mHandler = new Handler();
+        UserManagerUtils.getInstance().readUserInfo(this);
     }
 
     public Handler getHandler() {
         return mHandler;
-    }
-
-    public IMBilibiliComponent getBilibiliComponent() {
-        return bilibiliComponent;
     }
 }

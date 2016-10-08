@@ -5,12 +5,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackAdapter;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackItemDecoration;
@@ -65,7 +64,7 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
     }
 
     private void loadFeedbackData(String id, int page) {
-        mFeedbackCall = IMBilibiliApplication.getApplication().getApi().getFeedback(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, 0, id, Constant.PLATFORM, page, mPageSize, 0, 1);
+        mFeedbackCall = RetrofitHelper.getInstance().getReplyService().getFeedback(0, id, page, mPageSize, 0, 1);
         mFeedbackCall.enqueue(new Callback<BilibiliDataResponse<FeedbackData>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<FeedbackData>> call, Response<BilibiliDataResponse<FeedbackData>> response) {

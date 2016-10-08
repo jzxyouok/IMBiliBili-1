@@ -13,12 +13,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
@@ -127,7 +126,10 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
     }
 
     private void loadData() {
-        mSeasonGroupCall = IMBilibiliApplication.getApplication().getApi().getSeasonGroup(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM, System.currentTimeMillis());
+        mSeasonGroupCall = RetrofitHelper
+                .getInstance()
+                .getBangumiService()
+                .getSeasonGroup(System.currentTimeMillis());
         mSeasonGroupCall.enqueue(new Callback<BiliBiliResultResponse<List<SeasonGroup>>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<List<SeasonGroup>>> call, Response<BiliBiliResultResponse<List<SeasonGroup>>> response) {

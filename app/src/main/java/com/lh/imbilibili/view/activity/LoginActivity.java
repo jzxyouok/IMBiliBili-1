@@ -6,23 +6,34 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.model.user.UserResponse;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.DrawableTintUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
+import com.lh.imbilibili.utils.ToastUtils;
+import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.view.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/7.
  */
 
-public class LoginActivity extends BaseActivity implements View.OnFocusChangeListener {
+public class LoginActivity extends BaseActivity implements View.OnFocusChangeListener, View.OnClickListener {
 
     @BindView(R.id.nav_top_bar)
     Toolbar mToolbar;
@@ -36,6 +47,9 @@ public class LoginActivity extends BaseActivity implements View.OnFocusChangeLis
     EditText mEdUserName;
     @BindView(R.id.password)
     EditText mEdPassword;
+    @BindView(R.id.login)
+    TextView mBtnLogin;
+    private Call<UserResponse> mLoginCall;
 
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -74,6 +88,30 @@ public class LoginActivity extends BaseActivity implements View.OnFocusChangeLis
                 }
             }
         });
+        mBtnLogin.setOnClickListener(this);
+    }
+
+    private void login(final String username, String password) {
+        mLoginCall = RetrofitHelper.getInstance().getLoginService().doLogin(password, "jsonp", username);
+        mLoginCall.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (!TextUtils.isEmpty(response.body().getAccess_key())) {
+                    UserResponse userResponse = response.body();
+                    UserManagerUtils.getInstance().saveUserInfo(getApplicationContext(), userResponse);
+                    UserManagerUtils.getInstance().readUserInfo(getApplicationContext());
+                    BusUtils.getBus().post(userResponse);
+                    finish();
+                } else {
+                    ToastUtils.showToast(LoginActivity.this, response.body().getCode() + "", Toast.LENGTH_SHORT);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                ToastUtils.showToast(LoginActivity.this, "网络异常", Toast.LENGTH_SHORT);
+            }
+        });
 
     }
 
@@ -95,6 +133,13 @@ public class LoginActivity extends BaseActivity implements View.OnFocusChangeLis
             } else {
                 DrawableTintUtils.tintDrawable(getApplicationContext(), mEdUserName.getCompoundDrawables()[0], R.color.gray_dark);
             }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.login) {
+            login(mEdUserName.getText().toString(), mEdPassword.getText().toString());
         }
     }
 }

@@ -8,13 +8,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.search.BangumiSearchResult;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.LoadAnimationUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
@@ -94,7 +93,7 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
         if (mCurrentPage == 1) {
             LoadAnimationUtils.startLoadAnimate(mIvLoading, R.drawable.anim_search_loading);
         }
-        mSearchCall = IMBilibiliApplication.getApplication().getApi().getBangumiSearchResult(mKeyWord, page, 20, 1, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM);
+        mSearchCall = RetrofitHelper.getInstance().getSearchService().getBangumiSearchResult(mKeyWord, page, 20, 1);
         mSearchCall.enqueue(new Callback<BilibiliDataResponse<BangumiSearchResult>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<BangumiSearchResult>> call, Response<BilibiliDataResponse<BangumiSearchResult>> response) {

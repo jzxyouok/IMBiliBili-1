@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BangumiDetail;
@@ -29,6 +28,7 @@ import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.model.SeasonRecommend;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.BlurTransformation;
@@ -182,8 +182,10 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
         llComments.setVisibility(View.GONE);
         contentLayout.setVisibility(View.GONE);
         emptyView.setVisibility(View.GONE);
-        bangumiDetailCall = IMBilibiliApplication.getApplication().getApi().getBangumiDetail(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP,
-                Constant.PLATFORM, seasonId, System.currentTimeMillis(), Constant.TYPE_BANGUMI);
+        bangumiDetailCall = RetrofitHelper
+                .getInstance()
+                .getBangumiService()
+                .getBangumiDetail(seasonId, System.currentTimeMillis(), Constant.TYPE_BANGUMI);
         bangumiDetailCall.enqueue(new Callback<BiliBiliResultResponse<BangumiDetail>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<BangumiDetail>> call, Response<BiliBiliResultResponse<BangumiDetail>> response) {
@@ -208,8 +210,10 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     }
 
     private void loadFeedbackDate(String avId, final String index) {
-        feedbackCall = IMBilibiliApplication.getApplication().getApi().getFeedback(Constant.APPKEY,
-                Constant.BUILD, Constant.MOBI_APP, 1, avId, Constant.PLATFORM, 1, 3, 2, 1);
+        feedbackCall = RetrofitHelper
+                .getInstance()
+                .getReplyService()
+                .getFeedback(1, avId, 1, 3, 2, 1);
         feedbackCall.enqueue(new Callback<BilibiliDataResponse<FeedbackData>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<FeedbackData>> call, Response<BilibiliDataResponse<FeedbackData>> response) {
@@ -229,7 +233,10 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     private void loadBangumiRecommendDate(String seasonId) {
         tvRecommendBangumiHeader.setVisibility(View.GONE);
         recommendRecyclerView.setVisibility(View.GONE);
-        seasonRecommendCall = IMBilibiliApplication.getApplication().getApi().getSeasonRecommend(seasonId, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM, System.currentTimeMillis());
+        seasonRecommendCall = RetrofitHelper
+                .getInstance()
+                .getBangumiService()
+                .getSeasonRecommend(seasonId, System.currentTimeMillis());
         seasonRecommendCall.enqueue(new Callback<BiliBiliResultResponse<SeasonRecommend>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<SeasonRecommend>> call, Response<BiliBiliResultResponse<SeasonRecommend>> response) {

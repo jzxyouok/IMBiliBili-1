@@ -2,26 +2,23 @@ package com.lh.imbilibili.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.search.Nav;
 import com.lh.imbilibili.model.search.SearchResult;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.LoadAnimationUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.view.BaseActivity;
@@ -88,7 +85,6 @@ public class SearchActivity extends BaseActivity implements BiliBiliSearchView.O
         mSearchView = BiliBiliSearchView.newInstance();
         mSearchView.setOnSearchListener(this);
         mKeyWord = getIntent().getStringExtra(EXTRA_DATA);
-        mTabLayout.setTabTextColors(Color.BLACK, ContextCompat.getColor(this, R.color.colorPrimary));
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +94,8 @@ public class SearchActivity extends BaseActivity implements BiliBiliSearchView.O
         mTvSearchBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSearchView.show(getSupportFragmentManager(), "search");
+                mSearchView.setKeyWord(mKeyWord);
+                mSearchView.show(getSupportFragmentManager());
             }
         });
         mTvSearchBar.setText(mKeyWord);
@@ -110,7 +107,10 @@ public class SearchActivity extends BaseActivity implements BiliBiliSearchView.O
     private void search(String keyWord) {
         mContainer.setVisibility(View.GONE);
         LoadAnimationUtils.startLoadAnimate(mIvLoading, R.drawable.anim_search_loading);
-        mSearchCall = IMBilibiliApplication.getApplication().getApi().getSearchResult(0, keyWord, 1, 20, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM);
+        mSearchCall = RetrofitHelper
+                .getInstance()
+                .getSearchService()
+                .getSearchResult(0, keyWord, 1, 20);
         mSearchCall.enqueue(new Callback<BilibiliDataResponse<SearchResult>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<SearchResult>> call, Response<BilibiliDataResponse<SearchResult>> response) {
@@ -123,7 +123,7 @@ public class SearchActivity extends BaseActivity implements BiliBiliSearchView.O
                     } else {
                         mContainer.setVisibility(View.VISIBLE);
                         LoadAnimationUtils.stopLoadAnimate(mIvLoading, 0);
-                        bindViewDate();
+                        bindViewData();
                         mIvLoading.setVisibility(View.GONE);
                     }
                 } else {
@@ -139,7 +139,7 @@ public class SearchActivity extends BaseActivity implements BiliBiliSearchView.O
         });
     }
 
-    private void bindViewDate() {
+    private void bindViewData() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         for (Fragment fragment : mFragments) {
             transaction.remove(fragment);

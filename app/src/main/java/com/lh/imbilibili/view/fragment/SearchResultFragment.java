@@ -5,11 +5,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.search.SearchResult;
+import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
@@ -76,7 +76,7 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
     }
 
     private void loadSearchPage(int page) {
-        mSearchCall = IMBilibiliApplication.getApplication().getApi().getSearchResult(0, mKeyWord, page, 20, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM);
+        mSearchCall = RetrofitHelper.getInstance().getSearchService().getSearchResult(0, mKeyWord, page, 20);
         mSearchCall.enqueue(new Callback<BilibiliDataResponse<SearchResult>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<SearchResult>> call, Response<BilibiliDataResponse<SearchResult>> response) {
@@ -125,6 +125,12 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        CallUtils.cancelCall(mSearchCall);
     }
 
     public interface OnSeasonMoreClickListener {

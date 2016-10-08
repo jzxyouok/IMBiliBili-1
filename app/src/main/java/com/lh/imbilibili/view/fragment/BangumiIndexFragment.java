@@ -17,13 +17,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BangumiIndex;
 import com.lh.imbilibili.model.BangumiIndexCond;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
@@ -127,12 +126,12 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
 
     private ValueAnimator gridMenuAnimator;
 
-    public static BangumiIndexFragment newInstance(int year, int quarter,ArrayList<Integer> years) {
+    public static BangumiIndexFragment newInstance(int year, int quarter, ArrayList<Integer> years) {
         BangumiIndexFragment fragment = new BangumiIndexFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("year", year);
         bundle.putInt("quarter", quarter);
-        bundle.putIntegerArrayList("years",years);
+        bundle.putIntegerArrayList("years", years);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -173,21 +172,21 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         mGridMenu.setAdapter(mGridMenuAdapter);
         mGridMenu.setOnItemClickListener(this);
         mBangumiTypeList = new ArrayList<>();
-        mBangumiTypeList.add(generateCategory("全部","0"));
-        mBangumiTypeList.add(generateCategory("TV版","1"));
-        mBangumiTypeList.add(generateCategory("OVA·OAD","2"));
-        mBangumiTypeList.add(generateCategory("剧场版","3"));
-        mBangumiTypeList.add(generateCategory("其他","4"));
+        mBangumiTypeList.add(generateCategory("全部", "0"));
+        mBangumiTypeList.add(generateCategory("TV版", "1"));
+        mBangumiTypeList.add(generateCategory("OVA·OAD", "2"));
+        mBangumiTypeList.add(generateCategory("剧场版", "3"));
+        mBangumiTypeList.add(generateCategory("其他", "4"));
         mBangumiStatusList = new ArrayList<>();
-        mBangumiStatusList.add(generateCategory("全部","0"));
-        mBangumiStatusList.add(generateCategory("完结","2"));
-        mBangumiStatusList.add(generateCategory("连载","1"));
+        mBangumiStatusList.add(generateCategory("全部", "0"));
+        mBangumiStatusList.add(generateCategory("完结", "2"));
+        mBangumiStatusList.add(generateCategory("连载", "1"));
         mBangumiRegionList = new ArrayList<>();
-        mBangumiRegionList.add(generateCategory("全部","0"));
-        mBangumiRegionList.add(generateCategory("国产","1"));
-        mBangumiRegionList.add(generateCategory("日本","2"));
-        mBangumiRegionList.add(generateCategory("美国","3"));
-        mBangumiRegionList.add(generateCategory("其他","4"));
+        mBangumiRegionList.add(generateCategory("全部", "0"));
+        mBangumiRegionList.add(generateCategory("国产", "1"));
+        mBangumiRegionList.add(generateCategory("日本", "2"));
+        mBangumiRegionList.add(generateCategory("美国", "3"));
+        mBangumiRegionList.add(generateCategory("其他", "4"));
         for (TextView mTvSortButton : mTvSortButtons) {
             mTvSortButton.setOnClickListener(this);
         }
@@ -196,14 +195,14 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         }
     }
 
-    private BangumiIndexCond.Category generateCategory(String name, String id){
+    private BangumiIndexCond.Category generateCategory(String name, String id) {
         BangumiIndexCond.Category category = new BangumiIndexCond.Category();
         category.setTagId(id);
         category.setTagName(name);
         return category;
     }
 
-    private void initDrawer(){
+    private void initDrawer() {
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         mNavView = (RelativeLayout) getActivity().findViewById(R.id.nav_view);
 //        DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -220,7 +219,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         mDrawerViewHolder.setTypeTags(mBangumiTypeList);
         mDrawerViewHolder.setStatusTags(mBangumiStatusList);
         mDrawerViewHolder.setRegionTags(mBangumiRegionList);
-        mDrawerViewHolder.setYearTags(mYears,true);
+        mDrawerViewHolder.setYearTags(mYears, true);
     }
 
     private void initRecyclerView() {
@@ -264,19 +263,19 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                 (mIndexSort == 1 ? mIvDowns[i] : mIvUps[i]).setColorFilter(null);
             }
         }
-        if(mFilterType.equals("0")){
+        if (mFilterType.equals("0")) {
             mTvFilterType.setTextColor(colorBlack);
-        }else {
+        } else {
             mTvFilterType.setTextColor(colorPrimary);
         }
-        if(mFilterStyle.equals("0")){
+        if (mFilterStyle.equals("0")) {
             mTvFilterStyle.setTextColor(colorBlack);
-        }else {
+        } else {
             mTvFilterStyle.setTextColor(colorPrimary);
         }
-        if(mFilterStatus.equals("0")){
+        if (mFilterStatus.equals("0")) {
             mTvFilterStatus.setTextColor(colorBlack);
-        }else {
+        } else {
             mTvFilterStatus.setTextColor(colorPrimary);
         }
     }
@@ -315,8 +314,8 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
      * @param version      类型：0全部 1Tv版 2OVA·OAD 3剧场版 4其他
      */
     private void loadData(int indexSort, int indexType, String isFinish, int page, int pageSize, int quarter, int startYear, final String tagId, int updatePeriod, String version) {
-        mBangumiIndexCall = IMBilibiliApplication.getApplication().getApi().getBangumiIndex(Constant.APPKEY, Constant.BUILD,
-                indexSort, indexType, "", isFinish, Constant.MOBI_APP, page, pageSize, Constant.PLATFORM,
+        mBangumiIndexCall = RetrofitHelper.getInstance().getBangumiService().getBangumiIndex(
+                indexSort, indexType, "", isFinish, page, pageSize,
                 quarter, startYear, tagId, System.currentTimeMillis(), updatePeriod, version);
         mBangumiIndexCall.enqueue(new Callback<BiliBiliResultResponse<BangumiIndex>>() {
             @Override
@@ -326,7 +325,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                     mAdapter.addBangumis(mBangumiIndex.getList());
                     mAdapter.notifyDataSetChanged();
                     mLoadMoreRecyclerView.setLoading(false);
-                    if (mBangumiIndex.getPages().equals(mCurrentPage + "")||mBangumiIndex.getList().size()==0) {
+                    if (mBangumiIndex.getPages().equals(mCurrentPage + "") || mBangumiIndex.getList().size() == 0) {
                         mLoadMoreRecyclerView.setEnableLoadMore(false);
                         mLoadMoreRecyclerView.setLoadView("没有更多了", false);
                     } else {
@@ -344,7 +343,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
     }
 
     private void loadBangumiIndexCond(int type) {
-        mBangumiIndexCondCall = IMBilibiliApplication.getApplication().getApi().getBangumiIndexCond(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLATFORM, System.currentTimeMillis(), type);
+        mBangumiIndexCondCall = RetrofitHelper.getInstance().getBangumiService().getBangumiIndexCond(System.currentTimeMillis(), type);
         mBangumiIndexCondCall.enqueue(new Callback<BiliBiliResultResponse<BangumiIndexCond>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<BangumiIndexCond>> call, Response<BiliBiliResultResponse<BangumiIndexCond>> response) {
@@ -353,8 +352,8 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                     BangumiIndexCond.Category defaultCategory = new BangumiIndexCond.Category();
                     defaultCategory.setTagName("全部");
                     defaultCategory.setTagId("0");
-                    mBangumiIndexCond.getCategory().add(0,defaultCategory);
-                    mDrawerViewHolder.setStyleTags(mBangumiIndexCond.getCategory(),true);
+                    mBangumiIndexCond.getCategory().add(0, defaultCategory);
+                    mDrawerViewHolder.setStyleTags(mBangumiIndexCond.getCategory(), true);
                 }
             }
 
@@ -425,10 +424,10 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                 mCurrentFilter = 0;
                 mGridMenuAdapter.setmBangumiCategories(mBangumiTypeList);
                 mGridMenuAdapter.notifyDataSetChanged();
-                if(!mIsFliterTypeClicked){
+                if (!mIsFliterTypeClicked) {
                     mGridMenuAdapter.selectItem(mFilterType);
                     showGridMenu();
-                }else {
+                } else {
                     hideGridMenu();
                 }
                 mIsFliterTypeClicked = !mIsFliterTypeClicked;
@@ -439,10 +438,10 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                 mCurrentFilter = 1;
                 mGridMenuAdapter.setmBangumiCategories(mBangumiIndexCond.getCategory());
                 mGridMenuAdapter.notifyDataSetChanged();
-                if(!mIsFliterStyleClicked){
+                if (!mIsFliterStyleClicked) {
                     mGridMenuAdapter.selectItem(mFilterStyle);
                     showGridMenu();
-                }else {
+                } else {
                     hideGridMenu();
                 }
                 mIsFliterTypeClicked = false;
@@ -453,10 +452,10 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                 mCurrentFilter = 2;
                 mGridMenuAdapter.setmBangumiCategories(mBangumiStatusList);
                 mGridMenuAdapter.notifyDataSetChanged();
-                if(!mIsFliterStatusClicked){
+                if (!mIsFliterStatusClicked) {
                     mGridMenuAdapter.selectItem(mFilterStatus);
                     showGridMenu();
-                }else {
+                } else {
                     hideGridMenu();
                 }
                 mIsFliterTypeClicked = false;
@@ -469,13 +468,13 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         }
     }
 
-    private void openOrCloseDrawer(){
-        if(!mDrawerLayout.isDrawerOpen(mNavView)) {
+    private void openOrCloseDrawer() {
+        if (!mDrawerLayout.isDrawerOpen(mNavView)) {
             mDrawerLayout.openDrawer(mNavView);
             int index = Integer.valueOf(mFilterType);
             mDrawerViewHolder.mTagsType.selectTag(index);
-            mDrawerViewHolder.onItemClick(mDrawerViewHolder.mTagsType,index,null);
-        }else {
+            mDrawerViewHolder.onItemClick(mDrawerViewHolder.mTagsType, index, null);
+        } else {
             mDrawerLayout.closeDrawers();
         }
     }
@@ -486,27 +485,27 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
             case 0:
                 mFilterType = mBangumiTypeList.get(position).getTagId();
                 mGridMenuAdapter.selectItem(mFilterType);
-                if(position == 0){
+                if (position == 0) {
                     mTvFilterType.setText("类型");
-                }else {
+                } else {
                     mTvFilterType.setText(mBangumiTypeList.get(position).getTagName());
                 }
                 break;
             case 1:
                 mFilterStyle = mBangumiIndexCond.getCategory().get(position).getTagId();
                 mGridMenuAdapter.selectItem(mFilterStyle);
-                if(position == 0){
+                if (position == 0) {
                     mTvFilterStyle.setText("风格");
-                }else {
+                } else {
                     mTvFilterStyle.setText(mBangumiIndexCond.getCategory().get(position).getTagName());
                 }
                 break;
             case 2:
                 mFilterStatus = mBangumiStatusList.get(position).getTagId();
                 mGridMenuAdapter.selectItem(mFilterStatus);
-                if(position == 0){
+                if (position == 0) {
                     mTvFilterStatus.setText("状态");
-                }else {
+                } else {
                     mTvFilterStatus.setText(mBangumiStatusList.get(position).getTagName());
                 }
                 break;
@@ -576,8 +575,8 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         @BindView(R.id.confirm)
         View mBtnConfirm;
 
-        public DrawerViewHolder(View view){
-            ButterKnife.bind(this,view);
+        public DrawerViewHolder(View view) {
+            ButterKnife.bind(this, view);
             mBtnStyleeExpand.setVisibility(View.VISIBLE);
             mDrawerExit.setOnClickListener(this);
             mBtnStyleeExpand.setOnClickListener(this);
@@ -587,25 +586,25 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.exit:
                     mDrawerLayout.closeDrawers();
                     break;
                 case R.id.btn_style:
-                    if(mTagsStyle.getChildCount()==5){
-                        setStyleTags(mBangumiIndexCond.getCategory(),false);
+                    if (mTagsStyle.getChildCount() == 5) {
+                        setStyleTags(mBangumiIndexCond.getCategory(), false);
                         mIvStyle.setImageLevel(2);
-                    }else {
-                        setStyleTags(mBangumiIndexCond.getCategory(),true);
+                    } else {
+                        setStyleTags(mBangumiIndexCond.getCategory(), true);
                         mIvStyle.setImageLevel(1);
                     }
                     break;
                 case R.id.btn_time:
-                    if(mTagsYear.getChildCount()==5){
-                        setYearTags(mYears,false);
+                    if (mTagsYear.getChildCount() == 5) {
+                        setYearTags(mYears, false);
                         mIvTime.setImageLevel(2);
-                    }else {
-                        setYearTags(mYears,true);
+                    } else {
+                        setYearTags(mYears, true);
                         mIvTime.setImageLevel(1);
                     }
                     break;
@@ -614,12 +613,12 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
 
         @Override
         public void onItemClick(ViewGroup parent, int position, View view) {
-            switch (parent.getId()){
+            switch (parent.getId()) {
                 case R.id.tags_type:
                     String selectText;
-                    if(position!=0) {
+                    if (position != 0) {
                         selectText = ":" + mBangumiTypeList.get(position).getTagName();
-                    }else {
+                    } else {
                         selectText = "";
                     }
                     mTvTypeSelect.setText(selectText);
@@ -627,58 +626,58 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
             }
         }
 
-        public void setTypeTags(List<BangumiIndexCond.Category> tags){
-            for (int i = 0;i<tags.size();i++) {
-                mTagsType.addTag(tags.get(i).getTagName(),i);
+        public void setTypeTags(List<BangumiIndexCond.Category> tags) {
+            for (int i = 0; i < tags.size(); i++) {
+                mTagsType.addTag(tags.get(i).getTagName(), i);
             }
         }
 
-        public void setStyleTags(List<BangumiIndexCond.Category> tags,boolean isLite){
+        public void setStyleTags(List<BangumiIndexCond.Category> tags, boolean isLite) {
             mTagsStyle.removeAllViews();
-            if(isLite){
+            if (isLite) {
                 int liteAmount = tags.size() > 5 ? 5 : tags.size();
                 for (int i = 0; i < liteAmount; i++) {
                     mTagsStyle.addTag(tags.get(i).getTagName(), i);
                     mTagsStyle.selectTag(0);
                 }
-            }else {
-                for (int i =0 ;i<tags.size();i++){
-                    mTagsStyle.addTag(tags.get(i).getTagName(),i);
+            } else {
+                for (int i = 0; i < tags.size(); i++) {
+                    mTagsStyle.addTag(tags.get(i).getTagName(), i);
                     mTagsStyle.selectTag(0);
                 }
             }
         }
 
 
-        public void setStatusTags(List<BangumiIndexCond.Category> tags){
+        public void setStatusTags(List<BangumiIndexCond.Category> tags) {
             mTagsStatus.removeAllViews();
-            for (int i =0 ;i<tags.size();i++){
-                mTagsStatus.addTag(tags.get(i).getTagName(),i);
+            for (int i = 0; i < tags.size(); i++) {
+                mTagsStatus.addTag(tags.get(i).getTagName(), i);
                 mTagsStatus.selectTag(0);
             }
         }
 
-        public void setRegionTags(List<BangumiIndexCond.Category> tags){
+        public void setRegionTags(List<BangumiIndexCond.Category> tags) {
             mTagsRegion.removeAllViews();
-            for (int i =0 ;i<tags.size();i++){
-                mTagsRegion.addTag(tags.get(i).getTagName(),i);
+            for (int i = 0; i < tags.size(); i++) {
+                mTagsRegion.addTag(tags.get(i).getTagName(), i);
                 mTagsRegion.selectTag(0);
             }
         }
 
-        public void setYearTags(List<Integer> years,boolean isLite){
+        public void setYearTags(List<Integer> years, boolean isLite) {
             mTagsMonth.removeAllViews();
             mTagsYear.removeAllViews();
-            mTagsMonth.addTag("全部",0);
-            mTagsMonth.addTag("1月",1);
-            mTagsMonth.addTag("4月",2);
-            mTagsMonth.addTag("7月",3);
-            mTagsMonth.addTag("10月",4);
-            mTagsYear.addTag("全部",0);
+            mTagsMonth.addTag("全部", 0);
+            mTagsMonth.addTag("1月", 1);
+            mTagsMonth.addTag("4月", 2);
+            mTagsMonth.addTag("7月", 3);
+            mTagsMonth.addTag("10月", 4);
+            mTagsYear.addTag("全部", 0);
             int liteAmount;
-            if(isLite){
-                 liteAmount = years.size() > 4 ? 4 : years.size();
-            }else {
+            if (isLite) {
+                liteAmount = years.size() > 4 ? 4 : years.size();
+            } else {
                 liteAmount = years.size();
             }
             for (int i = 0; i < liteAmount; i++) {

@@ -23,13 +23,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.VideoDetail;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.DisableableAppBarLayoutBehavior;
+import com.lh.imbilibili.utils.HistoryUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.ToastUtils;
@@ -156,7 +157,10 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
     }
 
     private void loadVideoDetail() {
-        mLoadVideoDetailCall = IMBilibiliApplication.getApplication().getApi().getVideoDetail(mAid, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, Constant.PLAT, Constant.PLATFORM, System.currentTimeMillis());
+        mLoadVideoDetailCall = RetrofitHelper
+                .getInstance()
+                .getVideService()
+                .getVideoDetail(mAid, Constant.PLAT, System.currentTimeMillis());
         mLoadVideoDetailCall.enqueue(new Callback<BilibiliDataResponse<VideoDetail>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<VideoDetail>> call, Response<BilibiliDataResponse<VideoDetail>> response) {
@@ -210,6 +214,7 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
 
     private void initVideoView(final int page) {
         initPlayerLayout();
+        HistoryUtils.addHistory(mAid);
         mVideoFragment = VideoFragment.newInstance(mAid, mVideoDetail.getPages().get(page).getCid() + "", mVideoDetail.getTitle());
         mVideoContainer.setVisibility(View.VISIBLE);
         mVideoFragment.setOnFullScreemButtonClick(VideoDetailActivity.this);

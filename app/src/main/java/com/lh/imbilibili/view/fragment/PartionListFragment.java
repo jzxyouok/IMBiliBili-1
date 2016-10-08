@@ -5,12 +5,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
+import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
@@ -77,6 +77,7 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     @Override
     public void onDestroy() {
         super.onDestroy();
+        CallUtils.cancelCall(mPartionDataCall, mNewVideoDataCall);
     }
 
     private void initRecyclerView() {
@@ -93,7 +94,7 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     }
 
     private void loadNewData(int page) {
-        mNewVideoDataCall = IMBilibiliApplication.getApplication().getApi().getPartionChildList(mPartion.getId(), page, 20, "senddate", Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP);
+        mNewVideoDataCall = RetrofitHelper.getInstance().getPartionService().getPartionChildList(mPartion.getId(), page, 20, "senddate");
         mNewVideoDataCall.enqueue(new Callback<BilibiliDataResponse<List<PartionVideo>>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {
@@ -120,7 +121,7 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     }
 
     private void loadData() {
-        mPartionDataCall = IMBilibiliApplication.getApplication().getApi().getPartionChild(mPartion.getId(), "*", Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP);
+        mPartionDataCall = RetrofitHelper.getInstance().getPartionService().getPartionChild(mPartion.getId(), "*");
         mPartionDataCall.enqueue(new Callback<BilibiliDataResponse<PartionHome>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<PartionHome>> call, Response<BilibiliDataResponse<PartionHome>> response) {

@@ -4,13 +4,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.view.activity.SeasonGroupActivity;
@@ -119,9 +118,8 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void loadIndexData() {
-        indexCall = IMBilibiliApplication.getApplication().getApi()
-                .getIndexPage(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP,
-                        Constant.MOBI_APP, System.currentTimeMillis());
+        indexCall = RetrofitHelper.getInstance().getBangumiService()
+                .getIndexPage(System.currentTimeMillis());
         indexCall.enqueue(new Callback<BiliBiliResultResponse<IndexPage>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<IndexPage>> call, Response<BiliBiliResultResponse<IndexPage>> response) {
@@ -141,8 +139,8 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void loadBangumiRecommendData(String cursor, int pageSize) {
-        recommendCall = IMBilibiliApplication.getApplication().getApi().getBangumiRecommend(Constant.APPKEY, Constant.BUILD, cursor, Constant.MOBI_APP,
-                pageSize, Constant.MOBI_APP, System.currentTimeMillis());
+        recommendCall = RetrofitHelper.getInstance().getBangumiService()
+                .getBangumiRecommend(cursor, pageSize, System.currentTimeMillis());
         recommendCall.enqueue(new Callback<BiliBiliResultResponse<List<IndexBangumiRecommend>>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> call, Response<BiliBiliResultResponse<List<IndexBangumiRecommend>>> response) {

@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -28,6 +29,8 @@ import butterknife.ButterKnife;
  */
 
 public class BiliBiliSearchView extends DialogFragment implements DialogInterface.OnKeyListener, View.OnClickListener {
+
+    public static final String TAG = BiliBiliSearchView.class.getName();
 
     @BindView(R.id.back)
     View mBack;
@@ -92,7 +95,6 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
         mBack.setOnClickListener(this);
         mSearch.setOnClickListener(this);
         mEdSearchBar.setHint(mHint);
-        mEdSearchBar.setText(mKeyWord);
         getDialog().setOnKeyListener(this);
         mEdSearchBar.post(new Runnable() {
             @Override
@@ -119,6 +121,7 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
     @Override
     public void onResume() {
         super.onResume();
+        mEdSearchBar.setText(mKeyWord);
     }
 
     @Override
@@ -134,6 +137,10 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
                 }
                 break;
         }
+    }
+
+    public void show(FragmentManager manager) {
+        super.show(manager, TAG);
     }
 
     @Override

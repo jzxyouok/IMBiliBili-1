@@ -7,14 +7,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.TextView;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BangumiDetail;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
 import com.lh.imbilibili.model.ReplyCount;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackAdapter;
@@ -83,7 +82,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     }
 
     private void loadReplyCount(String id) {
-        replyCountCall = IMBilibiliApplication.getApplication().getApi().getReplyCount(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, id, Constant.PLATFORM, 1);
+        replyCountCall = RetrofitHelper.getInstance().getReplyService().getReplyCount(id, 1);
         replyCountCall.enqueue(new Callback<BilibiliDataResponse<ReplyCount>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<ReplyCount>> call, Response<BilibiliDataResponse<ReplyCount>> response) {
@@ -100,7 +99,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     }
 
     private void loadFeedbackData(String id, int page) {
-        feedbackCall = IMBilibiliApplication.getApplication().getApi().getFeedback(Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP, 0, id, Constant.PLATFORM, page, pageSize, 0, 1);
+        feedbackCall = RetrofitHelper.getInstance().getReplyService().getFeedback(0, id, page, pageSize, 0, 1);
         feedbackCall.enqueue(new Callback<BilibiliDataResponse<FeedbackData>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<FeedbackData>> call, Response<BilibiliDataResponse<FeedbackData>> response) {

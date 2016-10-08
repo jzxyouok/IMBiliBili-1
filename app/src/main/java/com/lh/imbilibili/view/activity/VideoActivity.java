@@ -21,7 +21,6 @@ import com.lh.danmakulibrary.BiliBiliDanmakuParser;
 import com.lh.danmakulibrary.Danmaku;
 import com.lh.danmakulibrary.DanmakuView;
 import com.lh.ijkplayer.widget.IjkVideoView;
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
@@ -29,6 +28,8 @@ import com.lh.imbilibili.model.SourceData;
 import com.lh.imbilibili.model.VideoPlayData;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.DanmakuUtils;
+import com.lh.imbilibili.utils.HistoryUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.utils.VideoUtils;
@@ -157,7 +158,11 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     }
 
     private void loadSourceInfo() {
-        sourceInfoCall = IMBilibiliApplication.getApplication().getApi().getSource(Constant.APPKEY, Constant.BUILD, mAid, Constant.MOBI_APP, Constant.PLATFORM, System.currentTimeMillis());
+        HistoryUtils.addHistory(mAid);
+        sourceInfoCall = RetrofitHelper
+                .getInstance()
+                .getBangumiService()
+                .getSource(mAid, System.currentTimeMillis());
         sourceInfoCall.enqueue(new Callback<BiliBiliResultResponse<List<SourceData>>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<List<SourceData>>> call, Response<BiliBiliResultResponse<List<SourceData>>> response) {
@@ -180,7 +185,10 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     }
 
     private void loadVideoInfo() {
-        playInfoCall = IMBilibiliApplication.getApplication().getApi().getPlayData(Constant.PLATFORM, Constant.BUILD, Constant.PLATFORM, mAid, 0, 0, 0, mCid, mCurrentQuality, "json", Constant.PLAYER_APPKEY);
+        playInfoCall = RetrofitHelper
+                .getInstance()
+                .getVideoPlayService()
+                .getPlayData(Constant.BUILD, Constant.PLATFORM, mAid, 0, 0, 0, mCid, mCurrentQuality, "json");
         playInfoCall.enqueue(new Callback<VideoPlayData>() {
             @Override
             public void onResponse(Call<VideoPlayData> call, Response<VideoPlayData> response) {

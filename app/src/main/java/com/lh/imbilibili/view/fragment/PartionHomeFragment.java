@@ -5,13 +5,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
-import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.R;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
 import com.lh.imbilibili.utils.CallUtils;
+import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.categoryfragment.PartionHomeRecyclerViewAdapter;
@@ -61,7 +60,7 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
     }
 
     private void loadData() {
-        mPartionHomeDataCall = IMBilibiliApplication.getApplication().getApi().getPartionInfo(mPartionModel.getId(), "*", Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP);
+        mPartionHomeDataCall = RetrofitHelper.getInstance().getPartionService().getPartionInfo(mPartionModel.getId(), "*");
         mPartionHomeDataCall.enqueue(new Callback<BilibiliDataResponse<PartionHome>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<PartionHome>> call, Response<BilibiliDataResponse<PartionHome>> response) {
@@ -81,7 +80,7 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
     }
 
     private void loadDynamicData(int page) {
-        mPartionDynamicCall = IMBilibiliApplication.getApplication().getApi().getPartionDynamic(mPartionModel.getId(), page, 50, Constant.APPKEY, Constant.BUILD, Constant.MOBI_APP);
+        mPartionDynamicCall = RetrofitHelper.getInstance().getPartionService().getPartionDynamic(mPartionModel.getId(), page, 50);
         mPartionDynamicCall.enqueue(new Callback<BilibiliDataResponse<List<PartionVideo>>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {

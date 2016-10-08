@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -12,14 +11,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.model.user.UserDetailInfo;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
+import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.IDrawerLayoutActivity;
 import com.lh.imbilibili.view.activity.SearchActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.MainViewPagerAdapter;
 import com.lh.imbilibili.widget.BiliBiliSearchView;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +66,18 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        BusUtils.getBus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        BusUtils.getBus().unregister(this);
+    }
+
+    @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
     }
@@ -80,7 +96,6 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         fragments.add(CategoryFragment.newInstance());
-        mTabs.setTabTextColors(ContextCompat.getColor(getContext(), R.color.gray_light), ContextCompat.getColor(getContext(), R.color.white));
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);
         mViewPager.setAdapter(adapter);
         mTabs.setupWithViewPager(mViewPager);
@@ -104,6 +119,12 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         });
     }
 
+    @Subscribe
+    public void bindUserInfoView(UserDetailInfo detailInfo) {
+        Glide.with(this).load(detailInfo.getFace()).transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAvatar);
+        mTvNickName.setText(detailInfo.getUname());
+    }
+
     @Override
     public String getTitle() {
         return null;
@@ -112,7 +133,7 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.app_bar_search) {
-            mSearchView.show(getChildFragmentManager(), "search");
+            mSearchView.show(getChildFragmentManager(), "");
         }
         return true;
     }
@@ -124,5 +145,10 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         } else {
             SearchActivity.startActivity(getContext(), keyWord);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

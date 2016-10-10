@@ -20,13 +20,24 @@ import com.lh.imbilibili.R;
 @SuppressWarnings("unused")
 public class StatusBarUtils {
 
-    public static void setDrawerToolbarTabLayout(Activity activity, CoordinatorLayout coordinatorLayout) {
+    public static void setDrawerToolbarTabLayout(Activity activity, ViewGroup rootView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
-            coordinatorLayout.setFitsSystemWindows(true);
+            rootView.setFitsSystemWindows(true);
+            setKKStatusBar(activity, R.color.colorPrimaryDark);
+        }
+    }
+
+    public static void setDrawerToolbarLayout(Activity activity, ViewGroup rootView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
+            contentLayout.getChildAt(0).setFitsSystemWindows(false);
+            rootView.setFitsSystemWindows(true);
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }

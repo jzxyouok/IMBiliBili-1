@@ -16,7 +16,7 @@ import com.lh.imbilibili.utils.LoadAnimationUtils;
 import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
-import com.lh.imbilibili.view.adapter.search.SearchItemDecoration;
+import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.search.UpUserSearchAdapter;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
@@ -72,7 +72,7 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
         mAdapter = new UpUserSearchAdapter(getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        SearchItemDecoration itemDecoration = new SearchItemDecoration(getContext());
+        LinearLayoutItemDecoration itemDecoration = new LinearLayoutItemDecoration(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mAdapter);

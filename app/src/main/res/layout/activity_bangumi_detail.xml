@@ -351,7 +351,7 @@
         android:layout_height="match_parent"/>
 
     <include
-        layout="@layout/navigation_top_bar"/>
+        layout="@layout/navigation_back_top_bar"/>
 
     <TextView
         android:id="@+id/bottom_tips"

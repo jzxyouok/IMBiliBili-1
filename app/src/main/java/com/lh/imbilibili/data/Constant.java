@@ -54,7 +54,9 @@ public class Constant {
 
     public static final String SEARCH = "/x/v2/search";
     public static final String SEARCH_TYPE = SEARCH + "/type";
-    public static final String HISTORY_ADD = "/x/v2/history/add";
+
+    public static final String HISTORY = "/x/v2/history";
+    public static final String HISTORY_ADD = HISTORY + "/add";
 
     public static final String LOGIN = "/api/login/v2";
 

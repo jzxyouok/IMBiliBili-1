@@ -2,13 +2,13 @@
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
     <FrameLayout
-        android:id="@+id/feedback_container"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        app:menu="@menu/main_drawer_menu"
-        app:headerLayout="@layout/drawer_head_layout"/>
+        app:headerLayout="@layout/drawer_head_layout"
+        app:menu="@menu/main_drawer_menu"/>
 
 </android.support.v4.widget.DrawerLayout>

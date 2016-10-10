@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.lh.imbilibili.model.user.User;
+import com.lh.imbilibili.model.user.UserDetailInfo;
 import com.lh.imbilibili.model.user.UserResponse;
 
 /**
@@ -14,6 +15,7 @@ import com.lh.imbilibili.model.user.UserResponse;
 public class UserManagerUtils {
     private static UserManagerUtils mUserManager;
     private User mUser;
+    private UserDetailInfo mUserDetailInfo;
 
     private UserManagerUtils() {
     }
@@ -52,5 +54,13 @@ public class UserManagerUtils {
 
     public User getCurrentUser() {
         return mUser;
+    }
+
+    public void setUserDetailInfo(UserDetailInfo info) {
+        mUserDetailInfo = info;
+    }
+
+    public UserDetailInfo getUserDetailInfo() {
+        return mUserDetailInfo;
     }
 }

@@ -21,7 +21,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/bili_drawerbg_not_logined"/>
 
-        <View
+        <android.support.v4.widget.Space
             android:id="@+id/top"
             android:layout_width="0dp"
             android:layout_height="0dp"

@@ -2,8 +2,11 @@ package com.lh.imbilibili.view.activity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +25,7 @@ import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseActivity;
+import com.lh.imbilibili.view.fragment.HistoryRecordFragment;
 import com.lh.imbilibili.view.fragment.MainFragment;
 import com.squareup.otto.Subscribe;
 
@@ -41,6 +45,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
     private ImageView mIvAvatar;
     private TextView mTvNickName;
     //    private ImageView mIvLoginBg;
+    private View mDrawerProfileLayout;
     private TextView mTvLevel;
     private TextView mTvMemberState;
     private TextView mTvCoinCount;
@@ -55,6 +60,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
         ButterKnife.bind(this);
         BusUtils.getBus().register(this);
         View headView = mDrawer.getHeaderView(0);
+        mDrawerProfileLayout = headView.findViewById(R.id.drawer_profile_layout);
         mIvAvatar = (ImageView) headView.findViewById(R.id.user_avatar);
         mTvNickName = (TextView) headView.findViewById(R.id.user_nick_text);
         mTvLevel = (TextView) headView.findViewById(R.id.level);
@@ -62,12 +68,12 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
         mTvCoinCount = (TextView) headView.findViewById(R.id.user_coin_count);
 //        mIvLoginBg = (ImageView) mDrawer.getHeaderView(0).findViewById(R.id.login_bg);
         initView();
-        initFragmentView();
+        switchFragment(0);
     }
 
     private void initView() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mDrawer.getHeaderView(0).setPadding(0, StatusBarUtils.getStatusBarHeight(this), 0, 0);
+            mDrawerProfileLayout.setPadding(0, StatusBarUtils.getStatusBarHeight(this), 0, 0);
         }
         mIvAvatar.setOnClickListener(this);
         mTvNickName.setOnClickListener(this);
@@ -78,14 +84,45 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
             mTvNickName.setText("点击头像登陆");
             mTvLevel.setVisibility(View.GONE);
         }
+        mDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.item_home:
+                        switchFragment(0);
+                        break;
+                    case R.id.item_history:
+                        switchFragment(1);
+                        break;
+                }
+                closeDrawer();
+                return true;
+            }
+        });
     }
 
-    private void initFragmentView() {
-        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(MainFragment.TAG);
-        if (mainFragment == null) {
-            mainFragment = MainFragment.newInstance();
+    private void switchFragment(int index) {
+        Fragment fragment;
+        String tag;
+        switch (index) {
+            case 0:
+                tag = MainFragment.TAG;
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment == null) {
+                    fragment = MainFragment.newInstance();
+                }
+                break;
+            case 1:
+                tag = HistoryRecordFragment.TAG;
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment == null) {
+                    fragment = HistoryRecordFragment.newInstance();
+                }
+                break;
+            default:
+                return;
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.feedback_container, mainFragment, MainFragment.TAG).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment, tag).commit();
     }
 
     @Override
@@ -119,6 +156,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
             public void onResponse(Call<UserDetailInfo> call, Response<UserDetailInfo> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mUserDetailInfo = response.body();
+                    UserManagerUtils.getInstance().setUserDetailInfo(mUserDetailInfo);
                     BusUtils.getBus().post(mUserDetailInfo);
                     bindUserInfoViewWithData();
                 }

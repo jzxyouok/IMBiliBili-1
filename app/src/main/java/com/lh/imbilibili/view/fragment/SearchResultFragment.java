@@ -14,8 +14,8 @@ import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
+import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.search.SearchAdapter;
-import com.lh.imbilibili.view.adapter.search.SearchItemDecoration;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import butterknife.BindView;
@@ -57,7 +57,7 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         mAdapter = new SearchAdapter(getContext(), searchResult);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        SearchItemDecoration itemDecoration = new SearchItemDecoration(getContext());
+        LinearLayoutItemDecoration itemDecoration = new LinearLayoutItemDecoration(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mAdapter);

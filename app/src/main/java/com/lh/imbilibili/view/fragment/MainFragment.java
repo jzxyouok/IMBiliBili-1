@@ -16,6 +16,7 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.user.UserDetailInfo;
 import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
+import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.IDrawerLayoutActivity;
@@ -104,8 +105,12 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
 
     private void initToolbar() {
         mIvAvatar.setImageResource(R.drawable.bili_default_avatar);
-        mTvNickName.setText("未登录");
-        mIvAccountBadge.setVisibility(View.GONE);
+        if (UserManagerUtils.getInstance().getUserDetailInfo() != null) {
+            bindUserInfoView(UserManagerUtils.getInstance().getUserDetailInfo());
+        } else {
+            mTvNickName.setText("未登录");
+            mIvAccountBadge.setVisibility(View.GONE);
+        }
         mSearchView = BiliBiliSearchView.newInstance();
         mSearchView.setHint("搜索视频、番剧、up主或av号");
         mSearchView.setOnSearchListener(this);

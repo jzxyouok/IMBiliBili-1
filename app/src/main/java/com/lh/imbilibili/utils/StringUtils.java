@@ -76,4 +76,12 @@ public class StringUtils {
             return format("%d秒前", diff);
         }
     }
+
+    /**
+     * @param time time
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    public static String formateDateActu(long time) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(time));
+    }
 }

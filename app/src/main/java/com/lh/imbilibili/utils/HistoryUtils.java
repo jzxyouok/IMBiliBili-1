@@ -25,4 +25,18 @@ public class HistoryUtils {
             }
         });
     }
+
+    public static void addHisotry(String cid, String eposideId) {
+        RetrofitHelper.getInstance().getHistoryService().reportWatch(cid, eposideId, System.currentTimeMillis()).enqueue(new Callback<BilibiliDataResponse>() {
+            @Override
+            public void onResponse(Call<BilibiliDataResponse> call, Response<BilibiliDataResponse> response) {
+                System.out.println("history:" + response.message());
+            }
+
+            @Override
+            public void onFailure(Call<BilibiliDataResponse> call, Throwable t) {
+
+            }
+        });
+    }
 }

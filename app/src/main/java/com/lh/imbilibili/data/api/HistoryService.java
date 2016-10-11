@@ -24,6 +24,11 @@ public interface HistoryService {
     @Headers({"Content-Type: application/x-www-form-urlencoded; charset=UTF-8"})
     Call<BilibiliDataResponse> addHistory(@Field("aid") String aid);
 
+    @GET(Constant.REPORT_WATCH)
+    Call<BilibiliDataResponse> reportWatch(@Query("cid") String cid,
+                                           @Query("episode_id") String eposideId,
+                                           @Query("ts") long ts);
+
     @GET(Constant.API_URL + Constant.HISTORY)
     Call<BilibiliDataResponse<List<History>>> getHistory(@Query("pn") int pn,
                                                          @Query("ps") int ps);

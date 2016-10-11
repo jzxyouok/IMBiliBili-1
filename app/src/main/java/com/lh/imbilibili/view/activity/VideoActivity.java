@@ -158,7 +158,6 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     }
 
     private void loadSourceInfo() {
-        HistoryUtils.addHistory(mAid);
         sourceInfoCall = RetrofitHelper
                 .getInstance()
                 .getBangumiService()
@@ -171,6 +170,7 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                     SourceData sourceData = mSourceDatas.get(0);
                     mAid = sourceData.getAvId();
                     mCid = sourceData.getCid();
+                    HistoryUtils.addHisotry(mCid, mAid);
                     appendVideoMsg("正在解析视频信息...", StringUtils.format("成功(av_id=%s cid=%s)", sourceData.getAvId(), sourceData.getCid()), false);
                     mHandler.sendEmptyMessage(MSG_LOAD_DANMAKU);
                     mHandler.sendEmptyMessage(MSG_LOAD_VIDEO);

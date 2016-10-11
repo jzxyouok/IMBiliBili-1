@@ -10,6 +10,8 @@ import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.model.SeasonRecommend;
 import com.lh.imbilibili.model.SourceData;
+import com.lh.imbilibili.model.attention.FollowBangumi;
+import com.lh.imbilibili.model.attention.FollowBangumiResponse;
 
 import java.util.List;
 
@@ -66,5 +68,10 @@ public interface BangumiService {
     @GET(Constant.BANGUMI_INDEX_COND)
     Call<BiliBiliResultResponse<BangumiIndexCond>> getBangumiIndexCond(@Query(Constant.QUERY_TS) long ts,
                                                                        @Query(Constant.QUERY_TYPE) int type);
+
+    @GET(Constant.MY_FOLLOWS)
+    Call<FollowBangumiResponse<List<FollowBangumi>>> getFollowBangumi(@Query("mid") String mid,
+                                                                      @Query("ts") long ts);
+
 
 }

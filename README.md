@@ -1,5 +1,7 @@
 ## 高仿BiliBili安卓客户端
 
+[![Build Status](https://travis-ci.org/lh123/IMBiliBili.svg?branch=master)](https://travis-ci.org/lh123/IMBiliBili)
+
 ## 介绍
 
 ### 已完成的功能

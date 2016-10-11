@@ -15,4 +15,5 @@ public interface AccountService {
     @GET(Constant.ACCOUNT_URL + Constant.MY_INFO)
     Call<UserDetailInfo> getUserDetailInfo();
 
+
 }

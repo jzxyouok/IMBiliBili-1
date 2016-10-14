@@ -111,7 +111,7 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         mTvDescription.setText(mVideoDetail.getDesc());
         Glide.with(this).load(mVideoDetail.getOwner().getFace()).transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
         mTvAuthorName.setText(mVideoDetail.getOwner().getName());
-        mTvPubTime.setText(StringUtils.formateDate(mVideoDetail.getPubdate()));
+        mTvPubTime.setText(StringUtils.formateDateRelative(mVideoDetail.getPubdate()));
         if (mVideoDetail.getPages().size() > 1) {
             mPageLayout.setVisibility(View.VISIBLE);
             mTvPageCount.setText(StringUtils.format("分集(%d)", mVideoDetail.getPages().size()));

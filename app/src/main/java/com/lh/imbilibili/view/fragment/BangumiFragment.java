@@ -5,11 +5,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BiliBiliResultResponse;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.CallUtils;
-import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.view.activity.SeasonGroupActivity;

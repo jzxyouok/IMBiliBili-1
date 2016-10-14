@@ -59,7 +59,11 @@ public class StringUtils {
         return value;
     }
 
-    public static String formateDate(long time) {
+    /**
+     * @param time time
+     * @return 秒前 分钟前 小时前 yyyy-MM-dd HH:mm
+     */
+    public static String formateDateRelative(long time) {
         long cTime = System.currentTimeMillis() / 1000;
         long interval = Math.abs(cTime - time);
         int diff = 0;
@@ -83,5 +87,13 @@ public class StringUtils {
      */
     public static String formateDateActu(long time) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(time));
+    }
+
+    /**
+     * @param time time
+     * @return yyyy年MM月dd日
+     */
+    public static String formateDateCN(long time) {
+        return new SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault()).format(new Date(time));
     }
 }

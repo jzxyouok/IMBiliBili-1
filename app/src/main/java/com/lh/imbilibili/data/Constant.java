@@ -17,14 +17,14 @@ public class Constant {
 //    public static final String APPKEY = "85eb6835b0a1034e";
 //    public static final String SECRETKEY = "2ad42749773c441109bdc0191257a664";
 
-    public static final String APPKEY = "9326043312df4201";
-    public static final String SECRETKEY = "af97f9c667f1bbb47752d4fedbe27842";
+    static final String APPKEY = "9326043312df4201";
+    static final String SECRETKEY = "af97f9c667f1bbb47752d4fedbe27842";
 
-    public static final String PLAYER_APPKEY = "6f90a59ac58a4123";
-    public static final String PLAYER_SECRETKEY = "0bfd84cc3940035173f35e6777508326";
+    static final String PLAYER_APPKEY = "6f90a59ac58a4123";
+    static final String PLAYER_SECRETKEY = "0bfd84cc3940035173f35e6777508326";
 
-    public static final String LOGIN_SECRETKEY = "c2ed53a74eeefe3cf99fbd01d8c9c375";
-    public static final String LOGIN_APPKEY = "27eb53fc9058f8c3";
+    static final String LOGIN_SECRETKEY = "c2ed53a74eeefe3cf99fbd01d8c9c375";
+    static final String LOGIN_APPKEY = "27eb53fc9058f8c3";
 
     public static final String BASE_URL = "http://bangumi.bilibili.com";
     public static final String API_URL = "http://api.bilibili.com";
@@ -48,6 +48,7 @@ public class Constant {
     public static final String FEEDBACK = "/x/reply";
     public static final String REPLY_COUNT = "/x/reply/count";
     public static final String SEASON_RECOMMEND = "/api/season/recommend/{season_id}.json";
+    public static final String VIDEO_DYNAMIC = "/x/feed/pull";
 
     public static final String PARTION_INFO = "/x/v2/region/show";
     public static final String PARTION_DYNAMIC = "/x/v2/region/show/dynamic";

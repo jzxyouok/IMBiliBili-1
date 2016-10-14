@@ -29,7 +29,9 @@ import butterknife.ButterKnife;
 
 /**
  * Created by liuhui on 2016/7/6.
+ * 番剧的RecyclerView Adapter
  */
+@SuppressWarnings("WeakerAccess")
 public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int BANNER = 0;
@@ -106,13 +108,13 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (getItemViewType(position) == BANNER) {
+        /*if (getItemViewType(position) == BANNER) {
             BannerHolder bannerHolder = (BannerHolder) holder;
-
-//            Glide.with(context)
-//                    .load(indexPage.getAd().getHead().get(position).getImg())
-//                    .into(bannerHolder.bannerView);
-        } else if (getItemViewType(position) == SERIALIZING_HEAD) {
+            Glide.with(context)
+                    .load(indexPage.getAd().getHead().get(position).getImg())
+                    .into(bannerHolder.bannerView);
+        } else*/
+        if (getItemViewType(position) == SERIALIZING_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("新番连载");
             headHolder.setLeftDrawable(R.drawable.ic_lianzai);

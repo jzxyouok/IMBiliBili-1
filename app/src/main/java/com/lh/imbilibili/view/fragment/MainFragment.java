@@ -97,6 +97,7 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         fragments = new ArrayList<>();
         fragments.add(BangumiFragment.newInstance());
         fragments.add(CategoryFragment.newInstance());
+        fragments.add(AttentionFragment.newInstance());
         adapter = new MainViewPagerAdapter(getChildFragmentManager(), fragments);
         mViewPager.setAdapter(adapter);
         mTabs.setupWithViewPager(mViewPager);

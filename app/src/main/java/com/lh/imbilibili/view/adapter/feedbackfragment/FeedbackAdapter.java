@@ -52,7 +52,7 @@ public class FeedbackAdapter extends RecyclerView.Adapter {
             }
             replyHolder.tvMessage.setText(reply.getContent().getMessage());
             replyHolder.tvName.setText(reply.getMember().getUname());
-            replyHolder.tvPubTime.setText(StringUtils.formateDate(reply.getCtime()));
+            replyHolder.tvPubTime.setText(StringUtils.formateDateRelative(reply.getCtime()));
             feedbackHolder.replyGroup.addView(replyHolder.itemView);
         }
     }

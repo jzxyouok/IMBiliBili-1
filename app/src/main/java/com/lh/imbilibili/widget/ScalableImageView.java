@@ -60,7 +60,6 @@ public class ScalableImageView extends ImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (heightRatio != 0 && widthRatio != 0) {
             int width = getMeasuredWidth();
-//            System.out.println("Width=" + width);
             int height = (int) ((float) width * heightRatio / widthRatio);
             setMeasuredDimension(width, height);
         }

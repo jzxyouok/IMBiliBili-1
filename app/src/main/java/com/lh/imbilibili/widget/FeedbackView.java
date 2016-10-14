@@ -73,7 +73,7 @@ public class FeedbackView extends FrameLayout implements View.OnClickListener {
         tvRating.setText(StringUtils.format("%d", feedback.getLike()));
         tvFloor.setText(StringUtils.format("#%d", feedback.getFloor()));
         tvComments.setText(StringUtils.format("%d", feedback.getRcount()));
-        tvPubTime.setText(StringUtils.formateDate(feedback.getCtime()));
+        tvPubTime.setText(StringUtils.formateDateRelative(feedback.getCtime()));
         tvMessage.setText(feedback.getContent().getMessage());
     }
 

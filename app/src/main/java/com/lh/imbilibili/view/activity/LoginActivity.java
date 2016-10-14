@@ -14,10 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.user.UserResponse;
 import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.DrawableTintUtils;
-import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.utils.UserManagerUtils;

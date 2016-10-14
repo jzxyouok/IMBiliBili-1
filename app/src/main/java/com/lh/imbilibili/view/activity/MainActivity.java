@@ -14,11 +14,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.user.UserDetailInfo;
 import com.lh.imbilibili.model.user.UserResponse;
 import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
-import com.lh.imbilibili.utils.RetrofitHelper;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.ToastUtils;
@@ -52,6 +52,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
 
     private Call<UserDetailInfo> mUserInfoCall;
     private UserDetailInfo mUserDetailInfo;
+    private boolean isShowHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
     private void switchFragment(int index) {
         Fragment fragment;
         String tag;
+        isShowHome = index == 0;
         switch (index) {
             case 0:
                 tag = MainFragment.TAG;
@@ -180,6 +182,20 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
             mTvMemberState.setVisibility(View.GONE);
         }
         mTvCoinCount.setText(StringUtils.format("硬币 : %d", mUserDetailInfo.getCoins()));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(mDrawer)) {
+            mDrawerLayout.closeDrawer(mDrawer);
+            return;
+        }
+        if (!isShowHome) {
+            mDrawer.setCheckedItem(R.id.item_home);
+            switchFragment(0);
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.lh.imbilibili.IMBilibiliApplication;
 import com.lh.imbilibili.data.Constant;
+import com.lh.imbilibili.data.RetrofitHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

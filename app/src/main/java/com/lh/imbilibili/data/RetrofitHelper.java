@@ -1,9 +1,7 @@
-package com.lh.imbilibili.utils;
+package com.lh.imbilibili.data;
 
-import com.lh.imbilibili.data.BiliSignInterceptor;
-import com.lh.imbilibili.data.BilliInterceptor;
-import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.data.api.AccountService;
+import com.lh.imbilibili.data.api.AttentionService;
 import com.lh.imbilibili.data.api.BangumiService;
 import com.lh.imbilibili.data.api.HistoryService;
 import com.lh.imbilibili.data.api.LoginService;
@@ -43,6 +41,7 @@ public class RetrofitHelper {
     private VideoService mVideService;
     private AccountService mAccountService;
     private HistoryService mHistoryService;
+    private AttentionService mAttentionService;
 
     private RetrofitHelper() {
         HttpLoggingInterceptor logi = new HttpLoggingInterceptor();
@@ -82,6 +81,7 @@ public class RetrofitHelper {
         mVideService = mSignRetrofit.create(VideoService.class);
         mAccountService = mSignRetrofit.create(AccountService.class);
         mHistoryService = mSignRetrofit.create(HistoryService.class);
+        mAttentionService = mSignRetrofit.create(AttentionService.class);
     }
 
     public static RetrofitHelper getInstance() {
@@ -103,7 +103,7 @@ public class RetrofitHelper {
         }
     }
 
-    OkHttpClient getOkhttpClient() {
+    public OkHttpClient getOkhttpClient() {
         return mOkhttpClient;
     }
 
@@ -145,5 +145,9 @@ public class RetrofitHelper {
 
     public HistoryService getHistoryService() {
         return mHistoryService;
+    }
+
+    public AttentionService getAttentionService() {
+        return mAttentionService;
     }
 }

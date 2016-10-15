@@ -27,4 +27,9 @@ public interface AttentionService {
     Call<BilibiliDataResponse<DynamicVideo>> getDynamicVideo(@Query("pn") int pn,
                                                              @Query("ps") int ps,
                                                              @Query("type") int type);
+
+    @GET(Constant.MY_CONCERNED_SEASON)
+    Call<FollowBangumiResponse<List<FollowBangumi>>> getConcernedBangumi(@Query("page") int page,
+                                                                         @Query("pagesize") int pageSize,
+                                                                         @Query("ts") long ts);
 }

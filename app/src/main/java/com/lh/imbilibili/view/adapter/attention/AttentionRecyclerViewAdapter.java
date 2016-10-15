@@ -95,6 +95,7 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.tvTitle.setText("番剧");
             headHolder.setLeftDrawable(R.drawable.search_result_ic_bangumi);
             headHolder.tvSubTitle.setText("更多");
+            headHolder.itemView.setClickable(true);
         } else if (type == TYPE_BANGUMI_FOLLOW_ITEM) {
             BangumiViewHolder bangumiViewHolder = (BangumiViewHolder) holder;
             FollowBangumi followBangumi = mFollowBangumis.get(position - 1);
@@ -108,6 +109,7 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.tvTitle.setText("动态");
             headHolder.setLeftDrawable(R.drawable.ic_header_dynamic);
             headHolder.tvSubTitle.setText("");
+            headHolder.itemView.setClickable(false);
         } else {
             DynamicVideoViewHolder dynamicVideoViewHolder = (DynamicVideoViewHolder) holder;
             DynamicVideo.Feed feed = mFeeds.get(position - 5);
@@ -172,7 +174,7 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    class HeadHolder extends RecyclerView.ViewHolder {
+    class HeadHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title)
         TextView tvTitle;
         @BindView(R.id.sub_title)
@@ -183,12 +185,19 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        public void setLeftDrawable(int resId) {
+        void setLeftDrawable(int resId) {
             Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), resId);
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             tvTitle.setCompoundDrawables(drawable, null, null, null);
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            if (getItemViewType() == TYPE_BANGUMI_FOLLOW_HEAD && mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(null, getItemViewType());
+            }
+        }
     }
 
     class BangumiViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

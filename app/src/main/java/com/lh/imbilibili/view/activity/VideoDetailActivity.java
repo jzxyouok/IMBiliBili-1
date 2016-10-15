@@ -92,7 +92,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
     private VideoFragment mVideoFragment;
 
     private boolean mIsFabShow;
-    private boolean mIsAppLayoutDisable;
     private boolean mIsFullScreen;
     private boolean mIsInitLayout;
     private int mVideoViewHeight;
@@ -118,7 +117,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mIsFullScreen = false;
         mIsFabShow = true;
-        mIsAppLayoutDisable = false;
         mIsInitLayout = false;
         mCurrentSelectVideoPage = 0;
         initView();
@@ -231,7 +229,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
                 ((OnVideoStartPlayingListener) mFragments.get(i)).onVideoStart();
             }
         }
-        mIsAppLayoutDisable = true;
         mAppBarLayout.setExpanded(true);
         hidFab();
         mPreViewLayout.setVisibility(View.INVISIBLE);

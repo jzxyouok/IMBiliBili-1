@@ -28,7 +28,7 @@ public class BannerAdapter extends BannerView.Adaper {
         }
     }
 
-    public void setData(List<Banner> banners){
+    public void setData(List<Banner> banners) {
         mBanners = banners;
     }
 
@@ -57,6 +57,9 @@ public class BannerAdapter extends BannerView.Adaper {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+        if (object instanceof View) {
+            container.removeView((View) object);
+        }
     }
 
     @Override

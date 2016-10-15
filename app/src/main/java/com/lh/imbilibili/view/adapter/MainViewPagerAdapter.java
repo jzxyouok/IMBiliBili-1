@@ -3,7 +3,6 @@ package com.lh.imbilibili.view.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
 
 import com.lh.imbilibili.view.BaseFragment;
 
@@ -29,11 +28,6 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return fragments.size();
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-//        super.destroyItem(container, position, object);
     }
 
     @Override

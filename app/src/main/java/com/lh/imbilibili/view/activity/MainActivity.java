@@ -67,7 +67,6 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
         mTvLevel = (TextView) headView.findViewById(R.id.level);
         mTvMemberState = (TextView) headView.findViewById(R.id.member_status);
         mTvCoinCount = (TextView) headView.findViewById(R.id.user_coin_count);
-//        mIvLoginBg = (ImageView) mDrawer.getHeaderView(0).findViewById(R.id.login_bg);
         initView();
         switchFragment(0);
     }
@@ -151,7 +150,6 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
 
     @Subscribe
     public void loadUserInfo(UserResponse response) {
-        System.out.println("loadUserInfo");
         mUserInfoCall = RetrofitHelper.getInstance().getAccountService().getUserDetailInfo();
         mUserInfoCall.enqueue(new Callback<UserDetailInfo>() {
             @Override

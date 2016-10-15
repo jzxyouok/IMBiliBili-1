@@ -43,6 +43,7 @@ public class Constant {
     public static final String BANGUMI_INDEX_COND = "/api/bangumi_index_cond";
     public static final String BANGUMI_INDEX = "/api/bangumi_index";
     public static final String MY_FOLLOWS = "/api/my_follows";
+    public static final String MY_CONCERNED_SEASON = "/api/get_concerned_season";
     public static final String REPORT_WATCH = "/api/report_watch";
 
     public static final String FEEDBACK = "/x/reply";

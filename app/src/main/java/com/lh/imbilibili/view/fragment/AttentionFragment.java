@@ -19,6 +19,7 @@ import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
+import com.lh.imbilibili.view.activity.FollowBangumiActivity;
 import com.lh.imbilibili.view.activity.LoginActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.attention.AttentionItemDecoration;
@@ -36,6 +37,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/10.
+ * 关注页面
  */
 
 public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SwipeRefreshLayout.OnRefreshListener, AttentionRecyclerViewAdapter.OnItemClickListener {
@@ -171,6 +173,7 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
         });
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onLoginSuccess(UserResponse user) {
         mBtnLogin.setVisibility(View.GONE);
@@ -210,6 +213,8 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
             BangumiDetailActivity.startActivity(getContext(), id);
         } else if (type == AttentionRecyclerViewAdapter.TYPE_DYNAMIC_ITEM) {
             VideoDetailActivity.startActivity(getContext(), id);
+        } else if (type == AttentionRecyclerViewAdapter.TYPE_BANGUMI_FOLLOW_HEAD) {
+            FollowBangumiActivity.startActivity(getContext());
         }
     }
 }

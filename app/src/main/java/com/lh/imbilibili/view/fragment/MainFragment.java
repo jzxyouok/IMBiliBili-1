@@ -1,7 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -81,16 +79,6 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
     @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
-    }
-
-    @Override
-    protected int getContentView() {
-        return R.layout.fragment_main_home;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mToolbar.inflateMenu(R.menu.main_menu);
         mToolbar.setOnMenuItemClickListener(this);
         StatusBarUtils.setDrawerToolbarTabLayout(getActivity(), mCoordinatorLayout);
@@ -103,6 +91,12 @@ public class MainFragment extends BaseFragment implements Toolbar.OnMenuItemClic
         mTabs.setupWithViewPager(mViewPager);
         initToolbar();
     }
+
+    @Override
+    protected int getContentView() {
+        return R.layout.fragment_main_home;
+    }
+
 
     private void initToolbar() {
         mIvAvatar.setImageResource(R.drawable.bili_default_avatar);

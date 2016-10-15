@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
 public class FollowBangumi {
     private String brief;
     private String cover;
+    private String favorites;
+    @SerializedName("is_finish")
+    private String isFinish; //1完结
     private int limitGroupId;
     @SerializedName("new_ep")
     private Ep newEp;
@@ -18,8 +21,8 @@ public class FollowBangumi {
     private int seasonStatus;
     private String squareCover;
     private String title;
-    @SerializedName("title_count")
-    private String titleCount;
+    @SerializedName("total_count")
+    private String totalCount;
     @SerializedName("user_season")
     private UserSeason userSeason;
     private String weekday;
@@ -88,12 +91,12 @@ public class FollowBangumi {
         this.title = title;
     }
 
-    public String getTitleCount() {
-        return titleCount;
+    public String getTotalCount() {
+        return totalCount;
     }
 
-    public void setTitleCount(String titleCount) {
-        this.titleCount = titleCount;
+    public void setTotalCount(String totalCount) {
+        this.totalCount = totalCount;
     }
 
     public UserSeason getUserSeason() {
@@ -110,6 +113,22 @@ public class FollowBangumi {
 
     public void setWeekday(String weekday) {
         this.weekday = weekday;
+    }
+
+    public String getIsFinish() {
+        return isFinish;
+    }
+
+    public void setIsFinish(String isFinish) {
+        this.isFinish = isFinish;
+    }
+
+    public String getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(String favorites) {
+        this.favorites = favorites;
     }
 
     public static class Ep {

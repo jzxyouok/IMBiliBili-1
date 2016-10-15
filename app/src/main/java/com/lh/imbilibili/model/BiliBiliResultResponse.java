@@ -31,4 +31,8 @@ public class BiliBiliResultResponse<T> {
     public void setResult(T result) {
         this.result = result;
     }
+
+    public boolean isSuccess() {
+        return result != null && code == 0;
+    }
 }

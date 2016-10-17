@@ -29,11 +29,13 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/1.
+ * 分区列表界面
  */
 
 public class PartionListFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, PartionChildRecyclerViewAdapter.OnVideoItemClickListener {
 
     private static final String EXTRA_DATA = "partion";
+    public static final int PAGE_SIZE = 20;
 
     @BindView(R.id.recycler_view)
     LoadMoreRecyclerView mRecyclerView;
@@ -71,7 +73,7 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     @Override
     protected void fetchData() {
         loadData();
-        loadNewData(mCurrentPage);
+        loadNewData();
     }
 
     @Override
@@ -93,8 +95,8 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
         mAdapter.setOnVideoItemClickListener(this);
     }
 
-    private void loadNewData(int page) {
-        mNewVideoDataCall = RetrofitHelper.getInstance().getPartionService().getPartionChildList(mPartion.getId(), page, 20, "senddate");
+    private void loadNewData() {
+        mNewVideoDataCall = RetrofitHelper.getInstance().getPartionService().getPartionChildList(mPartion.getId(), mCurrentPage, PAGE_SIZE, "senddate");
         mNewVideoDataCall.enqueue(new Callback<BilibiliDataResponse<List<PartionVideo>>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {
@@ -102,20 +104,20 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
                 if (response.body().getCode() == 0) {
                     if (response.body().getData().size() == 0) {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
-                        mCurrentPage--;
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addNewVideos(response.body().getData());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemRangeInserted(startPosition, response.body().getData().size());
+                        mCurrentPage++;
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<List<PartionVideo>>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }
@@ -133,15 +135,14 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<PartionHome>> call, Throwable t) {
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
-        loadNewData(mCurrentPage);
+        loadNewData();
     }
 
     @Override

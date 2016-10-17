@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by liuhui on 2016/9/29.
+ * 分区界面
  */
 
 public class CategoryFragment extends BaseFragment implements GridViewAdapter.OnItemClickListener {

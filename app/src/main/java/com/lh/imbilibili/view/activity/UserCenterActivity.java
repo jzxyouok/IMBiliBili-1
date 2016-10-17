@@ -22,6 +22,7 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.user.UserCenter;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.StringUtils;
@@ -30,7 +31,14 @@ import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.adapter.usercenter.ViewPagerAdapter;
+import com.lh.imbilibili.view.fragment.UserCenterArchiveFragment;
+import com.lh.imbilibili.view.fragment.UserCenterCommunityFragment;
+import com.lh.imbilibili.view.fragment.UserCenterFavouriteFragment;
+import com.lh.imbilibili.view.fragment.UserCenterFollowBangumiFragment;
+import com.lh.imbilibili.view.fragment.UserCenterGameFragment;
 import com.lh.imbilibili.view.fragment.UserCenterHomeFragment;
+import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,11 +48,13 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/15.
+ * 用户中心Activity
  */
 
 public class UserCenterActivity extends BaseActivity {
 
     private static final String EXTRA_ID = "id";
+    private static final String EXTRA_PAGE = "page";
     private static final int PAGE_SIZE = 10;
 
     @BindView(R.id.coordinator_layout)
@@ -80,7 +90,7 @@ public class UserCenterActivity extends BaseActivity {
     @BindView(R.id.view_pager)
     ViewPager mViewPager;
 
-    private String mId;
+    private int mId;
     private int[] mLevelImg = new int[]{R.drawable.ic_lv0_large,
             R.drawable.ic_lv1_large,
             R.drawable.ic_lv2_large,
@@ -91,13 +101,22 @@ public class UserCenterActivity extends BaseActivity {
             R.drawable.ic_lv7_large,
             R.drawable.ic_lv8_large,
             R.drawable.ic_lv9_large};
-    private BaseFragment[] mFragments;
 
     private Call<BilibiliDataResponse<UserCenter>> mUserInfoCall;
 
-    public static void startActivity(Context context, String id) {
+    private UserCenter mUserCenter;
+    private String[] mtitles;
+    private int mDefaultPage;
+
+    /**
+     * @param context Context
+     * @param id      用户Id
+     * @param page    默认展示的页面
+     */
+    public static void startActivity(Context context, int id, int page) {
         Intent intent = new Intent(context, UserCenterActivity.class);
         intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_PAGE, page);
         context.startActivity(intent);
     }
 
@@ -107,9 +126,43 @@ public class UserCenterActivity extends BaseActivity {
         setContentView(R.layout.activity_user_center);
         ButterKnife.bind(this);
         StatusBarUtils.setCollapsingToolbarLayout(this, mToolbar, mAppBarLayout, mCollapsingToolbarLayout);
-        mId = getIntent().getStringExtra(EXTRA_ID);
+        mId = getIntent().getIntExtra(EXTRA_ID, 0);
+        mDefaultPage = getIntent().getIntExtra(EXTRA_PAGE, 0);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         Glide.with(this).load("file:///android_asset/ic_zone_background.png").centerCrop().into(mIvBackground);
+        initViewPager();
         loadUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        BusUtils.getBus().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        BusUtils.getBus().unregister(this);
+    }
+
+    private void initViewPager() {
+        BaseFragment[] mFragments = new BaseFragment[]{UserCenterHomeFragment.newInstance(),
+                UserCenterArchiveFragment.newInstance(false),
+                UserCenterFavouriteFragment.newInstance(),
+                UserCenterFollowBangumiFragment.newInstance(),
+                UserCenterCommunityFragment.newInstance(),
+                UserCenterArchiveFragment.newInstance(true),
+                UserCenterGameFragment.newInstance()};
+        mtitles = new String[]{"主页", "投稿", "收藏", "追番", "兴趣圈", "投币", "游戏"};
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragments, mtitles);
+        mViewPager.setAdapter(viewPagerAdapter);
+        mTabs.setupWithViewPager(mViewPager);
     }
 
     private void loadUserInfo() {
@@ -118,7 +171,8 @@ public class UserCenterActivity extends BaseActivity {
             @Override
             public void onResponse(Call<BilibiliDataResponse<UserCenter>> call, Response<BilibiliDataResponse<UserCenter>> response) {
                 if (response.body().isSuccess()) {
-                    bindViewData(response.body().getData());
+                    mUserCenter = response.body().getData();
+                    bindViewData(mUserCenter);
                 }
             }
 
@@ -130,10 +184,13 @@ public class UserCenterActivity extends BaseActivity {
     }
 
     private void bindViewData(UserCenter userCenter) {
+        BusUtils.getBus().post(userCenter);
+        modifyTabsTitle(userCenter);
+        mToolbar.setTitle(userCenter.getCard().getName());
         if (!TextUtils.isEmpty(userCenter.getImages().getImgUrl())) {
             Glide.with(this).load(userCenter.getImages().getImgUrl()).centerCrop().into(mIvBackground);
         }
-        Glide.with(this).load(userCenter.getCard().getFace()).transform(new CircleTransformation(getApplicationContext())).into(mIvUserAvator);
+        Glide.with(this).load(userCenter.getCard().getFace()).asBitmap().transform(new CircleTransformation(getApplicationContext())).into(mIvUserAvator);
         mTvNickName.setText(userCenter.getCard().getName());
         mIvLevel.setImageResource(mLevelImg[userCenter.getCard().getLevelInfo().getCurrentLevel()]);
         switch (userCenter.getCard().getSex()) {
@@ -158,9 +215,46 @@ public class UserCenterActivity extends BaseActivity {
         } else {
             mTvUserDesc.setText(userCenter.getCard().getSign());
         }
-        mFragments = new BaseFragment[]{UserCenterHomeFragment.newInstance(userCenter)};
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragments);
-        mViewPager.setAdapter(viewPagerAdapter);
+        mViewPager.setCurrentItem(mDefaultPage);
+    }
+
+    private void modifyTabsTitle(UserCenter userCenter) {
+        String foramt = " %d";
+        if (userCenter.getArchive() != null) {
+            mtitles[1] += StringUtils.format(foramt, userCenter.getArchive().getCount());
+        }
+        if (userCenter.getSetting().getFavVideo() != 0 && userCenter.getFavourite() != null) {
+            mtitles[2] += StringUtils.format(foramt, userCenter.getFavourite().getCount());
+        }
+        if (userCenter.getSetting().getBangumi() != 0 && userCenter.getSeason() != null) {
+            mtitles[3] += StringUtils.format(foramt, userCenter.getSeason().getCount());
+        }
+        if (userCenter.getSetting().getGroups() != 0 && userCenter.getCommunity() != null) {
+            mtitles[4] += StringUtils.format(foramt, userCenter.getCommunity().getCount());
+        }
+        if (userCenter.getSetting().getCoinsVideo() != 0 && userCenter.getCoinArchive() != null) {
+            mtitles[5] += StringUtils.format(foramt, userCenter.getCoinArchive().getCount());
+        }
+        if (userCenter.getSetting().getPlayedGame() != 0 && userCenter.getGame() != null) {
+            mtitles[6] += StringUtils.format(foramt, userCenter.getGame().getCount());
+        }
+        mTabs.setupWithViewPager(mViewPager);
+    }
+
+    @Produce
+    public UserCenter produceUserCenter() {
+        return mUserCenter;
+    }
+
+
+    /**
+     * @param event UserCenterHomeFragment产生的Item点击事件
+     */
+    @Subscribe
+    public void onHomeItemClickEvent(UserCenterHomeFragment.ItemClickEvent event) {
+        if (event.position >= 0 && event.position < mtitles.length) {
+            mViewPager.setCurrentItem(event.position);
+        }
     }
 
     @Override

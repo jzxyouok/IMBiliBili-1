@@ -27,13 +27,16 @@ public class UpUserSearchAdapter extends RecyclerView.Adapter {
 
     private List<Up> mUps;
 
-
     private Context mContext;
+    private OnItemClickListener mOnItemClickListener;
 
     public UpUserSearchAdapter(Context context) {
         mContext = context;
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
 
     public void addData(List<Up> datas) {
         if (datas == null) {
@@ -56,11 +59,12 @@ public class UpUserSearchAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         UpUserViewHolder upUserViewHolder = (UpUserViewHolder) holder;
         Up up = mUps.get(position);
-        Glide.with(mContext).load(up.getCover()).transform(new CircleTransformation(mContext.getApplicationContext())).into(upUserViewHolder.mIvAvatar);
+        Glide.with(mContext).load(up.getCover()).asBitmap().transform(new CircleTransformation(mContext.getApplicationContext())).into(upUserViewHolder.mIvAvatar);
         upUserViewHolder.mTvTitle.setText(up.getTitle());
         upUserViewHolder.mTvFanNum.setText(StringUtils.format("粉丝:%s", StringUtils.formateNumber(up.getFans())));
         upUserViewHolder.mTvVideoNum.setText(StringUtils.format("视频数:%s", StringUtils.formateNumber(up.getArchives())));
         upUserViewHolder.mTvSign.setText(up.getSign());
+        upUserViewHolder.mMid = up.getParam();
     }
 
     @Override
@@ -71,7 +75,7 @@ public class UpUserSearchAdapter extends RecyclerView.Adapter {
         return mUps.size();
     }
 
-    class UpUserViewHolder extends RecyclerView.ViewHolder {
+    class UpUserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.avatar)
         ImageView mIvAvatar;
@@ -84,9 +88,24 @@ public class UpUserSearchAdapter extends RecyclerView.Adapter {
         @BindView(R.id.sign)
         TextView mTvSign;
 
-        public UpUserViewHolder(View itemView) {
+        private String mMid;
+
+        UpUserViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                int mid = Integer.parseInt(mMid);
+                mOnItemClickListener.onUpItemClick(mid);
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onUpItemClick(int mid);
     }
 }

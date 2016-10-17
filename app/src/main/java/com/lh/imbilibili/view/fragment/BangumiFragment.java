@@ -47,6 +47,9 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     private Call<BiliBiliResultResponse<IndexPage>> indexCall;
     private Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> recommendCall;
+    private int mNotifyCount;
+
+    private boolean mNeedRefresh; //是否需要全部刷新
 
     public static BangumiFragment newInstance() {
         return new BangumiFragment();
@@ -60,6 +63,8 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
+        mNeedRefresh = true;
+        mNotifyCount = 2;
         initRecyclerView();
         loadAllData();
     }
@@ -72,9 +77,9 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     private void initRecyclerView() {
         swipeRefreshLayout.setOnRefreshListener(this);
-        adapter = new BangumiAdapter(getActivity());
+        adapter = new BangumiAdapter(getContext());
         adapter.setItemClickListener(this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -110,7 +115,9 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
                     indexData = response.body().getResult();
                     Collections.sort(indexData.getSerializing());
                     adapter.setmIndexPage(indexData);
-                    adapter.notifyDataSetChanged();
+                    if (mNeedRefresh) {
+                        notifyDataLoadFinish();
+                    }
                 }
             }
 
@@ -130,12 +137,19 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
                 recyclerView.setLoading(false);
                 if (response.isSuccessful() && response.body().getCode() == 0) {
                     if (response.body().getResult().size() == 0) {
-                        recyclerView.setLoadView("再怎么找也没有了", false);
+                        recyclerView.setLoadView(R.string.no_data_tips, false);
                         recyclerView.setEnableLoadMore(false);
                         return;
                     }
-                    adapter.addBangumis(response.body().getResult());
-                    adapter.notifyDataSetChanged();
+                    if (mNeedRefresh) {//需要全部刷新
+                        adapter.clearRecommend();
+                        adapter.addBangumis(response.body().getResult());
+                        notifyDataLoadFinish();
+                    } else {//加载更多
+                        int startPosition = adapter.getItemCount();
+                        adapter.addBangumis(response.body().getResult());
+                        adapter.notifyItemRangeInserted(startPosition, response.body().getResult().size());
+                    }
                     mCursor = response.body().getResult().get(response.body().getResult().size() - 1).getCursor();
                 }
             }
@@ -154,7 +168,10 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
+        mNotifyCount = 2;
+        mNeedRefresh = true;
         recyclerView.setEnableLoadMore(true);
+        recyclerView.setLoadView(R.string.loading, true);
         loadAllData();
     }
 
@@ -182,6 +199,16 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             if (data.equals(String.valueOf(R.id.follow_bangumi))) {
                 FollowBangumiActivity.startActivity(getContext());
             }
+        }
+    }
+
+    //保证数据全部加载完毕再刷新
+    private void notifyDataLoadFinish() {
+        mNotifyCount--;
+        if (mNotifyCount == 0) {
+            mNotifyCount = 2;
+            mNeedRefresh = false;
+            adapter.notifyDataSetChanged();
         }
     }
 

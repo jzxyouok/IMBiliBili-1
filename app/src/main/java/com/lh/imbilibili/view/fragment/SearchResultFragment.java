@@ -54,6 +54,7 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         ButterKnife.bind(this, view);
         mKeyWord = getArguments().getString(EXTRA_KEY);
         SearchResult searchResult = getArguments().getParcelable(EXTRA_DATA);
+        mCurrentPage = 1;
         mAdapter = new SearchAdapter(getContext(), searchResult);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -86,27 +87,24 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
                         mSearchResult = response.body().getData();
                         mAdapter.addData(mSearchResult.getItems().getArchive());
                         mAdapter.notifyDataSetChanged();
+                        mCurrentPage++;
                     } else {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     }
-                } else {
-                    mCurrentPage--;
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<SearchResult>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
         loadSearchPage(mCurrentPage);
     }
 

@@ -16,6 +16,7 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.user.UserCenter;
 import com.lh.imbilibili.utils.DisplayUtils;
 import com.lh.imbilibili.utils.StringUtils;
+import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.widget.FavoritesView;
 
@@ -50,11 +51,22 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<Integer> mTypeList;
+    private boolean mIsMe;
 
-    public HomeRecyclerViewAdapter(Context context, UserCenter uerCenter) {
+    private OnItemClickListener mOnItemClickListener;
+
+    public HomeRecyclerViewAdapter(Context context) {
         mContext = context;
-        mUserCenter = uerCenter;
         mTypeList = new ArrayList<>();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
+
+    public void setUserCenter(UserCenter userCenter) {
+        mUserCenter = userCenter;
+        mIsMe = UserManagerUtils.getInstance().getCurrentUser() != null && mUserCenter.getCard().getMid().equals(UserManagerUtils.getInstance().getCurrentUser().getMid() + "");
     }
 
     @Override
@@ -93,9 +105,9 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
         int type = holder.getItemViewType();
         if (type == TYPE_ARCHIVE_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("全部投稿");
+            headViewHolder.mTvTitle.setText(mIsMe ? R.string.author_space_header_my_videos : R.string.author_space_header_videos);
             headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getArchive().getCount()));
-            headViewHolder.mTvSubTitle.setText("进去看看");
+            headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
         } else if (type == TYPE_ARCHIVE_ITEM) {
             TwoVideoViewHolder twoVideoViewHolder = (TwoVideoViewHolder) holder;
             for (int index = 0; index < 2; index++) {
@@ -112,12 +124,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         } else if (type == TYPE_COIN_ARCHIVE_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("最近投过硬币的视频");
+            headViewHolder.mTvTitle.setText(R.string.author_space_header_coins_videos);
             if (mUserCenter.getSetting().getCoinsVideo() == 0) {
-                headViewHolder.mTvCount.setText("未公开");
+                headViewHolder.mTvCount.setText(R.string.author_space_privacy_denied);
             } else {
                 headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getCoinArchive().getCount()));
-                headViewHolder.mTvSubTitle.setText("进去看看");
+                headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
             }
         } else if (type == TYPE_COIN_ARCHIVE_ITEM) {
             TwoVideoViewHolder twoVideoViewHolder = (TwoVideoViewHolder) holder;
@@ -129,18 +141,19 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
                     twoVideoViewHolder.mVideos[index].mTvTitle.setText(archive.getTitle());
                     twoVideoViewHolder.mVideos[index].mTvInfoViews.setText(StringUtils.formateNumber(archive.getPlay()));
                     twoVideoViewHolder.mVideos[index].mTvInfoDanmakus.setText(StringUtils.formateNumber(archive.getDanmaku()));
+                    twoVideoViewHolder.mVideos[index].mAid = archive.getParam();
                 } else {
                     twoVideoViewHolder.mVideos[index].itemView.setVisibility(View.INVISIBLE);
                 }
             }
         } else if (type == TYPE_FAVOURITE_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("TA的收藏夹");
+            headViewHolder.mTvTitle.setText(mIsMe ? R.string.author_space_header_my_favorites : R.string.author_space_header_favorites);
             if (mUserCenter.getSetting().getFavVideo() == 0) {
-                headViewHolder.mTvCount.setText("未公开");
+                headViewHolder.mTvCount.setText(R.string.author_space_privacy_denied);
             } else {
                 headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getFavourite().getCount()));
-                headViewHolder.mTvSubTitle.setText("进去看看");
+                headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
             }
         } else if (type == TYPE_FAVOURITE_ITEM) {
             FavViewHolder favViewHolder = (FavViewHolder) holder;
@@ -154,12 +167,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         } else if (type == TYPE_FOLLOW_BANGUMI_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("TA的追番");
+            headViewHolder.mTvTitle.setText(mIsMe ? R.string.author_space_header_my_bangumi : R.string.author_space_header_bangumi);
             if (mUserCenter.getSetting().getBangumi() == 0) {
-                headViewHolder.mTvCount.setText("未公开");
+                headViewHolder.mTvCount.setText(R.string.author_space_privacy_denied);
             } else {
                 headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getSeason().getCount()));
-                headViewHolder.mTvSubTitle.setText("进去看看");
+                headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
             }
         } else if (type == TYPE_FOLLOW_BANGUMI_ITEM) {
             BangumiViewHolder bangumiViewHolder = (BangumiViewHolder) holder;
@@ -167,8 +180,13 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             if (realPosition < mUserCenter.getSeason().getItem().size()) {
                 bangumiViewHolder.itemView.setVisibility(View.VISIBLE);
                 UserCenter.Season season = mUserCenter.getSeason().getItem().get(realPosition);
-                Glide.with(mContext).load(season.getCover()).centerCrop().into(bangumiViewHolder.mIvCover);
+                Glide.with(mContext)
+                        .load(season.getCover())
+                        .centerCrop()
+                        .transform(new RoundedCornersTransformation(mContext.getApplicationContext(), DisplayUtils.dip2px(mContext.getApplicationContext(), 2)))
+                        .into(bangumiViewHolder.mIvCover);
                 bangumiViewHolder.mTvTitle.setText(season.getTitle());
+                bangumiViewHolder.mSeasonId = season.getParam();
                 if (season.getNewestEpIndex().equals(season.getTotalCount())) {
                     bangumiViewHolder.mTvText1.setText(StringUtils.format("%s话全", season.getTotalCount()));
                 } else {
@@ -179,12 +197,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         } else if (type == TYPE_COMMUNITY_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("TA的圈子");
+            headViewHolder.mTvTitle.setText(mIsMe ? R.string.author_space_header_my_group : R.string.author_space_header_group);
             if (mUserCenter.getSetting().getGroups() == 0) {
-                headViewHolder.mTvCount.setText("未公开");
+                headViewHolder.mTvCount.setText(R.string.author_space_privacy_denied);
             } else {
                 headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getCommunity().getCount()));
-                headViewHolder.mTvSubTitle.setText("进去看看");
+                headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
             }
         } else if (type == TYPE_COMMUNITY_ITEM) {
             CommunityGameViewHolder communityGameViewHolder = (CommunityGameViewHolder) holder;
@@ -200,12 +218,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             communityGameViewHolder.mPostCount.setText(StringUtils.format("帖子:%d", community.getPostCount()));
         } else if (type == TYPE_GAME_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
-            headViewHolder.mTvTitle.setText("TA玩的游戏");
-            if (mUserCenter.getSetting().getGroups() == 0) {
-                headViewHolder.mTvCount.setText("未公开");
+            headViewHolder.mTvTitle.setText(mIsMe ? R.string.author_space_header_my_game : R.string.author_space_header_game);
+            if (mUserCenter.getSetting().getPlayedGame() == 0) {
+                headViewHolder.mTvCount.setText(R.string.author_space_privacy_denied);
             } else {
-                headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getCommunity().getCount()));
-                headViewHolder.mTvSubTitle.setText("进去看看");
+                headViewHolder.mTvCount.setText(StringUtils.formateNumber(mUserCenter.getGame().getCount()));
+                headViewHolder.mTvSubTitle.setText(R.string.head_title_enter);
             }
         } else if (type == TYPE_GAME_ITEM) {
             CommunityGameViewHolder communityGameViewHolder = (CommunityGameViewHolder) holder;
@@ -231,11 +249,9 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             return 0;
         }
         mTypeList.clear();
-        if (mUserCenter.getArchive() != null) {
+        if (mUserCenter.getArchive() != null && mUserCenter.getArchive().getCount() != 0) {
             mTypeList.add(TYPE_ARCHIVE_HEAD);
-            if (mUserCenter.getArchive().getCount() != 0) {
-                mTypeList.add(TYPE_ARCHIVE_ITEM);
-            }
+            mTypeList.add(TYPE_ARCHIVE_ITEM);
         }
         if (mUserCenter.getSetting().getCoinsVideo() == 0) {
             mTypeList.add(TYPE_COIN_ARCHIVE_HEAD);
@@ -284,7 +300,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
         return mTypeList.size();
     }
 
-    class HeadViewHolder extends RecyclerView.ViewHolder {
+    class HeadViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title)
         TextView mTvTitle;
         @BindView(R.id.count)
@@ -295,10 +311,18 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
         HeadViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(getItemViewType(), null);
+            }
         }
     }
 
-    class TwoVideoViewHolder extends RecyclerView.ViewHolder {
+    class TwoVideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.card_layout_1)
         ViewGroup mCard1;
@@ -310,6 +334,20 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mVideos = new VideoViewHolder[]{new VideoViewHolder(mCard1), new VideoViewHolder(mCard2)};
+            mCard1.setOnClickListener(this);
+            mCard2.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener == null) {
+                return;
+            }
+            if (v.getId() == R.id.card_layout_1) {
+                mOnItemClickListener.onItemClick(getItemViewType(), mVideos[0].mAid);
+            } else {
+                mOnItemClickListener.onItemClick(getItemViewType(), mVideos[1].mAid);
+            }
         }
 
         public class VideoViewHolder {
@@ -323,6 +361,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             TextView mTvInfoDanmakus;
 
             private View itemView;
+            private String mAid;
 
             VideoViewHolder(View itemView) {
                 this.itemView = itemView;
@@ -345,7 +384,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    class BangumiViewHolder extends RecyclerView.ViewHolder {
+    class BangumiViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.cover)
         ImageView mIvCover;
         @BindView(R.id.title)
@@ -353,9 +392,19 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
         @BindView(R.id.text1)
         TextView mTvText1;
 
+        private String mSeasonId;
+
         public BangumiViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(getItemViewType(), mSeasonId);
+            }
         }
     }
 
@@ -376,5 +425,9 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int type, String data);
     }
 }

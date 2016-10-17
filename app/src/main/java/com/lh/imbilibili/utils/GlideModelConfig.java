@@ -5,6 +5,7 @@ import android.content.Context;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory;
+import com.bumptech.glide.load.engine.cache.MemorySizeCalculator;
 import com.bumptech.glide.module.GlideModule;
 
 /**
@@ -13,7 +14,9 @@ import com.bumptech.glide.module.GlideModule;
 public class GlideModelConfig implements GlideModule {
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
-        builder.setDiskCache(new ExternalCacheDiskCacheFactory(context));
+        MemorySizeCalculator calculator = new MemorySizeCalculator(context);
+        int defaultMemoryCacheSize = calculator.getMemoryCacheSize();
+        builder.setDiskCache(new ExternalCacheDiskCacheFactory(context, defaultMemoryCacheSize));
     }
 
     @Override

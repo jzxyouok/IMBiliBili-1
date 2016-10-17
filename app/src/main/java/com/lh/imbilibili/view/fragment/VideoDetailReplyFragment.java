@@ -23,23 +23,24 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/2.
+ * 视频详情评论页面
  */
 
 public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreViewClickListener, LoadMoreRecyclerView.OnLoadMoreLinstener {
 
     private static final String EXTRA_ID = "id";
+    private static final int PAGE_SIZE = 20;
 
     @BindView(R.id.recycler_view)
     LoadMoreRecyclerView mRecyclerView;
 
-    private int mCurrentPage = 1;
+    private int mCurrentPage;
     private Call<BilibiliDataResponse<FeedbackData>> mFeedbackCall;
-    private FeedbackData mFeedbackData;
     private FeedbackAdapter mFeedbackAdapter;
 
     private String mId;
 
-    private int mPageSize = 20;
+    private boolean mIsFirstLoad;
 
     public static VideoDetailReplyFragment newInstance(String id) {
         VideoDetailReplyFragment fragment = new VideoDetailReplyFragment();
@@ -53,18 +54,20 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
     protected void initView(View view) {
         ButterKnife.bind(this, view);
         mId = getArguments().getString(EXTRA_ID);
-        mFeedbackAdapter = new FeedbackAdapter(mFeedbackData);
+        mCurrentPage = 1;
+        mIsFirstLoad = true;
+        mFeedbackAdapter = new FeedbackAdapter();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         FeedbackItemDecoration itemDecoration = new FeedbackItemDecoration(ContextCompat.getColor(getContext(), R.color.theme_color_dividing_line));
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mFeedbackAdapter);
         mRecyclerView.setOnLoadMoreLinstener(this);
-        loadFeedbackData(mId, mCurrentPage);
+        loadFeedbackData();
     }
 
-    private void loadFeedbackData(String id, int page) {
-        mFeedbackCall = RetrofitHelper.getInstance().getReplyService().getFeedback(0, id, page, mPageSize, 0, 1);
+    private void loadFeedbackData() {
+        mFeedbackCall = RetrofitHelper.getInstance().getReplyService().getFeedback(0, mId, mCurrentPage, PAGE_SIZE, 0, 1);
         mFeedbackCall.enqueue(new Callback<BilibiliDataResponse<FeedbackData>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<FeedbackData>> call, Response<BilibiliDataResponse<FeedbackData>> response) {
@@ -72,23 +75,26 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
                 if (response.body().getCode() == 0) {
                     if (response.body().getData().getReplies().isEmpty()) {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     }
-                    if (mFeedbackData == null) {
-                        mFeedbackData = response.body().getData();
+                    FeedbackData feedbackData = response.body().getData();
+                    if (mIsFirstLoad) {
+                        mIsFirstLoad = false;
+                        mFeedbackAdapter.addFeedbackData(feedbackData);
+                        mFeedbackAdapter.notifyDataSetChanged();
                     } else {
-                        mFeedbackData.getReplies().addAll(response.body().getData().getReplies());
+                        int startPosition = mFeedbackAdapter.getItemCount();
+                        mFeedbackAdapter.addFeedbackData(feedbackData);
+                        mFeedbackAdapter.notifyItemRangeInserted(startPosition, feedbackData.getReplies().size());
                     }
-                    mFeedbackAdapter.setFeedbackData(mFeedbackData);
-                    mFeedbackAdapter.notifyDataSetChanged();
+                    mCurrentPage++;
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<FeedbackData>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setEnableLoadMore(false);
-                mRecyclerView.setLoadView("点击重试", false);
+                mRecyclerView.setLoadView(R.string.load_failed_with_click, false);
                 mRecyclerView.setOnLoadMoreViewClickListener(VideoDetailReplyFragment.this);
             }
         });
@@ -113,14 +119,12 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
     @Override
     public void onLoadMoreViewClick() {
         mRecyclerView.setEnableLoadMore(true);
-        mRecyclerView.setLoadView("加载中", true);
-        loadFeedbackData(mId, mCurrentPage);
-        mCurrentPage++;
+        mRecyclerView.setLoadView(R.string.loading, true);
+        loadFeedbackData();
     }
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
-        loadFeedbackData(mId, mCurrentPage);
+        loadFeedbackData();
     }
 }

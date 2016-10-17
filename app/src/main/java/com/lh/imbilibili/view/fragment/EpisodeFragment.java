@@ -24,7 +24,6 @@ public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter
     public static final String BANGUMI_DETAIL_DATA = "BangumiDetailData";
     RecyclerView recyclerView;
 
-    private FeedbackEpAdapter adapter;
     private List<BangumiDetail.Episode> episodes;
     private AlertDialog dialog;
 
@@ -43,7 +42,7 @@ public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter
             recyclerView = new RecyclerView(getContext());
             int space = getContext().getResources().getDimensionPixelSize(R.dimen.item_spacing);
             builder.setView(recyclerView, space, space, space, space);
-            adapter = new FeedbackEpAdapter(episodes);
+            FeedbackEpAdapter adapter = new FeedbackEpAdapter(episodes);
             adapter.selectItem(getArguments().getInt("position", 0));
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
             recyclerView.setLayoutManager(gridLayoutManager);

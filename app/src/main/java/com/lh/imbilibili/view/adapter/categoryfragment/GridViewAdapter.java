@@ -101,7 +101,7 @@ public class GridViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public static interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onItemClick(int position);
     }
 }

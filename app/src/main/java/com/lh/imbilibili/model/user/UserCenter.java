@@ -1,9 +1,5 @@
 package com.lh.imbilibili.model.user;
 
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -14,7 +10,7 @@ import java.util.List;
  * 用户中心数据
  */
 
-public class UserCenter implements Parcelable {
+public class UserCenter {
     private int relation;
     private Setting setting;
     private Image images;
@@ -26,32 +22,6 @@ public class UserCenter implements Parcelable {
     @SerializedName("coin_archive")
     private CenterList<Archive> coinArchive;
     private CenterList<Game> game;
-
-    protected UserCenter(Parcel in) {
-        relation = in.readInt();
-        setting = in.readParcelable(Setting.class.getClassLoader());
-        images = in.readParcelable(Image.class.getClassLoader());
-        card = in.readParcelable(Card.class.getClassLoader());
-        Bundle bundle = in.readBundle(getClass().getClassLoader());
-        archive = bundle.getParcelable("archive");
-        community = bundle.getParcelable("community");
-        season = bundle.getParcelable("season");
-        favourite = bundle.getParcelable("favourite");
-        coinArchive = bundle.getParcelable("coinArchive");
-        game = bundle.getParcelable("game");
-    }
-
-    public static final Creator<UserCenter> CREATOR = new Creator<UserCenter>() {
-        @Override
-        public UserCenter createFromParcel(Parcel in) {
-            return new UserCenter(in);
-        }
-
-        @Override
-        public UserCenter[] newArray(int size) {
-            return new UserCenter[size];
-        }
-    };
 
     public int getRelation() {
         return relation;
@@ -125,27 +95,6 @@ public class UserCenter implements Parcelable {
         this.game = game;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(relation);
-        dest.writeParcelable(setting, flags);
-        dest.writeParcelable(images, flags);
-        dest.writeParcelable(card, flags);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("archive", archive);
-        bundle.putParcelable("community", community);
-        bundle.putParcelable("season", season);
-        bundle.putParcelable("favourite", favourite);
-        bundle.putParcelable("coinArchive", coinArchive);
-        bundle.putParcelable("game", game);
-        dest.writeBundle(bundle);
-    }
-
     public Setting getSetting() {
         return setting;
     }
@@ -154,7 +103,7 @@ public class UserCenter implements Parcelable {
         this.setting = setting;
     }
 
-    public static class Card implements Parcelable {
+    public static class Card {
         private String mid;
         private String name;
         private boolean approve;
@@ -177,43 +126,6 @@ public class UserCenter implements Parcelable {
         private LevelInfo levelInfo;
         @SerializedName("official_verify")
         private OfficialVerify officialVerify;
-
-        public Card() {
-        }
-
-        protected Card(Parcel in) {
-            mid = in.readString();
-            name = in.readString();
-            approve = in.readByte() != 0;
-            sex = in.readString();
-            rank = in.readString();
-            face = in.readString();
-            displayRank = in.readString();
-            regtime = in.readLong();
-            birthday = in.readString();
-            place = in.readString();
-            description = in.readString();
-            article = in.readInt();
-            attentions = in.createIntArray();
-            fans = in.readInt();
-            friend = in.readInt();
-            attention = in.readInt();
-            sign = in.readString();
-            levelInfo = in.readParcelable(LevelInfo.class.getClassLoader());
-            officialVerify = in.readParcelable(OfficialVerify.class.getClassLoader());
-        }
-
-        public static final Creator<Card> CREATOR = new Creator<Card>() {
-            @Override
-            public Card createFromParcel(Parcel in) {
-                return new Card(in);
-            }
-
-            @Override
-            public Card[] newArray(int size) {
-                return new Card[size];
-            }
-        };
 
         public String getMid() {
             return mid;
@@ -366,57 +278,10 @@ public class UserCenter implements Parcelable {
         public void setOfficialVerify(OfficialVerify officialVerify) {
             this.officialVerify = officialVerify;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(mid);
-            dest.writeString(name);
-            dest.writeByte((byte) (approve ? 1 : 0));
-            dest.writeString(sex);
-            dest.writeString(rank);
-            dest.writeString(face);
-            dest.writeString(displayRank);
-            dest.writeLong(regtime);
-            dest.writeString(birthday);
-            dest.writeString(place);
-            dest.writeString(description);
-            dest.writeInt(article);
-            dest.writeIntArray(attentions);
-            dest.writeInt(fans);
-            dest.writeInt(friend);
-            dest.writeInt(attention);
-            dest.writeString(sign);
-            dest.writeParcelable(levelInfo, flags);
-            dest.writeParcelable(officialVerify, flags);
-        }
     }
 
-    public static class Image implements Parcelable {
+    public static class Image {
         private String imgUrl;
-
-        public Image() {
-        }
-
-        protected Image(Parcel in) {
-            imgUrl = in.readString();
-        }
-
-        public static final Creator<Image> CREATOR = new Creator<Image>() {
-            @Override
-            public Image createFromParcel(Parcel in) {
-                return new Image(in);
-            }
-
-            @Override
-            public Image[] newArray(int size) {
-                return new Image[size];
-            }
-        };
 
         public String getImgUrl() {
             return imgUrl;
@@ -425,41 +290,11 @@ public class UserCenter implements Parcelable {
         public void setImgUrl(String imgUrl) {
             this.imgUrl = imgUrl;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(imgUrl);
-        }
     }
 
-    public static class CenterList<T extends Parcelable> implements Parcelable {
+    public static class CenterList<T> {
         private int count;
         private ArrayList<T> item;
-
-        public CenterList() {
-        }
-
-        protected CenterList(Parcel in) {
-            count = in.readInt();
-            item = in.readBundle(getClass().getClassLoader()).getParcelableArrayList("Parcel");
-        }
-
-        public static final Creator<CenterList> CREATOR = new Creator<CenterList>() {
-            @Override
-            public CenterList createFromParcel(Parcel in) {
-                return new CenterList(in);
-            }
-
-            @Override
-            public CenterList[] newArray(int size) {
-                return new CenterList[size];
-            }
-        };
 
         public int getCount() {
             return count;
@@ -476,22 +311,9 @@ public class UserCenter implements Parcelable {
         public void setItem(ArrayList<T> item) {
             this.item = item;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(count);
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("Parcel", item);
-            dest.writeBundle(bundle);
-        }
     }
 
-    public static class Archive implements Parcelable {
+    public static class Archive {
         /*"title":"[锵锵三人行] 20161014期 许子东:杜特尔特为何对中国频频示好？",
                     "cover":"http://i0.hdslb.com/bfs/archive/7b2920660b186de121306fa8781f5e434ba93686.png",
                     "uri":"bilibili://video/6683575",
@@ -507,47 +329,6 @@ public class UserCenter implements Parcelable {
         private String go_to;
         private int play;
         private int danmaku;
-
-        public Archive() {
-        }
-
-        protected Archive(Parcel in) {
-            title = in.readString();
-            cover = in.readString();
-            uri = in.readString();
-            param = in.readString();
-            go_to = in.readString();
-            play = in.readInt();
-            danmaku = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(title);
-            dest.writeString(cover);
-            dest.writeString(uri);
-            dest.writeString(param);
-            dest.writeString(go_to);
-            dest.writeInt(play);
-            dest.writeInt(danmaku);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public static final Creator<Archive> CREATOR = new Creator<Archive>() {
-            @Override
-            public Archive createFromParcel(Parcel in) {
-                return new Archive(in);
-            }
-
-            @Override
-            public Archive[] newArray(int size) {
-                return new Archive[size];
-            }
-        };
 
         public String getTitle() {
             return title;
@@ -606,7 +387,7 @@ public class UserCenter implements Parcelable {
         }
     }
 
-    public static class Community implements Parcelable {
+    public static class Community {
         /*"id":3034,
                     "name":"新番",
                     "desc":"新番动漫资源，资讯，吐槽，追番党的大家庭",
@@ -627,32 +408,6 @@ public class UserCenter implements Parcelable {
         private String postNickname;
         @SerializedName("member_nickname")
         private String memberNickname;
-
-        public Community() {
-        }
-
-        protected Community(Parcel in) {
-            id = in.readInt();
-            name = in.readString();
-            desc = in.readString();
-            thumb = in.readString();
-            postCount = in.readInt();
-            memberCount = in.readInt();
-            postNickname = in.readString();
-            memberNickname = in.readString();
-        }
-
-        public static final Creator<Community> CREATOR = new Creator<Community>() {
-            @Override
-            public Community createFromParcel(Parcel in) {
-                return new Community(in);
-            }
-
-            @Override
-            public Community[] newArray(int size) {
-                return new Community[size];
-            }
-        };
 
         public int getId() {
             return id;
@@ -717,26 +472,9 @@ public class UserCenter implements Parcelable {
         public void setMemberNickname(String memberNickname) {
             this.memberNickname = memberNickname;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(id);
-            dest.writeString(name);
-            dest.writeString(desc);
-            dest.writeString(thumb);
-            dest.writeInt(postCount);
-            dest.writeInt(memberCount);
-            dest.writeString(postNickname);
-            dest.writeString(memberNickname);
-        }
     }
 
-    public static class Season implements Parcelable {
+    public static class Season {
         /*"title":"3月的狮子",
                 "cover":"http://i0.hdslb.com/bfs/bangumi/7bfd5b9a4aabee8df09df12939d2f32c2f41a0d7.jpg",
                 "uri":"bilibili://bangumi/season/5523",
@@ -756,32 +494,6 @@ public class UserCenter implements Parcelable {
         @SerializedName("total_count")
         private String totalCount;
         private String attention;
-
-        public Season() {
-        }
-
-        protected Season(Parcel in) {
-            title = in.readString();
-            cover = in.readString();
-            uri = in.readString();
-            param = in.readString();
-            go_to = in.readString();
-            newestEpIndex = in.readString();
-            totalCount = in.readString();
-            attention = in.readString();
-        }
-
-        public static final Creator<Season> CREATOR = new Creator<Season>() {
-            @Override
-            public Season createFromParcel(Parcel in) {
-                return new Season(in);
-            }
-
-            @Override
-            public Season[] newArray(int size) {
-                return new Season[size];
-            }
-        };
 
         public String getTitle() {
             return title;
@@ -846,26 +558,9 @@ public class UserCenter implements Parcelable {
         public void setAttention(String attention) {
             this.attention = attention;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(title);
-            dest.writeString(cover);
-            dest.writeString(uri);
-            dest.writeString(param);
-            dest.writeString(go_to);
-            dest.writeString(newestEpIndex);
-            dest.writeString(totalCount);
-            dest.writeString(attention);
-        }
     }
 
-    public static class Favourite implements Parcelable {
+    public static class Favourite {
         /*"fid":7220618,
                     "mid":6460141,
                     "name":"默认收藏夹",
@@ -885,32 +580,6 @@ public class UserCenter implements Parcelable {
         private int attenCount;
         private long ctime;
         private List<Video> videos;
-
-        public Favourite() {
-        }
-
-        protected Favourite(Parcel in) {
-            fid = in.readInt();
-            mid = in.readInt();
-            name = in.readString();
-            maxCount = in.readInt();
-            curCount = in.readInt();
-            attenCount = in.readInt();
-            ctime = in.readLong();
-            videos = in.createTypedArrayList(Video.CREATOR);
-        }
-
-        public static final Creator<Favourite> CREATOR = new Creator<Favourite>() {
-            @Override
-            public Favourite createFromParcel(Parcel in) {
-                return new Favourite(in);
-            }
-
-            @Override
-            public Favourite[] newArray(int size) {
-                return new Favourite[size];
-            }
-        };
 
         public int getFid() {
             return fid;
@@ -976,49 +645,11 @@ public class UserCenter implements Parcelable {
             this.videos = videos;
         }
 
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-
-            dest.writeInt(fid);
-            dest.writeInt(mid);
-            dest.writeString(name);
-            dest.writeInt(maxCount);
-            dest.writeInt(curCount);
-            dest.writeInt(attenCount);
-            dest.writeLong(ctime);
-            dest.writeTypedList(videos);
-        }
-
-        public static class Video implements Parcelable {
+        public static class Video {
             /* "aid":4289448,
                             "pic":"http://i1.hdslb.com/bfs/archive/72d2c10340b01d0da3a4d3708359e5324019d4d2.jpg"*/
             private int aid;
             private String pic;
-
-            public Video() {
-            }
-
-            protected Video(Parcel in) {
-                aid = in.readInt();
-                pic = in.readString();
-            }
-
-            public static final Creator<Video> CREATOR = new Creator<Video>() {
-                @Override
-                public Video createFromParcel(Parcel in) {
-                    return new Video(in);
-                }
-
-                @Override
-                public Video[] newArray(int size) {
-                    return new Video[size];
-                }
-            };
 
             public String getPic() {
                 return pic;
@@ -1035,21 +666,10 @@ public class UserCenter implements Parcelable {
             public void setAid(int aid) {
                 this.aid = aid;
             }
-
-            @Override
-            public int describeContents() {
-                return 0;
-            }
-
-            @Override
-            public void writeToParcel(Parcel dest, int flags) {
-                dest.writeInt(aid);
-                dest.writeString(pic);
-            }
         }
     }
 
-    public static class Game implements Parcelable {
+    public static class Game {
         /*"uri":"com.netease.onmyoji.bili",
                     "id":55,
                     "name":"阴阳师",
@@ -1060,29 +680,6 @@ public class UserCenter implements Parcelable {
         private String name;
         private String icon;
         private String summary;
-
-        public Game() {
-        }
-
-        protected Game(Parcel in) {
-            uri = in.readString();
-            id = in.readInt();
-            name = in.readString();
-            icon = in.readString();
-            summary = in.readString();
-        }
-
-        public static final Creator<Game> CREATOR = new Creator<Game>() {
-            @Override
-            public Game createFromParcel(Parcel in) {
-                return new Game(in);
-            }
-
-            @Override
-            public Game[] newArray(int size) {
-                return new Game[size];
-            }
-        };
 
         public String getUri() {
             return uri;
@@ -1123,23 +720,9 @@ public class UserCenter implements Parcelable {
         public void setSummary(String summary) {
             this.summary = summary;
         }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(uri);
-            dest.writeInt(id);
-            dest.writeString(name);
-            dest.writeString(icon);
-            dest.writeString(summary);
-        }
     }
 
-    public static class Setting implements Parcelable {
+    public static class Setting {
         /*"tags":0,
             "fav_video":0,
             "coins_video":0,
@@ -1155,27 +738,6 @@ public class UserCenter implements Parcelable {
         @SerializedName("played_game")
         private int playedGame;
         private int groups;
-
-        protected Setting(Parcel in) {
-            tags = in.readInt();
-            favVideo = in.readInt();
-            coinsVideo = in.readInt();
-            bangumi = in.readInt();
-            playedGame = in.readInt();
-            groups = in.readInt();
-        }
-
-        public static final Creator<Setting> CREATOR = new Creator<Setting>() {
-            @Override
-            public Setting createFromParcel(Parcel in) {
-                return new Setting(in);
-            }
-
-            @Override
-            public Setting[] newArray(int size) {
-                return new Setting[size];
-            }
-        };
 
         public int getTags() {
             return tags;
@@ -1215,21 +777,6 @@ public class UserCenter implements Parcelable {
 
         public void setGroups(int groups) {
             this.groups = groups;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(tags);
-            dest.writeInt(favVideo);
-            dest.writeInt(coinsVideo);
-            dest.writeInt(bangumi);
-            dest.writeInt(playedGame);
-            dest.writeInt(groups);
         }
 
         public int getCoinsVideo() {

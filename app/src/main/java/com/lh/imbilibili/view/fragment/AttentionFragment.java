@@ -55,6 +55,8 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
 
     private AttentionRecyclerViewAdapter mAdapter;
     private int mCurrentPage;
+    private int mNotifyCount;
+    private boolean mNeedRefresh;
 
     public static AttentionFragment newInstance() {
         return new AttentionFragment();
@@ -65,6 +67,8 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
         ButterKnife.bind(this, view);
         initRecyclerView();
         mCurrentPage = 1;
+        mNotifyCount = 2;
+        mNeedRefresh = true;
         if (UserManagerUtils.getInstance().getCurrentUser() == null) {
             mBtnLogin.setVisibility(View.VISIBLE);
             mSwipeRefreshLayout.setVisibility(View.GONE);
@@ -78,7 +82,7 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
             mBtnLogin.setVisibility(View.GONE);
             mSwipeRefreshLayout.setVisibility(View.VISIBLE);
             loadAttentionBangumiData();
-            loadDynamicVideoData(mCurrentPage);
+            loadDynamicVideoData();
         }
     }
 
@@ -132,20 +136,22 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (response.body().getCode() == 0) {
                     mAdapter.setFollowBangumiData(response.body().getResult());
-                    mAdapter.notifyDataSetChanged();
+                    if (mNeedRefresh) {
+                        notifyDataLoadFinish();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<FollowBangumiResponse<List<FollowBangumi>>> call, Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }
 
-    private void loadDynamicVideoData(final int page) {
-        mDynamicVideoCall = RetrofitHelper.getInstance().getAttentionService().getDynamicVideo(page, PAGE_SIZE, 0);
+    private void loadDynamicVideoData() {
+        mDynamicVideoCall = RetrofitHelper.getInstance().getAttentionService().getDynamicVideo(mCurrentPage, PAGE_SIZE, 0);
         mDynamicVideoCall.enqueue(new Callback<BilibiliDataResponse<DynamicVideo>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<DynamicVideo>> call, Response<BilibiliDataResponse<DynamicVideo>> response) {
@@ -153,13 +159,18 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
                     mRecyclerView.setLoading(false);
                     if (response.body().getData().getFeeds().size() == 0) {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
-                        if (page == 1) {
+                        if (mNeedRefresh) {
                             mAdapter.clearFeeds();
+                            mAdapter.addFeeds(response.body().getData().getFeeds());
+                            notifyDataLoadFinish();
+                        } else {
+                            int startPosition = mAdapter.getItemCount();
+                            List<DynamicVideo.Feed> feeds = response.body().getData().getFeeds();
+                            mAdapter.addFeeds(feeds);
+                            mAdapter.notifyItemRangeInserted(startPosition, feeds.size());
                         }
-                        mAdapter.addFeeds(response.body().getData().getFeeds());
-                        mAdapter.notifyDataSetChanged();
                         mCurrentPage++;
                     }
                 }
@@ -168,9 +179,19 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
             @Override
             public void onFailure(Call<BilibiliDataResponse<DynamicVideo>> call, Throwable t) {
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
+    }
+
+    //保证数据全部加载完毕再刷新
+    private void notifyDataLoadFinish() {
+        mNotifyCount--;
+        if (mNotifyCount == 0) {
+            mNotifyCount = 2;
+            mNeedRefresh = false;
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -179,7 +200,7 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
         mBtnLogin.setVisibility(View.GONE);
         mSwipeRefreshLayout.setVisibility(View.VISIBLE);
         loadAttentionBangumiData();
-        loadDynamicVideoData(1);
+        loadDynamicVideoData();
     }
 
     @Override
@@ -195,16 +216,18 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
 
     @Override
     public void onLoadMore() {
-        loadDynamicVideoData(mCurrentPage);
+        loadDynamicVideoData();
     }
 
     @Override
     public void onRefresh() {
         mCurrentPage = 1;
+        mNotifyCount = 2;
+        mNeedRefresh = true;
         mRecyclerView.setEnableLoadMore(true);
-        mRecyclerView.setLoadView("正在加载", true);
+        mRecyclerView.setLoadView(R.string.loading, true);
         loadAttentionBangumiData();
-        loadDynamicVideoData(mCurrentPage);
+        loadDynamicVideoData();
     }
 
     @Override

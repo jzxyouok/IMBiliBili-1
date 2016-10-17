@@ -57,6 +57,9 @@ public class Constant {
     public static final String PARTION_CHILD_LIST = "/x/v2/region/show/child/list";
 
     public static final String USER_SPACE = "/x/v2/space";
+    public static final String USER_SPACE_ARCHIVE = "/x/v2/space/archive";
+    public static final String USER_SPACE_COIN_ARCHIVE = "/x/v2/space/coinarc";
+    public static final String USER_SPACE_BANGUMI = "/x/v2/space/bangumi";
 
     public static final String SEARCH = "/x/v2/search";
     public static final String SEARCH_TYPE = SEARCH + "/type";

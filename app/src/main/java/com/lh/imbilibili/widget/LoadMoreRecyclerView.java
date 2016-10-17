@@ -2,6 +2,7 @@ package com.lh.imbilibili.widget;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -28,7 +29,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
     private boolean mShowLoadingView = true;
 
     private LoadMoreAdapter mAdapter;
-    private String mLoadMoreViewText = "正在加载";
+    private String mLoadMoreViewText;
 
     private boolean mShowProgressBar = true;
 
@@ -52,6 +53,8 @@ public class LoadMoreRecyclerView extends RecyclerView {
     }
 
     private void init() {
+        mLoadMoreViewText = getResources().getString(R.string.loading);
+        mShowProgressBar = true;
         addOnScrollListener(new LoadMoreScrollLinstener());
     }
 
@@ -101,9 +104,6 @@ public class LoadMoreRecyclerView extends RecyclerView {
             return;
         }
         mEnableLoadMore = enable;
-        if (getLayoutManager().getChildCount() == 0) {
-            return;
-        }
         mShouldChangeLoadViewState = true;
     }
 
@@ -115,6 +115,11 @@ public class LoadMoreRecyclerView extends RecyclerView {
         }
         mAdapter.notifyItemChanged(mAdapter.getItemCount() - 1);
     }
+
+    public void setLoadView(@StringRes int resId, boolean showProgress) {
+        setLoadView(getResources().getString(resId), showProgress);
+    }
+
 
     public void setShowLoadingView(boolean show) {
         if (mShowLoadingView == show) {
@@ -241,6 +246,9 @@ public class LoadMoreRecyclerView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             LayoutManager layoutManager = recyclerView.getLayoutManager();
+            if (layoutManager.getChildCount() <= 0) {
+                return;
+            }
             View view = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
             ViewHolder holder = recyclerView.getChildViewHolder(view);
             if (newState == RecyclerView.SCROLL_STATE_IDLE &&

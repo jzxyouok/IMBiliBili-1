@@ -13,10 +13,12 @@ import com.lh.imbilibili.view.BaseFragment;
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     private BaseFragment[] mFragments;
+    private String[] mTitles;
 
-    public ViewPagerAdapter(FragmentManager fm, BaseFragment[] fragments) {
+    public ViewPagerAdapter(FragmentManager fm, BaseFragment[] fragments, String[] titles) {
         super(fm);
-        this.mFragments = fragments;
+        mFragments = fragments;
+        mTitles = titles;
     }
 
     @Override
@@ -27,5 +29,10 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return mFragments.length;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return mTitles[position];
     }
 }

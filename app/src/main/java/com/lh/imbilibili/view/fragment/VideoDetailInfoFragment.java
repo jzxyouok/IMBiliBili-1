@@ -112,13 +112,13 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         mTvDanmakus.setText(StringUtils.formateNumber(mVideoDetail.getStat().getDanmaku()));
         mTvPlayCount.setText(StringUtils.formateNumber(mVideoDetail.getStat().getView()));
         mTvDescription.setText(mVideoDetail.getDesc());
-        Glide.with(this).load(mVideoDetail.getOwner().getFace()).transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
+        Glide.with(this).load(mVideoDetail.getOwner().getFace()).asBitmap().transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
         mTvAuthorName.setText(mVideoDetail.getOwner().getName());
         mTvPubTime.setText(StringUtils.formateDateRelative(mVideoDetail.getPubdate()));
         mOwnerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserCenterActivity.startActivity(getContext(), mVideoDetail.getOwner().getMid() + "");
+                UserCenterActivity.startActivity(getContext(), mVideoDetail.getOwner().getMid(), 1);
             }
         });
         if (mVideoDetail.getPages().size() > 1) {

@@ -21,5 +21,23 @@ public interface UserService {
     @GET(Constant.APP_URL + Constant.USER_SPACE)
     Call<BilibiliDataResponse<UserCenter>> getUserSpaceInfo(@Query("ps") int ps,
                                                             @Query("ts") long ts,
-                                                            @Query("vmid") String mid);
+                                                            @Query("vmid") int mid);
+
+    @GET(Constant.APP_URL + Constant.USER_SPACE_ARCHIVE)
+    Call<BilibiliDataResponse<UserCenter.CenterList<UserCenter.Archive>>> getUserArchive(@Query("pn") int pn,
+                                                                                         @Query("ps") int ps,
+                                                                                         @Query("ts") long ts,
+                                                                                         @Query("vmid") int mid);
+
+    @GET(Constant.APP_URL + Constant.USER_SPACE_COIN_ARCHIVE)
+    Call<BilibiliDataResponse<UserCenter.CenterList<UserCenter.Archive>>> getUserCoinArchive(@Query("pn") int pn,
+                                                                                             @Query("ps") int ps,
+                                                                                             @Query("ts") long ts,
+                                                                                             @Query("vmid") int mid);
+
+    @GET(Constant.APP_URL + Constant.USER_SPACE_BANGUMI)
+    Call<BilibiliDataResponse<UserCenter.CenterList<UserCenter.Season>>> getUserBangumi(@Query("pn") int pn,
+                                                                                        @Query("ps") int ps,
+                                                                                        @Query("ts") long ts,
+                                                                                        @Query("vmid") int mid);
 }

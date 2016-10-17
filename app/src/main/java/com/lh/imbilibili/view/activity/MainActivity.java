@@ -143,6 +143,8 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
             case R.id.user_nick_text:
                 if (UserManagerUtils.getInstance().getCurrentUser() == null) {
                     LoginActivity.startActivity(this);
+                } else {
+                    UserCenterActivity.startActivity(this, UserManagerUtils.getInstance().getCurrentUser().getMid(), 0);
                 }
                 break;
         }

@@ -1,8 +1,6 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,6 +27,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/6.
+ * 搜索界面-番剧
  */
 
 public class SearchBangumiResultFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener {
@@ -45,7 +44,6 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
     private BangumiSearchResult mSearchResult;
     private BangumiSearchAdapter mAdapter;
     private int mCurrentPage;
-    private AnimationDrawable mLoadingDrawable;
 
     public static SearchBangumiResultFragment newInstance(String keyWord) {
         SearchBangumiResultFragment fragment = new SearchBangumiResultFragment();
@@ -59,7 +57,6 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
     protected void initView(View view) {
         ButterKnife.bind(this, view);
         mKeyWord = getArguments().getString(EXTRA_DATA);
-        mLoadingDrawable = (AnimationDrawable) ContextCompat.getDrawable(getContext(), R.drawable.anim_search_loading);
         initRecyclerView();
         mCurrentPage = 1;
         mIvLoading.setVisibility(View.VISIBLE);
@@ -102,7 +99,7 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
                     if (response.body().getData().getItems() != null && response.body().getData().getItems().size() > 0) {
                         if (response.body().getData().getPages() == 1) {
                             mRecyclerView.setEnableLoadMore(false);
-                            mRecyclerView.setLoadView("没有更多了", false);
+                            mRecyclerView.setLoadView(R.string.no_data_tips, false);
                         }
                         if (mCurrentPage == 1) {
                             LoadAnimationUtils.stopLoadAnimate(mIvLoading, 0);
@@ -112,16 +109,15 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
                         mSearchResult = response.body().getData();
                         mAdapter.addData(mSearchResult.getItems());
                         mAdapter.notifyDataSetChanged();
+                        mCurrentPage++;
                     } else {
                         if (mCurrentPage == 1) {//first
                             LoadAnimationUtils.stopLoadAnimate(mIvLoading, R.drawable.search_failed);
                         } else {
                             mRecyclerView.setEnableLoadMore(false);
-                            mRecyclerView.setLoadView("没有更多了", false);
+                            mRecyclerView.setLoadView(R.string.no_data_tips, false);
                         }
                     }
-                } else {
-                    mCurrentPage--;
                 }
             }
 
@@ -129,7 +125,7 @@ public class SearchBangumiResultFragment extends LazyLoadFragment implements Loa
             public void onFailure(Call<BilibiliDataResponse<BangumiSearchResult>> call, Throwable t) {
                 mCurrentPage--;
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
                 LoadAnimationUtils.stopLoadAnimate(mIvLoading, R.drawable.search_failed);
                 mRecyclerView.setVisibility(View.GONE);
             }

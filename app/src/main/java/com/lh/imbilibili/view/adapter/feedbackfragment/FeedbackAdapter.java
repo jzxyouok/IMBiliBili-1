@@ -21,26 +21,29 @@ import butterknife.ButterKnife;
  */
 public class FeedbackAdapter extends RecyclerView.Adapter {
 
-    public static final int FEEDBACK_ITEM = 1;
-    public static final int HOT_FEEDBACK_ITEM = 2;
-    public static final int HOT_FEEDBACK_FOOTER = 3;
+    private static final int FEEDBACK_ITEM = 1;
+    private static final int HOT_FEEDBACK_ITEM = 2;
+    private static final int HOT_FEEDBACK_FOOTER = 3;
 
-    private FeedbackData feedbackData;
+    private FeedbackData mFeedbackData;
 
-    private OnFeedbackItemClickListener onFeedbackItemClickListener;
+    private OnFeedbackItemClickListener mOnFeedbackItemClickListener;
 
-    public FeedbackAdapter(FeedbackData feedbackData) {
-        this.feedbackData = feedbackData;
+    public void setOnFeedbackItemClickListener(OnFeedbackItemClickListener listener) {
+        mOnFeedbackItemClickListener = listener;
     }
 
-    public void setOnFeedbackItemClickListener(OnFeedbackItemClickListener OnFeedbackItemClickListener) {
-        this.onFeedbackItemClickListener = OnFeedbackItemClickListener;
+    public void addFeedbackData(FeedbackData feedbackData) {
+        if (mFeedbackData == null) {
+            mFeedbackData = feedbackData;
+        } else {
+            mFeedbackData.getReplies().addAll(feedbackData.getReplies());
+        }
     }
 
-    public void setFeedbackData(FeedbackData feedbackData) {
-        this.feedbackData = feedbackData;
+    public void clear() {
+        mFeedbackData = null;
     }
-
 
     private void addReply(FeedbackHolder feedbackHolder, Feedback feedback) {
         LayoutInflater inflater = LayoutInflater.from(feedbackHolder.itemView.getContext());
@@ -58,8 +61,8 @@ public class FeedbackAdapter extends RecyclerView.Adapter {
     }
 
     private void clickItem(int type, int position) {
-        if (onFeedbackItemClickListener != null) {
-            onFeedbackItemClickListener.onFeedbackItemClick(type, position);
+        if (mOnFeedbackItemClickListener != null) {
+            mOnFeedbackItemClickListener.onFeedbackItemClick(type, position);
         }
     }
 
@@ -81,15 +84,15 @@ public class FeedbackAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == HOT_FEEDBACK_ITEM) {
             FeedbackHolder feedbackHolder = (FeedbackHolder) holder;
-            Feedback feedback = feedbackData.getHots().get(position);
+            Feedback feedback = mFeedbackData.getHots().get(position);
             feedbackHolder.feedbackView.setData(feedback);
         } else if (getItemViewType(position) == FEEDBACK_ITEM) {
             FeedbackHolder feedbackHolder = (FeedbackHolder) holder;
             Feedback feedback;
-            if (feedbackData.getHots() != null && feedbackData.getHots().size() > 0) {
-                feedback = feedbackData.getReplies().get(position - feedbackData.getHots().size());
+            if (mFeedbackData.getHots() != null && mFeedbackData.getHots().size() > 0) {
+                feedback = mFeedbackData.getReplies().get(position - mFeedbackData.getHots().size());
             } else {
-                feedback = feedbackData.getReplies().get(position);
+                feedback = mFeedbackData.getReplies().get(position);
             }
             feedbackHolder.feedbackView.setData(feedback);
             if (feedback.getReplies() != null && feedback.getReplies().size() > 0) {
@@ -107,23 +110,23 @@ public class FeedbackAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (feedbackData == null || feedbackData.getReplies() == null) {
+        if (mFeedbackData == null || mFeedbackData.getReplies() == null) {
             return 0;
         } else {
-            if (feedbackData.getHots() == null) {
-                return feedbackData.getReplies().size();
+            if (mFeedbackData.getHots() == null) {
+                return mFeedbackData.getReplies().size();
             } else {
-                return feedbackData.getReplies().size() + feedbackData.getHots().size();
+                return mFeedbackData.getReplies().size() + mFeedbackData.getHots().size();
             }
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (feedbackData.getHots() != null && feedbackData.getHots().size() != 0) {
-            if (position < feedbackData.getHots().size()) {
+        if (mFeedbackData.getHots() != null && mFeedbackData.getHots().size() != 0) {
+            if (position < mFeedbackData.getHots().size()) {
                 return HOT_FEEDBACK_ITEM;
-            } else if (position == feedbackData.getHots().size()) {
+            } else if (position == mFeedbackData.getHots().size()) {
                 return HOT_FEEDBACK_FOOTER;
             } else {
                 return FEEDBACK_ITEM;

@@ -34,6 +34,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/8.
+ * 历史记录界面
  */
 
 public class HistoryRecordFragment extends BaseFragment {
@@ -142,7 +143,7 @@ public class HistoryRecordFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<List<History>>> call, Throwable t) {
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }

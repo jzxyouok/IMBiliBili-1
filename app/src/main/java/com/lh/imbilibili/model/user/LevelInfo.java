@@ -1,15 +1,12 @@
 package com.lh.imbilibili.model.user;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by liuhui on 2016/10/15.
  */
 
-public class LevelInfo implements Parcelable {
+public class LevelInfo {
     @SerializedName("current_level")
     private int currentLevel;
     @SerializedName("current_min")
@@ -18,28 +15,6 @@ public class LevelInfo implements Parcelable {
     private int currentExp;
     @SerializedName("next_exp")
     private String nextExp;
-
-    public LevelInfo() {
-    }
-
-    protected LevelInfo(Parcel in) {
-        currentLevel = in.readInt();
-        currentMin = in.readInt();
-        currentExp = in.readInt();
-        nextExp = in.readString();
-    }
-
-    public static final Creator<LevelInfo> CREATOR = new Creator<LevelInfo>() {
-        @Override
-        public LevelInfo createFromParcel(Parcel in) {
-            return new LevelInfo(in);
-        }
-
-        @Override
-        public LevelInfo[] newArray(int size) {
-            return new LevelInfo[size];
-        }
-    };
 
     public int getCurrentLevel() {
         return currentLevel;
@@ -71,18 +46,5 @@ public class LevelInfo implements Parcelable {
 
     public void setNextExp(String nextExp) {
         this.nextExp = nextExp;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(currentLevel);
-        dest.writeInt(currentMin);
-        dest.writeInt(currentExp);
-        dest.writeString(nextExp);
     }
 }

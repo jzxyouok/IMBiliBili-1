@@ -17,6 +17,7 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.Bangumi;
 import com.lh.imbilibili.model.IndexBangumiRecommend;
 import com.lh.imbilibili.model.IndexPage;
+import com.lh.imbilibili.utils.DisplayUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.widget.BannerView;
@@ -64,15 +65,17 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mIndexPage = indexPage;
     }
 
-//    public void setmBangumis(List<IndexBangumiRecommend> bangumis) {
-//        mBangumis = bangumis;
-//    }
-
     public void addBangumis(List<IndexBangumiRecommend> bangumis) {
         if (mBangumis == null) {
             mBangumis = bangumis;
         } else {
             mBangumis.addAll(bangumis);
+        }
+    }
+
+    public void clearRecommend() {
+        if (mBangumis != null) {
+            mBangumis.clear();
         }
     }
 
@@ -130,7 +133,8 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             List<Bangumi> bangumis = mIndexPage.getSerializing();
             Bangumi bangumi = bangumis.get(position - 3);
             Glide.with(context).load(bangumi.getCover())
-                    .transform(new RoundedCornersTransformation(context, 2))
+                    .centerCrop()
+                    .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
                     .into(gridHolder.ivCover);
             gridHolder.tvFavourite.setVisibility(View.GONE);
             gridHolder.tv1.setVisibility(View.VISIBLE);
@@ -162,7 +166,8 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             seasonHolder.tv1.setVisibility(View.GONE);
             seasonHolder.tvFavourite.setVisibility(View.VISIBLE);
             Glide.with(context).load(bangumi.getCover())
-                    .transform(new RoundedCornersTransformation(context, 2))
+                    .centerCrop()
+                    .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
                     .into(seasonHolder.ivCover);
             seasonHolder.tvTitle.setText(bangumi.getTitle());
             seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));

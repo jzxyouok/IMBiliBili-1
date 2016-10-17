@@ -91,7 +91,7 @@ public class FollowBangumiActivity extends BaseActivity implements LoadMoreRecyc
                 if (response.body().isSuccess()) {
                     if (response.body().getResult().isEmpty()) {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
                         mAdapter.addBangumi(response.body().getResult());
                         mAdapter.notifyDataSetChanged();
@@ -103,7 +103,7 @@ public class FollowBangumiActivity extends BaseActivity implements LoadMoreRecyc
             @Override
             public void onFailure(Call<FollowBangumiResponse<List<FollowBangumi>>> call, Throwable t) {
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(FollowBangumiActivity.this, "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(FollowBangumiActivity.this, R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }

@@ -20,7 +20,6 @@ import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
 import com.lh.imbilibili.widget.BannerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,7 +52,6 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
     public PartionHomeRecyclerViewAdapter(Context context, PartionModel partionModel) {
         mContext = context;
         mPartionModel = partionModel;
-        mDynamicVideo = new ArrayList<>();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -61,11 +59,21 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public void addDynamicVideo(List<PartionVideo> data) {
-        mDynamicVideo.addAll(data);
+        if (mDynamicVideo == null) {
+            mDynamicVideo = data;
+        } else {
+            mDynamicVideo.addAll(data);
+        }
     }
 
     public void setPartionData(PartionHome partionData) {
         this.mPartionData = partionData;
+    }
+
+    public void clearDynamicVideo() {
+        if (mDynamicVideo != null) {
+            mDynamicVideo.clear();
+        }
     }
 
     @Override
@@ -152,7 +160,7 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (mPartionData == null) {
+        if (mPartionData == null || mDynamicVideo == null) {
             return 0;
         }
         return 13 + mDynamicVideo.size();

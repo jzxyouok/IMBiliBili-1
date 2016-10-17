@@ -150,7 +150,7 @@ public class MainActivity extends BaseActivity implements IDrawerLayoutActivity,
 
     @Subscribe
     public void loadUserInfo(UserResponse response) {
-        mUserInfoCall = RetrofitHelper.getInstance().getAccountService().getUserDetailInfo();
+        mUserInfoCall = RetrofitHelper.getInstance().getUserService().getUserDetailInfo();
         mUserInfoCall.enqueue(new Callback<UserDetailInfo>() {
             @Override
             public void onResponse(Call<UserDetailInfo> call, Response<UserDetailInfo> response) {

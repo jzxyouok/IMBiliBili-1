@@ -109,6 +109,7 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.tvTitle.setText("动态");
             headHolder.setLeftDrawable(R.drawable.ic_header_dynamic);
             headHolder.tvSubTitle.setText("");
+            headHolder.tvSubTitle.setCompoundDrawables(null, null, null, null);
             headHolder.itemView.setClickable(false);
         } else {
             DynamicVideoViewHolder dynamicVideoViewHolder = (DynamicVideoViewHolder) holder;

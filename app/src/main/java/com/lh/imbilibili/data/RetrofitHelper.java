@@ -1,6 +1,5 @@
 package com.lh.imbilibili.data;
 
-import com.lh.imbilibili.data.api.AccountService;
 import com.lh.imbilibili.data.api.AttentionService;
 import com.lh.imbilibili.data.api.BangumiService;
 import com.lh.imbilibili.data.api.HistoryService;
@@ -9,6 +8,7 @@ import com.lh.imbilibili.data.api.PartionService;
 import com.lh.imbilibili.data.api.ReplyService;
 import com.lh.imbilibili.data.api.SearchService;
 import com.lh.imbilibili.data.api.SplashService;
+import com.lh.imbilibili.data.api.UserService;
 import com.lh.imbilibili.data.api.VideoPlayService;
 import com.lh.imbilibili.data.api.VideoService;
 
@@ -39,7 +39,7 @@ public class RetrofitHelper {
     private SplashService mSplashService;
     private VideoPlayService mVideoPlayService;
     private VideoService mVideService;
-    private AccountService mAccountService;
+    private UserService mUserService;
     private HistoryService mHistoryService;
     private AttentionService mAttentionService;
 
@@ -79,7 +79,7 @@ public class RetrofitHelper {
         mSplashService = mRetrofit.create(SplashService.class);
         mVideoPlayService = mSignRetrofit.create(VideoPlayService.class);
         mVideService = mSignRetrofit.create(VideoService.class);
-        mAccountService = mSignRetrofit.create(AccountService.class);
+        mUserService = mSignRetrofit.create(UserService.class);
         mHistoryService = mSignRetrofit.create(HistoryService.class);
         mAttentionService = mSignRetrofit.create(AttentionService.class);
     }
@@ -139,8 +139,8 @@ public class RetrofitHelper {
         return mVideService;
     }
 
-    public AccountService getAccountService() {
-        return mAccountService;
+    public UserService getUserService() {
+        return mUserService;
     }
 
     public HistoryService getHistoryService() {

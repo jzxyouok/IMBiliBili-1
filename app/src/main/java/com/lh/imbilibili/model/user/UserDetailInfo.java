@@ -182,47 +182,4 @@ public class UserDetailInfo {
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
-
-    public static class LevelInfo {
-        @SerializedName("current_level")
-        private int currentLevel;
-        @SerializedName("current_min")
-        private int currentMin;
-        @SerializedName("current_exp")
-        private int currentExp;
-        @SerializedName("next_exp")
-        private int nextExp;
-
-        public int getCurrentLevel() {
-            return currentLevel;
-        }
-
-        public void setCurrentLevel(int currentLevel) {
-            this.currentLevel = currentLevel;
-        }
-
-        public int getCurrentMin() {
-            return currentMin;
-        }
-
-        public void setCurrentMin(int currentMin) {
-            this.currentMin = currentMin;
-        }
-
-        public int getCurrentExp() {
-            return currentExp;
-        }
-
-        public void setCurrentExp(int currentExp) {
-            this.currentExp = currentExp;
-        }
-
-        public int getNextExp() {
-            return nextExp;
-        }
-
-        public void setNextExp(int nextExp) {
-            this.nextExp = nextExp;
-        }
-    }
 }

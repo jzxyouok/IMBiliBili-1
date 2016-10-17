@@ -21,6 +21,7 @@ import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.SearchActivity;
+import com.lh.imbilibili.view.activity.UserCenterActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.videodetailactivity.RelatesVideoItemDecoration;
 import com.lh.imbilibili.view.adapter.videodetailactivity.VideoPageRecyclerViewAdapter;
@@ -52,6 +53,8 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
     FlowLayout mFlowLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.owner_layout)
+    ViewGroup mOwnerLayout;
     @BindView(R.id.iv_author_face)
     ImageView mIvAuthorFace;
     @BindView(R.id.tv_author_name)
@@ -112,6 +115,12 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         Glide.with(this).load(mVideoDetail.getOwner().getFace()).transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
         mTvAuthorName.setText(mVideoDetail.getOwner().getName());
         mTvPubTime.setText(StringUtils.formateDateRelative(mVideoDetail.getPubdate()));
+        mOwnerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserCenterActivity.startActivity(getContext(), mVideoDetail.getOwner().getMid() + "");
+            }
+        });
         if (mVideoDetail.getPages().size() > 1) {
             mPageLayout.setVisibility(View.VISIBLE);
             mTvPageCount.setText(StringUtils.format("分集(%d)", mVideoDetail.getPages().size()));

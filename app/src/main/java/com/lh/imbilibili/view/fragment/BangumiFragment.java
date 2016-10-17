@@ -12,6 +12,7 @@ import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
+import com.lh.imbilibili.view.activity.FollowBangumiActivity;
 import com.lh.imbilibili.view.activity.SeasonGroupActivity;
 import com.lh.imbilibili.view.activity.WebViewActivity;
 import com.lh.imbilibili.view.adapter.bangumifragment.BangumiAdapter;
@@ -29,6 +30,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/7/6.
+ * 番剧页面
  */
 public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnLoadMoreLinstener, BangumiAdapter.OnItemClickListener {
 
@@ -176,6 +178,10 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             }
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_HEAD) {
             SeasonGroupActivity.startActivity(getContext());
+        } else if (itemType == BangumiAdapter.NAV) {
+            if (data.equals(String.valueOf(R.id.follow_bangumi))) {
+                FollowBangumiActivity.startActivity(getContext());
+            }
         }
     }
 

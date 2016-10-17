@@ -64,9 +64,9 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mIndexPage = indexPage;
     }
 
-    public void setmBangumis(List<IndexBangumiRecommend> bangumis) {
-        mBangumis = bangumis;
-    }
+//    public void setmBangumis(List<IndexBangumiRecommend> bangumis) {
+//        mBangumis = bangumis;
+//    }
 
     public void addBangumis(List<IndexBangumiRecommend> bangumis) {
         if (mBangumis == null) {
@@ -107,7 +107,7 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder = new HeadHolder(headView);
         } else if (viewType == BANGUMI_RECOMMEND_ITEM) {
             View itemView = inflater.inflate(R.layout.bangumi_recommend_item, parent, false);
-            holder = new BangumiRecommendHolder(itemView, itemClickListener);
+            holder = new BangumiRecommendHolder(itemView);
         }
         return holder;
     }
@@ -233,9 +233,21 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public class NavHolder extends RecyclerView.ViewHolder {
+    public class NavHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.follow_bangumi)
+        ViewGroup followBangumi;
+
         public NavHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
+            followBangumi.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (itemClickListener != null) {
+                itemClickListener.onClick(NAV, v.getId() + "");
+            }
         }
     }
 
@@ -335,14 +347,14 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         private String data;
 
-        public BangumiRecommendHolder(View itemView, final OnItemClickListener listener) {
+        public BangumiRecommendHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onClick(BANGUMI_RECOMMEND_ITEM, data);
+                    if (itemClickListener != null) {
+                        itemClickListener.onClick(BANGUMI_RECOMMEND_ITEM, data);
                     }
                 }
             });

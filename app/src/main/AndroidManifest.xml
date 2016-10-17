@@ -60,6 +60,9 @@
         <activity
             android:name=".view.activity.FollowBangumiActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".view.activity.UserCenterActivity"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".view.activity.VideoDetailActivity"

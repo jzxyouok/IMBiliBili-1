@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by liuhui on 2016/10/16.
+ * 用户收藏View
  */
 
 public class FavoritesView extends FrameLayout {
@@ -59,7 +60,7 @@ public class FavoritesView extends FrameLayout {
         mTopImage.setVisibility(GONE);
         mBottomImage.setVisibility(GONE);
         mBottomImageLayout.setVisibility(GONE);
-        Glide.with(getContext()).load(R.drawable.ic_favorite_box_default_large).centerCrop().into(mFillImage);
+        Glide.with(getContext()).load(R.drawable.ic_favorite_box_default_large).asBitmap().centerCrop().into(mFillImage);
     }
 
     private void setOneImage() {
@@ -67,7 +68,7 @@ public class FavoritesView extends FrameLayout {
         mTopImage.setVisibility(GONE);
         mBottomImage.setVisibility(GONE);
         mBottomImageLayout.setVisibility(GONE);
-        Glide.with(getContext()).load(mVideos.get(0).getPic()).centerCrop().into(mFillImage);
+        Glide.with(getContext()).load(mVideos.get(0).getPic()).asBitmap().centerCrop().into(mFillImage);
     }
 
     private void setTwoImage() {
@@ -75,8 +76,8 @@ public class FavoritesView extends FrameLayout {
         mBottomImage.setVisibility(VISIBLE);
         mFillImage.setVisibility(GONE);
         mBottomImageLayout.setVisibility(GONE);
-        Glide.with(getContext()).load(mVideos.get(0).getPic()).centerCrop().into(mTopImage);
-        Glide.with(getContext()).load(mVideos.get(1).getPic()).centerCrop().into(mBottomImage);
+        Glide.with(getContext()).load(mVideos.get(0).getPic()).asBitmap().centerCrop().into(mTopImage);
+        Glide.with(getContext()).load(mVideos.get(1).getPic()).asBitmap().centerCrop().into(mBottomImage);
     }
 
     private void setThreeImage() {
@@ -84,9 +85,9 @@ public class FavoritesView extends FrameLayout {
         mBottomImageLayout.setVisibility(VISIBLE);
         mBottomImage.setVisibility(GONE);
         mFillImage.setVisibility(GONE);
-        Glide.with(getContext()).load(mVideos.get(0).getPic()).centerCrop().into(mTopImage);
-        Glide.with(getContext()).load(mVideos.get(1).getPic()).centerCrop().into(mLeftImage);
-        Glide.with(getContext()).load(mVideos.get(2).getPic()).centerCrop().into(mRightImage);
+        Glide.with(getContext()).load(mVideos.get(0).getPic()).asBitmap().centerCrop().into(mTopImage);
+        Glide.with(getContext()).load(mVideos.get(1).getPic()).asBitmap().centerCrop().into(mLeftImage);
+        Glide.with(getContext()).load(mVideos.get(2).getPic()).asBitmap().centerCrop().into(mRightImage);
     }
 
     public void setImages(List<UserCenter.Favourite.Video> videos) {

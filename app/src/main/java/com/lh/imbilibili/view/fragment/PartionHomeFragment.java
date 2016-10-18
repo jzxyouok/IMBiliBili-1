@@ -10,6 +10,7 @@ import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
@@ -207,11 +208,19 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
 
     @Override
     public void onSubPartionItemClick(int position) {
-
+        BusUtils.getBus().post(new SubPartionClickEvent(position));
     }
 
     @Override
     public void onHeadItemClick(int type) {
 
+    }
+
+    public class SubPartionClickEvent {
+        public int position;
+
+        public SubPartionClickEvent(int position) {
+            this.position = position;
+        }
     }
 }

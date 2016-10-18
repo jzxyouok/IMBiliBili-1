@@ -1,12 +1,13 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.BangumiDetail;
@@ -16,50 +17,58 @@ import java.util.List;
 
 /**
  * Created by home on 2016/8/2.
+ * 集数选择对话框
  */
 public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter.onEpClickListener {
 
     public static final String TAG = "EpisodeFragment";
 
-    public static final String BANGUMI_DETAIL_DATA = "BangumiDetailData";
-    RecyclerView recyclerView;
+    private static final String EXTRA_DATA = "data";
+    private static final String EXTRA_POSITION = "position";
 
-    private List<BangumiDetail.Episode> episodes;
-    private AlertDialog dialog;
+    private RecyclerView mRecyclerView;
 
-    private int selectPosition;
+    private View mRootView;
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (dialog == null) {
-            BangumiDetail bangumiDetail = getArguments().getParcelable("data");
-            if (bangumiDetail != null) {
-                episodes = bangumiDetail.getEpisodes();
-            }
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("集数选择");
-            recyclerView = new RecyclerView(getContext());
-            int space = getContext().getResources().getDimensionPixelSize(R.dimen.item_spacing);
-            builder.setView(recyclerView, space, space, space, space);
-            FeedbackEpAdapter adapter = new FeedbackEpAdapter(episodes);
-            adapter.selectItem(getArguments().getInt("position", 0));
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
-            recyclerView.setLayoutManager(gridLayoutManager);
-            recyclerView.setAdapter(adapter);
-            adapter.setOnEpClickListener(this);
-            dialog = builder.create();
-        }
-        return dialog;
+    public static EpisodeFragment newInstance(BangumiDetail bangumiDetail, int position) {
+        EpisodeFragment fragment = new EpisodeFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_DATA, bangumiDetail);
+        bundle.putInt(EXTRA_POSITION, position);
+        fragment.setArguments(bundle);
+        fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.TitleDialogTheme);
+        return fragment;
     }
 
-    public int getSelectPosition() {
-        return selectPosition;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getDialog().setTitle("集数选择");
+        if (mRootView == null) {
+            mRootView = inflater.inflate(R.layout.dialog_episode_layout, container, false);
+            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
+            BangumiDetail bangumiDetail = getArguments().getParcelable(EXTRA_DATA);
+            if (bangumiDetail != null) {
+                List<BangumiDetail.Episode> episodes = bangumiDetail.getEpisodes();
+                FeedbackEpAdapter adapter = new FeedbackEpAdapter(episodes);
+                adapter.selectItem(getArguments().getInt(EXTRA_POSITION, 0));
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
+                mRecyclerView.setLayoutManager(gridLayoutManager);
+                mRecyclerView.setAdapter(adapter);
+                adapter.setOnEpClickListener(this);
+            }
+        }
+        return mRootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
     public void onEpClick(int position) {
-        selectPosition = position;
         FeedbackFragment fragment = (FeedbackFragment) getFragmentManager().findFragmentByTag(FeedbackFragment.TAG);
         if (fragment != null) {
             fragment.onEpisodeSelect(position);

@@ -12,7 +12,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.lh.imbilibili.data.Constant;
 import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.VideoDetail;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.DisableableAppBarLayoutBehavior;
 import com.lh.imbilibili.utils.HistoryUtils;
@@ -40,6 +40,7 @@ import com.lh.imbilibili.view.adapter.videodetailactivity.ViewPagerAdapter;
 import com.lh.imbilibili.view.fragment.VideoDetailInfoFragment;
 import com.lh.imbilibili.view.fragment.VideoDetailReplyFragment;
 import com.lh.imbilibili.view.fragment.VideoFragment;
+import com.lh.imbilibili.widget.EmptyView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,6 @@ import retrofit2.Response;
 
 public class VideoDetailActivity extends BaseActivity implements VideoFragment.OnVideoFragmentStateListener {
 
-    public static final String ACTION_NOTIFY_INFO = "com.lh.imbilibili.view.activity.VideoDetailActivity:info";
     private static final String EXTRA_AID = "aid";
 
     @BindView(R.id.coordinator_layout)
@@ -71,6 +71,8 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
     ViewGroup mPreViewLayout;
     @BindView(R.id.video_pre_view)
     ImageView mIvPreView;
+    @BindView(R.id.empty_view)
+    EmptyView mEmptyView;
     @BindView(R.id.tabs)
     TabLayout mTabLayout;
     @BindView(R.id.viewpager)
@@ -99,8 +101,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
 
     private Call<BilibiliDataResponse<VideoDetail>> mLoadVideoDetailCall;
 
-    private LocalBroadcastManager mLocalBroadcastManager;
-
     public static void startActivity(Context context, String aid) {
         Intent intent = new Intent(context, VideoDetailActivity.class);
         intent.putExtra(EXTRA_AID, aid);
@@ -114,7 +114,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         mAid = getIntent().getStringExtra(EXTRA_AID);
         ButterKnife.bind(this);
         StatusBarUtils.setCollapsingToolbarLayout(this, mToolbar, mAppBarLayout, mCollapsingToolbarLayout);
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mIsFullScreen = false;
         mIsFabShow = true;
         mIsInitLayout = false;
@@ -164,25 +163,32 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
             public void onResponse(Call<BilibiliDataResponse<VideoDetail>> call, Response<BilibiliDataResponse<VideoDetail>> response) {
                 if (response.body().getCode() == 0) {
                     mVideoDetail = response.body().getData();
-                    sendVideoDetailInfo(mVideoDetail);
+                    BusUtils.getBus().post(mVideoDetail);
                     bindViewData();
                 } else {
-                    mIvPreView.setImageResource(R.drawable.img_tips_error_not_foud);
+                    mEmptyView.setVisibility(View.VISIBLE);
+                    mEmptyView.setImgResource(R.drawable.img_tips_error_not_foud);
+                    mEmptyView.setShowRetryButton(false);
+                    mEmptyView.setText(R.string.video_load_error_404);
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<VideoDetail>> call, Throwable t) {
-                ToastUtils.showToast(VideoDetailActivity.this, "加载失败", Toast.LENGTH_SHORT);
-                mIvPreView.setImageResource(R.drawable.img_tips_error_not_foud);
+                ToastUtils.showToast(VideoDetailActivity.this, R.string.load_error, Toast.LENGTH_SHORT);
+                mEmptyView.setVisibility(View.VISIBLE);
+                mEmptyView.setImgResource(R.drawable.img_tips_error_load_error);
+                mEmptyView.setText(R.string.video_load_error_failed);
+                mEmptyView.setShowRetryButton(true);
+                mEmptyView.setOnRetryListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mEmptyView.setVisibility(View.GONE);
+                        loadVideoDetail();
+                    }
+                });
             }
         });
-    }
-
-    private void sendVideoDetailInfo(VideoDetail detail) {
-        Intent intent = new Intent(ACTION_NOTIFY_INFO);
-        intent.putExtra(VideoDetailInfoFragment.EXTRA_DATA, detail);
-        mLocalBroadcastManager.sendBroadcast(intent);
     }
 
     private void bindViewData() {
@@ -224,11 +230,6 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
             return;
         }
         mIsInitLayout = true;
-        for (int i = 0; i < mFragments.size(); i++) {
-            if (mFragments.get(i) instanceof OnVideoStartPlayingListener) {
-                ((OnVideoStartPlayingListener) mFragments.get(i)).onVideoStart();
-            }
-        }
         mAppBarLayout.setExpanded(true);
         hidFab();
         mPreViewLayout.setVisibility(View.INVISIBLE);
@@ -326,9 +327,5 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         } else {
             super.onBackPressed();
         }
-    }
-
-    public interface OnVideoStartPlayingListener {
-        void onVideoStart();
     }
 }

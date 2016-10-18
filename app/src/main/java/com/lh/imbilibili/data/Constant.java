@@ -60,6 +60,8 @@ public class Constant {
     public static final String USER_SPACE_ARCHIVE = "/x/v2/space/archive";
     public static final String USER_SPACE_COIN_ARCHIVE = "/x/v2/space/coinarc";
     public static final String USER_SPACE_BANGUMI = "/x/v2/space/bangumi";
+    public static final String USER_SPACE_COMMUNITY = "/x/v2/space/community";
+    public static final String USER_SPACE_GAME = "/x/v2/space/game";
 
     public static final String SEARCH = "/x/v2/search";
     public static final String SEARCH_TYPE = SEARCH + "/type";

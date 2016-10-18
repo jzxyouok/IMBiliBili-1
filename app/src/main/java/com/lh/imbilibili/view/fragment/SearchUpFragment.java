@@ -101,8 +101,9 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
                             mRecyclerView.setShowLoadingView(true);
                         }
                         mSearchResult = response.body().getData();
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addData(mSearchResult.getItems());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemRangeInserted(startPosition, mSearchResult.getItems().size());
                         mCurrentPage++;
                     } else {
                         if (mCurrentPage == 1) {

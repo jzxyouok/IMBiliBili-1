@@ -519,7 +519,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         loadDataAccordingFlilter();
     }
 
-    class DrawerViewHolder implements View.OnClickListener, FlowLayout.onItemClickListener {
+    class DrawerViewHolder implements View.OnClickListener, FlowLayout.OnItemClickListener {
         @BindView(R.id.exit)
         View mDrawerExit;
 

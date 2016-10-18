@@ -118,6 +118,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter {
                     twoVideoViewHolder.mVideos[index].mTvTitle.setText(archive.getTitle());
                     twoVideoViewHolder.mVideos[index].mTvInfoViews.setText(StringUtils.formateNumber(archive.getPlay()));
                     twoVideoViewHolder.mVideos[index].mTvInfoDanmakus.setText(StringUtils.formateNumber(archive.getDanmaku()));
+                    twoVideoViewHolder.mVideos[index].mAid = archive.getParam();
                 } else {
                     twoVideoViewHolder.mVideos[index].itemView.setVisibility(View.INVISIBLE);
                 }

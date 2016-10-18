@@ -140,10 +140,8 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
 
     private void showEpChooseDialog() {
         if (mEpisodeFragment == null) {
-            mEpisodeFragment = new EpisodeFragment();
-            mEpisodeFragment.setCancelable(true);
+            mEpisodeFragment = EpisodeFragment.newInstance(mBangumiDetail, mSelectPosition);
         }
-        mEpisodeFragment.setArguments(getArguments());
         mEpisodeFragment.show(getFragmentManager(), EpisodeFragment.TAG);
     }
 

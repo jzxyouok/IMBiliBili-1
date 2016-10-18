@@ -22,7 +22,7 @@ public class FlowLayout extends ViewGroup implements View.OnClickListener {
     private int mCurrentSelectPosition = 0;
     private List<Point> points = new ArrayList<>();
     private int space;
-    private onItemClickListener mOnItemClickListener;
+    private OnItemClickListener mOnItemClickListener;
 
     public FlowLayout(Context context) {
         super(context);
@@ -49,7 +49,7 @@ public class FlowLayout extends ViewGroup implements View.OnClickListener {
         setWillNotDraw(false);//在加载scrollBar时用到
     }
 
-    public void setOnItemClickListener(onItemClickListener l) {
+    public void setOnItemClickListener(OnItemClickListener l) {
         mOnItemClickListener = l;
     }
 
@@ -139,7 +139,7 @@ public class FlowLayout extends ViewGroup implements View.OnClickListener {
         }
     }
 
-    public interface onItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(ViewGroup parent,int position,View view);
     }
 }

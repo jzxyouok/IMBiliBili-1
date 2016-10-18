@@ -49,6 +49,9 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     private Call<BilibiliDataResponse<PartionHome>> mPartionDataCall;
     private Call<BilibiliDataResponse<List<PartionVideo>>> mNewVideoDataCall;
 
+    private int mNotifyCount;
+    private boolean mNeedRefresh;
+
     public static PartionListFragment newInstance(PartionModel.Partion partion) {
         PartionListFragment fragment = new PartionListFragment();
         Bundle bundle = new Bundle();
@@ -67,6 +70,8 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
         mPartion = getArguments().getParcelable(EXTRA_DATA);
         ButterKnife.bind(this, view);
         mCurrentPage = 1;
+        mNotifyCount = 2;
+        mNeedRefresh = true;
         initRecyclerView();
     }
 
@@ -101,14 +106,19 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {
                 mRecyclerView.setLoading(false);
-                if (response.body().getCode() == 0) {
+                if (response.body().isSuccess()) {
                     if (response.body().getData().size() == 0) {
                         mRecyclerView.setEnableLoadMore(false);
                         mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
-                        int startPosition = mAdapter.getItemCount();
-                        mAdapter.addNewVideos(response.body().getData());
-                        mAdapter.notifyItemRangeInserted(startPosition, response.body().getData().size());
+                        if (mNeedRefresh) {
+                            mAdapter.addNewVideos(response.body().getData());
+                            notifyDataLoadFinish();
+                        } else {
+                            int startPosition = mAdapter.getItemCount();
+                            mAdapter.addNewVideos(response.body().getData());
+                            mAdapter.notifyItemRangeInserted(startPosition, response.body().getData().size());
+                        }
                         mCurrentPage++;
                     }
                 }
@@ -118,6 +128,9 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
             public void onFailure(Call<BilibiliDataResponse<List<PartionVideo>>> call, Throwable t) {
                 mRecyclerView.setLoading(false);
                 ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
+                if (mNeedRefresh) {
+                    notifyDataLoadFinish();
+                }
             }
         });
     }
@@ -127,17 +140,32 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
         mPartionDataCall.enqueue(new Callback<BilibiliDataResponse<PartionHome>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<PartionHome>> call, Response<BilibiliDataResponse<PartionHome>> response) {
-                if (response.body().getCode() == 0) {
+                if (response.body().isSuccess()) {
                     mAdapter.setPartionHomeData(response.body().getData());
-                    mAdapter.notifyDataSetChanged();
+                    if (mNeedRefresh) {
+                        notifyDataLoadFinish();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<PartionHome>> call, Throwable t) {
                 ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
+                if (mNeedRefresh) {
+                    notifyDataLoadFinish();
+                }
             }
         });
+    }
+
+    //保证数据全部加载完毕再刷新
+    private void notifyDataLoadFinish() {
+        mNotifyCount--;
+        if (mNotifyCount == 0) {
+            mNotifyCount = 2;
+            mNeedRefresh = false;
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -23,8 +23,14 @@ public class SubPartionGridAdapter extends RecyclerView.Adapter<SubPartionGridAd
 
     private List<PartionModel.Partion> partions;
 
+    private OnItemClickListener mOnItemClickListener;
+
     public SubPartionGridAdapter(List<PartionModel.Partion> partions) {
         this.partions = partions;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class SubPartionGridAdapter extends RecyclerView.Adapter<SubPartionGridAd
         return partions.size();
     }
 
-    static class PartionHolder extends RecyclerView.ViewHolder {
+    class PartionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.iv_ico)
         ImageView mIcon;
         @BindView(R.id.tv_name)
@@ -53,6 +59,18 @@ public class SubPartionGridAdapter extends RecyclerView.Adapter<SubPartionGridAd
         PartionHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(getAdapterPosition());
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 }

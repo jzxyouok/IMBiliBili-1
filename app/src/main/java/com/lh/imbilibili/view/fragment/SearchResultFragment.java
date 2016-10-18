@@ -29,6 +29,9 @@ import retrofit2.Response;
  */
 
 public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SearchAdapter.OnSearchItemClickListener {
+
+    private static final int PAGE_SIZE = 20;
+
     private static final String EXTRA_DATA = "searchData";
     private static final String EXTRA_KEY = "keyWord";
 
@@ -54,7 +57,7 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         ButterKnife.bind(this, view);
         mKeyWord = getArguments().getString(EXTRA_KEY);
         SearchResult searchResult = getArguments().getParcelable(EXTRA_DATA);
-        mCurrentPage = 1;
+        mCurrentPage = 2;
         mAdapter = new SearchAdapter(getContext(), searchResult);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -68,7 +71,6 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
 
     @Override
     protected void fetchData() {
-
     }
 
     @Override
@@ -76,8 +78,8 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         return R.layout.fragment_search_result_list;
     }
 
-    private void loadSearchPage(int page) {
-        mSearchCall = RetrofitHelper.getInstance().getSearchService().getSearchResult(0, mKeyWord, page, 20);
+    private void loadSearchPage() {
+        mSearchCall = RetrofitHelper.getInstance().getSearchService().getSearchResult(0, mKeyWord, mCurrentPage, PAGE_SIZE);
         mSearchCall.enqueue(new Callback<BilibiliDataResponse<SearchResult>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<SearchResult>> call, Response<BilibiliDataResponse<SearchResult>> response) {
@@ -85,8 +87,9 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
                 if (response.body().getCode() == 0) {
                     if (response.body().getData().getItems().getArchive().size() != 0) {
                         mSearchResult = response.body().getData();
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addData(mSearchResult.getItems().getArchive());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemRangeInserted(startPosition, mSearchResult.getItems().getArchive().size());
                         mCurrentPage++;
                     } else {
                         mRecyclerView.setEnableLoadMore(false);
@@ -105,7 +108,7 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
 
     @Override
     public void onLoadMore() {
-        loadSearchPage(mCurrentPage);
+        loadSearchPage();
     }
 
     @Override

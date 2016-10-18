@@ -112,7 +112,7 @@ public class UserCenterFollowBangumiFragment extends BaseFragment implements Loa
             mEmptyView.setText(R.string.no_data_tips);
         } else {
             mRecyclerView.setShowLoadingView(true);
-            if (userCenter.getSeason().getCount() < PAGE_SIZE) {
+            if (userCenter.getSeason().getCount() <= PAGE_SIZE) {
                 mRecyclerView.setLoadView(R.string.no_data_tips, false);
                 mRecyclerView.setEnableLoadMore(false);
             } else {

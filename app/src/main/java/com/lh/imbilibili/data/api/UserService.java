@@ -40,4 +40,16 @@ public interface UserService {
                                                                                         @Query("ps") int ps,
                                                                                         @Query("ts") long ts,
                                                                                         @Query("vmid") int mid);
+
+    @GET(Constant.APP_URL + Constant.USER_SPACE_COMMUNITY)
+    Call<BilibiliDataResponse<UserCenter.CenterList<UserCenter.Community>>> getUserCommunity(@Query("pn") int pn,
+                                                                                             @Query("ps") int ps,
+                                                                                             @Query("ts") long ts,
+                                                                                             @Query("vmid") int mid);
+
+    @GET(Constant.APP_URL + Constant.USER_SPACE_GAME)
+    Call<BilibiliDataResponse<UserCenter.CenterList<UserCenter.Game>>> getUserGame(@Query("pn") int pn,
+                                                                                   @Query("ps") int ps,
+                                                                                   @Query("ts") long ts,
+                                                                                   @Query("vmid") int mid);
 }

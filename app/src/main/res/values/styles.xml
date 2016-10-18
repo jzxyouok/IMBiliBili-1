@@ -18,6 +18,10 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="TitleDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+    </style>
+
     <style name="TextAppearance.App" parent="@style/TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>

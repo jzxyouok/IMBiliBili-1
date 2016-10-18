@@ -15,7 +15,6 @@ import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
-import com.lh.imbilibili.view.adapter.categoryfragment.PartionChildRecyclerViewAdapter;
 import com.lh.imbilibili.view.adapter.usercenter.ArchiveRecyclerViewAdapter;
 import com.lh.imbilibili.widget.EmptyView;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
@@ -32,7 +31,7 @@ import retrofit2.Response;
  * 用户中心投稿or投币界面
  */
 
-public class UserCenterArchiveFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, PartionChildRecyclerViewAdapter.OnVideoItemClickListener {
+public class UserCenterArchiveFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, ArchiveRecyclerViewAdapter.OnVideoItemClickListener {
 
     private static final String EXTRA_DATA = "data";
     private static final int PAGE_SIZE = 10;
@@ -112,7 +111,7 @@ public class UserCenterArchiveFragment extends BaseFragment implements LoadMoreR
             mEmptyView.setText(R.string.no_data_tips);
         } else {
             mRecyclerView.setShowLoadingView(true);
-            if (count < PAGE_SIZE) {
+            if (count <= PAGE_SIZE) {
                 mRecyclerView.setEnableLoadMore(false);
                 mRecyclerView.setLoadView(R.string.no_data_tips, false);
             } else {

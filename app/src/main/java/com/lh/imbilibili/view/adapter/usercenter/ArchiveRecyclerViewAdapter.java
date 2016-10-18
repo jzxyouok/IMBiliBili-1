@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.user.UserCenter;
 import com.lh.imbilibili.utils.StringUtils;
-import com.lh.imbilibili.view.adapter.categoryfragment.PartionChildRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class ArchiveRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private List<UserCenter.Archive> mVideos;
 
-    private PartionChildRecyclerViewAdapter.OnVideoItemClickListener mOnVideoItemClickListener;
+    private OnVideoItemClickListener mOnVideoItemClickListener;
 
     private Context mContext;
 
@@ -39,7 +38,7 @@ public class ArchiveRecyclerViewAdapter extends RecyclerView.Adapter {
         mContext = context;
     }
 
-    public void setOnVideoItemClickListener(PartionChildRecyclerViewAdapter.OnVideoItemClickListener listener) {
+    public void setOnVideoItemClickListener(OnVideoItemClickListener listener) {
         mOnVideoItemClickListener = listener;
     }
 

@@ -94,8 +94,8 @@ public class UserCenterFavouriteFragment extends BaseFragment {
             mEmptyView.setImgResource(R.drawable.img_tips_error_space_no_data);
             mEmptyView.setText(R.string.no_data_tips);
         } else {
-            mRecyclerView.setEnableLoadMore(true);
-            mRecyclerView.setShowLoadingView(true);
+            mRecyclerView.setEnableLoadMore(false);
+            mRecyclerView.setShowLoadingView(false);
             mAdapter.addFavourites(userCenter.getFavourite().getItem());
             mAdapter.notifyDataSetChanged();
         }

@@ -164,24 +164,23 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (mPartionData == null) {
-            return 0;
-        }
         mTypeList.clear();
-        if (mPartionData.getBanner() != null) {
-            mTypeList.add(TYPE_BANNER);
-        }
-        mTypeList.add(TYPE_SUB_PARTION);
-        if (mPartionData.getRecommend() != null) {
-            mTypeList.add(TYPE_HOT_RECOMMEND_HEAD);
-            for (int i = 0; i < mPartionData.getRecommend().size(); i++) {
-                mTypeList.add(TYPE_HOT_RECOMMEND_ITEM);
+        if (mPartionData != null) {
+            if (mPartionData.getBanner() != null) {
+                mTypeList.add(TYPE_BANNER);
             }
-        }
-        if (mPartionData.getNewVideo() != null) {
-            mTypeList.add(TYPE_NEW_VIDEO_HEAD);
-            for (int i = 0; i < mPartionData.getNewVideo().size(); i++) {
-                mTypeList.add(TYPE_NEW_VIDEO_ITEM);
+            mTypeList.add(TYPE_SUB_PARTION);
+            if (mPartionData.getRecommend() != null) {
+                mTypeList.add(TYPE_HOT_RECOMMEND_HEAD);
+                for (int i = 0; i < mPartionData.getRecommend().size(); i++) {
+                    mTypeList.add(TYPE_HOT_RECOMMEND_ITEM);
+                }
+            }
+            if (mPartionData.getNewVideo() != null) {
+                mTypeList.add(TYPE_NEW_VIDEO_HEAD);
+                for (int i = 0; i < mPartionData.getNewVideo().size(); i++) {
+                    mTypeList.add(TYPE_NEW_VIDEO_ITEM);
+                }
             }
         }
         if (mDynamicVideo != null) {
@@ -237,7 +236,7 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    class HeadHolder extends RecyclerView.ViewHolder {
+    class HeadHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title)
         TextView tvTitle;
         @BindView(R.id.sub_title)
@@ -246,12 +245,20 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
         HeadHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         void setLeftDrawable(int resId) {
             Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), resId);
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             tvTitle.setCompoundDrawables(drawable, null, null, null);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onHeadItemClick(getItemViewType());
+            }
         }
     }
 

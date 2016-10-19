@@ -55,7 +55,6 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
 
     private AttentionRecyclerViewAdapter mAdapter;
     private int mCurrentPage;
-    private int mNotifyCount;
     private boolean mNeedRefresh;
 
     public static AttentionFragment newInstance() {
@@ -67,7 +66,6 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
         ButterKnife.bind(this, view);
         initRecyclerView();
         mCurrentPage = 1;
-        mNotifyCount = 2;
         mNeedRefresh = true;
         if (UserManagerUtils.getInstance().getCurrentUser() == null) {
             mBtnLogin.setVisibility(View.VISIBLE);
@@ -104,7 +102,7 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                int type = mAdapter.getItemViewType(position);
+                int type = mRecyclerView.getItemViewType(position);
                 if (type == AttentionRecyclerViewAdapter.TYPE_BANGUMI_FOLLOW_HEAD
                         || type == AttentionRecyclerViewAdapter.TYPE_DYNAMIC_HEAD
                         || type == AttentionRecyclerViewAdapter.TYPE_DYNAMIC_ITEM
@@ -136,9 +134,7 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (response.body().getCode() == 0) {
                     mAdapter.setFollowBangumiData(response.body().getResult());
-                    if (mNeedRefresh) {
-                        notifyDataLoadFinish();
-                    }
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -162,9 +158,10 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
                         mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
                         if (mNeedRefresh) {
+                            mNeedRefresh = false;
                             mAdapter.clearFeeds();
                             mAdapter.addFeeds(response.body().getData().getFeeds());
-                            notifyDataLoadFinish();
+                            mAdapter.notifyDataSetChanged();
                         } else {
                             int startPosition = mAdapter.getItemCount();
                             List<DynamicVideo.Feed> feeds = response.body().getData().getFeeds();
@@ -182,16 +179,6 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
                 ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
-    }
-
-    //保证数据全部加载完毕再刷新
-    private void notifyDataLoadFinish() {
-        mNotifyCount--;
-        if (mNotifyCount == 0) {
-            mNotifyCount = 2;
-            mNeedRefresh = false;
-            mAdapter.notifyDataSetChanged();
-        }
     }
 
     @SuppressWarnings("unused")
@@ -222,7 +209,6 @@ public class AttentionFragment extends BaseFragment implements LoadMoreRecyclerV
     @Override
     public void onRefresh() {
         mCurrentPage = 1;
-        mNotifyCount = 2;
         mNeedRefresh = true;
         mRecyclerView.setEnableLoadMore(true);
         mRecyclerView.setLoadView(R.string.loading, true);

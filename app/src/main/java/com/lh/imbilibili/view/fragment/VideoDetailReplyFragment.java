@@ -1,6 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
@@ -9,11 +8,14 @@ import com.lh.imbilibili.R;
 import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.FeedbackData;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.BaseFragment;
+import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackAdapter;
 import com.lh.imbilibili.view.adapter.feedbackfragment.FeedbackItemDecoration;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +30,6 @@ import retrofit2.Response;
 
 public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRecyclerView.OnLoadMoreViewClickListener, LoadMoreRecyclerView.OnLoadMoreLinstener {
 
-    private static final String EXTRA_ID = "id";
     private static final int PAGE_SIZE = 20;
 
     @BindView(R.id.recycler_view)
@@ -42,18 +43,13 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
 
     private boolean mIsFirstLoad;
 
-    public static VideoDetailReplyFragment newInstance(String id) {
-        VideoDetailReplyFragment fragment = new VideoDetailReplyFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_ID, id);
-        fragment.setArguments(bundle);
-        return fragment;
+    public static VideoDetailReplyFragment newInstance() {
+        return new VideoDetailReplyFragment();
     }
 
     @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
-        mId = getArguments().getString(EXTRA_ID);
         mCurrentPage = 1;
         mIsFirstLoad = true;
         mFeedbackAdapter = new FeedbackAdapter();
@@ -63,7 +59,18 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setAdapter(mFeedbackAdapter);
         mRecyclerView.setOnLoadMoreLinstener(this);
-        loadFeedbackData();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BusUtils.getBus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        BusUtils.getBus().unregister(this);
     }
 
     private void loadFeedbackData() {
@@ -80,6 +87,7 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
                     FeedbackData feedbackData = response.body().getData();
                     if (mIsFirstLoad) {
                         mIsFirstLoad = false;
+                        mFeedbackAdapter.clear();
                         mFeedbackAdapter.addFeedbackData(feedbackData);
                         mFeedbackAdapter.notifyDataSetChanged();
                     } else {
@@ -126,5 +134,20 @@ public class VideoDetailReplyFragment extends BaseFragment implements LoadMoreRe
     @Override
     public void onLoadMore() {
         loadFeedbackData();
+    }
+
+    @Subscribe
+    public void onVideoDetailLoadFinish(VideoDetailActivity.VideoStateChangeEvent event) {
+        switch (event.state) {
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_LOAD_FINISH:
+                mId = event.videoDetail.getAid();
+                if (mIsFirstLoad) {
+                    loadFeedbackData();
+                }
+                break;
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_PLAY:
+                mRecyclerView.setNestedScrollingEnabled(false);
+                break;
+        }
     }
 }

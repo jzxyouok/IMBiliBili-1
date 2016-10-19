@@ -49,7 +49,6 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
     private Call<BilibiliDataResponse<PartionHome>> mPartionDataCall;
     private Call<BilibiliDataResponse<List<PartionVideo>>> mNewVideoDataCall;
 
-    private int mNotifyCount;
     private boolean mNeedRefresh;
 
     public static PartionListFragment newInstance(PartionModel.Partion partion) {
@@ -70,7 +69,6 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
         mPartion = getArguments().getParcelable(EXTRA_DATA);
         ButterKnife.bind(this, view);
         mCurrentPage = 1;
-        mNotifyCount = 2;
         mNeedRefresh = true;
         initRecyclerView();
     }
@@ -112,8 +110,9 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
                         mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
                         if (mNeedRefresh) {
+                            mNeedRefresh = false;
                             mAdapter.addNewVideos(response.body().getData());
-                            notifyDataLoadFinish();
+                            mAdapter.notifyDataSetChanged();
                         } else {
                             int startPosition = mAdapter.getItemCount();
                             mAdapter.addNewVideos(response.body().getData());
@@ -128,9 +127,6 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
             public void onFailure(Call<BilibiliDataResponse<List<PartionVideo>>> call, Throwable t) {
                 mRecyclerView.setLoading(false);
                 ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
-                if (mNeedRefresh) {
-                    notifyDataLoadFinish();
-                }
             }
         });
     }
@@ -142,30 +138,15 @@ public class PartionListFragment extends LazyLoadFragment implements LoadMoreRec
             public void onResponse(Call<BilibiliDataResponse<PartionHome>> call, Response<BilibiliDataResponse<PartionHome>> response) {
                 if (response.body().isSuccess()) {
                     mAdapter.setPartionHomeData(response.body().getData());
-                    if (mNeedRefresh) {
-                        notifyDataLoadFinish();
-                    }
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<PartionHome>> call, Throwable t) {
                 ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
-                if (mNeedRefresh) {
-                    notifyDataLoadFinish();
-                }
             }
         });
-    }
-
-    //保证数据全部加载完毕再刷新
-    private void notifyDataLoadFinish() {
-        mNotifyCount--;
-        if (mNotifyCount == 0) {
-            mNotifyCount = 2;
-            mNeedRefresh = false;
-            mAdapter.notifyDataSetChanged();
-        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -123,8 +122,6 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
     private ImageView[] mIvUps;
     private ImageView[] mIvDowns;
     private TextView[] mTvFliterButtons;
-
-    private ValueAnimator gridMenuAnimator;
 
     public static BangumiIndexFragment newInstance(int year, int quarter, ArrayList<Integer> years) {
         BangumiIndexFragment fragment = new BangumiIndexFragment();

@@ -32,8 +32,6 @@ public class FeedbackActivity extends BaseActivity {
         Intent intent = new Intent(context, FeedbackActivity.class);
         intent.putExtra("position", position);
         intent.putExtra("data", bangumiDetail);
-//        intent.putExtra(Constant.SEASONID_EXTRA,episodes.get(position).getAvId());
-//        intent.putExtra(Constant.EPISODES_EXTRA,new Gson().toJson(episodes));
         context.startActivity(intent);
     }
 

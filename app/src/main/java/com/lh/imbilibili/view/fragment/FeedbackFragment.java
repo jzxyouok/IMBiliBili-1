@@ -53,7 +53,7 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     private int mSelectPosition;
     private boolean mNeedRefresh;
 
-    private EpisodeFragment mEpisodeFragment;
+    private EpisodeDialogFragment mEpisodeDialogFragment;
 
     public static FeedbackFragment newInstance(Bundle bundle) {
         FeedbackFragment feedbackFragment = new FeedbackFragment();
@@ -139,10 +139,10 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
     }
 
     private void showEpChooseDialog() {
-        if (mEpisodeFragment == null) {
-            mEpisodeFragment = EpisodeFragment.newInstance(mBangumiDetail, mSelectPosition);
+        if (mEpisodeDialogFragment == null) {
+            mEpisodeDialogFragment = EpisodeDialogFragment.newInstance(mBangumiDetail, mSelectPosition);
         }
-        mEpisodeFragment.show(getFragmentManager(), EpisodeFragment.TAG);
+        mEpisodeDialogFragment.show(getFragmentManager(), EpisodeDialogFragment.TAG);
     }
 
     @Override
@@ -175,8 +175,8 @@ public class FeedbackFragment extends BaseFragment implements LoadMoreRecyclerVi
         mTvTitle.setText(StringUtils.format("第%s话", mBangumiDetail.getEpisodes().get(position).getIndex()));
         loadFeedbackData(mBangumiDetail.getEpisodes().get(position).getAvId(), mCurrentPage);
         loadReplyCount(mBangumiDetail.getEpisodes().get(position).getAvId());
-        if (mEpisodeFragment != null) {
-            mEpisodeFragment.dismiss();
+        if (mEpisodeDialogFragment != null) {
+            mEpisodeDialogFragment.dismiss();
         }
     }
 }

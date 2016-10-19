@@ -47,6 +47,7 @@ public class FollowBangumiActivity extends BaseActivity implements LoadMoreRecyc
     private int mCurrentPage;
     private AttentionBangumiRecyclerViewAdapter mAdapter;
 
+
     private Call<FollowBangumiResponse<List<FollowBangumi>>> mConcernedBangumiCall;
 
     public static void startActivity(Context context) {
@@ -93,8 +94,13 @@ public class FollowBangumiActivity extends BaseActivity implements LoadMoreRecyc
                         mRecyclerView.setEnableLoadMore(false);
                         mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addBangumi(response.body().getResult());
-                        mAdapter.notifyDataSetChanged();
+                        if (mCurrentPage == 1) {
+                            mAdapter.notifyDataSetChanged();
+                        } else {
+                            mAdapter.notifyItemRangeInserted(startPosition, response.body().getResult().size());
+                        }
                         mCurrentPage++;
                     }
                 }

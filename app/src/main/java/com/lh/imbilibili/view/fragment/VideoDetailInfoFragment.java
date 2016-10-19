@@ -181,8 +181,15 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
     }
 
     @Subscribe
-    public void onVideoDetailLoadFinish(VideoDetail videoDetail) {
-        mVideoDetail = videoDetail;
-        bindViewWithData();
+    public void onVideoDetailLoadFinish(VideoDetailActivity.VideoStateChangeEvent event) {
+        switch (event.state) {
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_LOAD_FINISH:
+                mVideoDetail = event.videoDetail;
+                bindViewWithData();
+                break;
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_PLAY:
+                mScrollView.setNestedScrollingEnabled(false);
+                break;
+        }
     }
 }

@@ -48,7 +48,6 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
     private Call<BilibiliDataResponse<List<PartionVideo>>> mPartionDynamicCall;
 
     private int mCurrentPage = 1;
-    private int mNotifyCount;
 
     private boolean mNeedRefresh;
 
@@ -65,7 +64,6 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
         mPartionModel = getArguments().getParcelable(EXTRA_DATA);
         ButterKnife.bind(this, view);
         mCurrentPage = 1;
-        mNotifyCount = 2;
         mNeedRefresh = true;
         initRecyclerView();
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -85,9 +83,7 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
                 if (response.body().getCode() == 0) {
                     mPartionHomeData = response.body().getData();
                     mAdapter.setPartionData(mPartionHomeData);
-                    if (mNeedRefresh) {
-                        notifyDataLoadFinish();
-                    }
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -110,9 +106,10 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
                         mRecyclerView.setEnableLoadMore(false);
                     }
                     if (mNeedRefresh) {//需要全部刷新
+                        mNeedRefresh = false;
                         mAdapter.clearDynamicVideo();
                         mAdapter.addDynamicVideo(response.body().getData());
-                        notifyDataLoadFinish();
+                        mAdapter.notifyDataSetChanged();
                     } else {//加载更多
                         int startPosition = mAdapter.getItemCount();
                         mAdapter.addDynamicVideo(response.body().getData());
@@ -177,22 +174,11 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
     @Override
     public void onRefresh() {
         mCurrentPage = 1;
-        mNotifyCount = 2;
         mNeedRefresh = true;
         mRecyclerView.setEnableLoadMore(true);
         mRecyclerView.setLoadView(R.string.loading, true);
         loadData();
         loadDynamicData();
-    }
-
-    //保证数据全部加载完毕再刷新
-    private void notifyDataLoadFinish() {
-        mNotifyCount--;
-        if (mNotifyCount == 0) {
-            mNotifyCount = 2;
-            mNeedRefresh = false;
-            mAdapter.notifyDataSetChanged();
-        }
     }
 
     @Override
@@ -213,13 +199,15 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
 
     @Override
     public void onHeadItemClick(int type) {
-
+        if (type == PartionHomeRecyclerViewAdapter.TYPE_NEW_VIDEO_HEAD) {
+            BusUtils.getBus().post(new SubPartionClickEvent(1));
+        }
     }
 
-    public class SubPartionClickEvent {
+    public static class SubPartionClickEvent {
         public int position;
 
-        public SubPartionClickEvent(int position) {
+        SubPartionClickEvent(int position) {
             this.position = position;
         }
     }

@@ -147,7 +147,7 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         mTvPlayer.setEnabled(false);
         mFragments = new ArrayList<>();
         mFragments.add(VideoDetailInfoFragment.newInstance());
-        mFragments.add(VideoDetailReplyFragment.newInstance(mAid));
+        mFragments.add(VideoDetailReplyFragment.newInstance());
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragments);
         mViewPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -163,7 +163,7 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
             public void onResponse(Call<BilibiliDataResponse<VideoDetail>> call, Response<BilibiliDataResponse<VideoDetail>> response) {
                 if (response.body().getCode() == 0) {
                     mVideoDetail = response.body().getData();
-                    BusUtils.getBus().post(mVideoDetail);
+                    BusUtils.getBus().post(new VideoStateChangeEvent(VideoStateChangeEvent.STATE_LOAD_FINISH, mVideoDetail));
                     bindViewData();
                 } else {
                     mEmptyView.setVisibility(View.VISIBLE);
@@ -234,9 +234,12 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
         hidFab();
         mPreViewLayout.setVisibility(View.INVISIBLE);
         mToolbar.setVisibility(View.INVISIBLE);
+        BusUtils.getBus().post(new VideoStateChangeEvent(VideoStateChangeEvent.STATE_PLAY, mVideoDetail));
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mAppBarLayout.getLayoutParams();
         DisableableAppBarLayoutBehavior behavior = (DisableableAppBarLayoutBehavior) params.getBehavior();
-        behavior.setEnableScroll(false);
+        if (behavior != null) {
+            behavior.setEnableScroll(false);
+        }
         mViewPager.post(new Runnable() {
             @Override
             public void run() {
@@ -326,6 +329,21 @@ public class VideoDetailActivity extends BaseActivity implements VideoFragment.O
             exitFullScreen();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    public static class VideoStateChangeEvent {
+
+        public static final int STATE_PLAY = 1;
+        public static final int STATE_STOP = 2;
+        public static final int STATE_LOAD_FINISH = 3;
+
+        public int state;
+        public VideoDetail videoDetail;
+
+        VideoStateChangeEvent(int state, VideoDetail videoDetail) {
+            this.state = state;
+            this.videoDetail = videoDetail;
         }
     }
 }

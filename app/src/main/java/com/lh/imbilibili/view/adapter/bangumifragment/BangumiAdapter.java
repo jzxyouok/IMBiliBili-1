@@ -22,6 +22,7 @@ import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.widget.BannerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,6 +48,8 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private IndexPage mIndexPage;
     private List<IndexBangumiRecommend> mBangumis;
 
+    private List<Integer> mTypeList;
+
     private int[] mHeadImgs = new int[]{R.drawable.bangumi_home_ic_season_1,
             R.drawable.bangumi_home_ic_season_2,
             R.drawable.bangumi_home_ic_season_3,
@@ -59,6 +62,7 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public BangumiAdapter(Context context) {
         this.context = context;
+        mTypeList = new ArrayList<>();
     }
 
     public void setmIndexPage(IndexPage indexPage) {
@@ -131,29 +135,35 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (getItemViewType(position) == SERIALIZING_GRID_ITEM) {
             BangumiGridHolder gridHolder = (BangumiGridHolder) holder;
             List<Bangumi> bangumis = mIndexPage.getSerializing();
-            Bangumi bangumi = bangumis.get(position - 3);
-            Glide.with(context).load(bangumi.getCover())
-                    .centerCrop()
-                    .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
-                    .into(gridHolder.ivCover);
-            gridHolder.tvFavourite.setVisibility(View.GONE);
-            gridHolder.tv1.setVisibility(View.VISIBLE);
-            gridHolder.tvTitle.setText(bangumi.getTitle());
-            gridHolder.tv1.setText(StringUtils.format("更新至第%s话", bangumi.getNewestEpIndex()));
-            gridHolder.tv2.setText(bangumi.getLastTime());
-            Drawable drawable = DrawableCompat.wrap(gridHolder.tv2.getBackground());
-            if (bangumi.getWatchingCount() >= 8000) {
-                gridHolder.tv2.setVisibility(View.VISIBLE);
-                DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.colorPrimary));
-            } else if (bangumi.getWatchingCount() >= 10) {
-                gridHolder.tv2.setVisibility(View.VISIBLE);
-                DrawableCompat.setTint(drawable, Color.GRAY);
+            int realPosition = position - mTypeList.indexOf(SERIALIZING_GRID_ITEM);
+            if (realPosition < bangumis.size()) {
+                gridHolder.itemView.setVisibility(View.VISIBLE);
+                Bangumi bangumi = bangumis.get(realPosition);
+                Glide.with(context).load(bangumi.getCover())
+                        .centerCrop()
+                        .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
+                        .into(gridHolder.ivCover);
+                gridHolder.tvFavourite.setVisibility(View.GONE);
+                gridHolder.tv1.setVisibility(View.VISIBLE);
+                gridHolder.tvTitle.setText(bangumi.getTitle());
+                gridHolder.tv1.setText(StringUtils.format("更新至第%s话", bangumi.getNewestEpIndex()));
+                gridHolder.tv2.setText(bangumi.getLastTime());
+                Drawable drawable = DrawableCompat.wrap(gridHolder.tv2.getBackground());
+                if (bangumi.getWatchingCount() >= 8000) {
+                    gridHolder.tv2.setVisibility(View.VISIBLE);
+                    DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.colorPrimary));
+                } else if (bangumi.getWatchingCount() >= 10) {
+                    gridHolder.tv2.setVisibility(View.VISIBLE);
+                    DrawableCompat.setTint(drawable, Color.GRAY);
+                } else {
+                    gridHolder.tv2.setVisibility(View.GONE);
+                }
+                gridHolder.tv2.setBackground(drawable);
+                gridHolder.tv2.setText(StringUtils.format("%s人在看", StringUtils.formateNumber(bangumi.getWatchingCount())));
+                gridHolder.mSeasonId = bangumi.getSeasonId();
             } else {
-                gridHolder.tv2.setVisibility(View.GONE);
+                gridHolder.itemView.setVisibility(View.GONE);
             }
-            gridHolder.tv2.setBackground(drawable);
-            gridHolder.tv2.setText(StringUtils.format("%s人在看", StringUtils.formateNumber(bangumi.getWatchingCount())));
-            gridHolder.mSeasonId = bangumi.getSeasonId();
         } else if (getItemViewType(position) == SEASON_BANGUMI_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText(StringUtils.format("%d月新番", mMonth[mIndexPage.getPrevious().getSeason() - 1]));
@@ -162,16 +172,22 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (getItemViewType(position) == SEASON_BANGUMI_ITEM) {
             SeasonHolder seasonHolder = (SeasonHolder) holder;
             List<Bangumi> bangumis = mIndexPage.getPrevious().getList();
-            Bangumi bangumi = bangumis.get(position - 10);
-            seasonHolder.tv1.setVisibility(View.GONE);
-            seasonHolder.tvFavourite.setVisibility(View.VISIBLE);
-            Glide.with(context).load(bangumi.getCover())
-                    .centerCrop()
-                    .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
-                    .into(seasonHolder.ivCover);
-            seasonHolder.tvTitle.setText(bangumi.getTitle());
-            seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));
-            seasonHolder.mSeasonId = bangumi.getSeasonId();
+            int realPosition = position - mTypeList.indexOf(SEASON_BANGUMI_ITEM);
+            if (realPosition < bangumis.size()) {
+                seasonHolder.itemView.setVisibility(View.VISIBLE);
+                Bangumi bangumi = bangumis.get(realPosition);
+                seasonHolder.tv1.setVisibility(View.GONE);
+                seasonHolder.tvFavourite.setVisibility(View.VISIBLE);
+                Glide.with(context).load(bangumi.getCover())
+                        .centerCrop()
+                        .transform(new RoundedCornersTransformation(context.getApplicationContext(), DisplayUtils.dip2px(context.getApplicationContext(), 2)))
+                        .into(seasonHolder.ivCover);
+                seasonHolder.tvTitle.setText(bangumi.getTitle());
+                seasonHolder.tvFavourite.setText(StringUtils.format("%s人在追番", StringUtils.formateNumber(bangumi.getFavourites())));
+                seasonHolder.mSeasonId = bangumi.getSeasonId();
+            } else {
+                seasonHolder.itemView.setVisibility(View.GONE);
+            }
         } else if (getItemViewType(position) == BANGUMI_RECOMMEND_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("番剧推荐");
@@ -179,7 +195,8 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             headHolder.tvSubTitle.setVisibility(View.GONE);
         } else if (getItemViewType(position) == BANGUMI_RECOMMEND_ITEM) {
             BangumiRecommendHolder recommendHolder = (BangumiRecommendHolder) holder;
-            IndexBangumiRecommend bangumi = mBangumis.get(position - 14);
+            int realPosition = position - mTypeList.indexOf(BANGUMI_RECOMMEND_ITEM);
+            IndexBangumiRecommend bangumi = mBangumis.get(realPosition);
             Glide.with(context).load(bangumi.getCover()).into(recommendHolder.ivCover);
             recommendHolder.tvTitle.setText(bangumi.getTitle());
             recommendHolder.tv1.setText(bangumi.getDesc());
@@ -190,34 +207,37 @@ public class BangumiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if (mIndexPage == null) {
-            return 0;
-        } else if (mBangumis == null) {
-            return 13;
-        } else {
-            return 13 + mBangumis.size();
+        mTypeList.clear();
+        if (mIndexPage != null && mIndexPage.getAd() != null && mIndexPage.getAd().getHead() != null && !mIndexPage.getAd().getHead().isEmpty()) {
+            mTypeList.add(BANNER);
         }
+        mTypeList.add(NAV);
+        if (mIndexPage != null) {
+            if (mIndexPage.getSerializing() != null && !mIndexPage.getSerializing().isEmpty()) {
+                mTypeList.add(SERIALIZING_HEAD);
+                for (int i = 0; i < 6; i++) {
+                    mTypeList.add(SERIALIZING_GRID_ITEM);
+                }
+            }
+            if (mIndexPage.getPrevious() != null && mIndexPage.getPrevious().getList() != null) {
+                mTypeList.add(SEASON_BANGUMI_HEAD);
+                mTypeList.add(SEASON_BANGUMI_ITEM);
+                mTypeList.add(SEASON_BANGUMI_ITEM);
+                mTypeList.add(SEASON_BANGUMI_ITEM);
+            }
+        }
+        if (mBangumis != null) {
+            mTypeList.add(BANGUMI_RECOMMEND_HEAD);
+            for (int i = 0; i < mBangumis.size(); i++) {
+                mTypeList.add(BANGUMI_RECOMMEND_ITEM);
+            }
+        }
+        return mTypeList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
-            return BANNER;
-        } else if (position == 1) {
-            return NAV;
-        } else if (position == 2) {
-            return SERIALIZING_HEAD;
-        } else if (position >= 3 && position <= 8) {
-            return SERIALIZING_GRID_ITEM;
-        } else if (position == 9) {
-            return SEASON_BANGUMI_HEAD;
-        } else if (position >= 10 && position <= 12) {
-            return SEASON_BANGUMI_ITEM;
-        } else if (position == 13) {
-            return BANGUMI_RECOMMEND_HEAD;
-        } else {
-            return BANGUMI_RECOMMEND_ITEM;
-        }
+        return mTypeList.get(position);
     }
 
     public interface OnItemClickListener {

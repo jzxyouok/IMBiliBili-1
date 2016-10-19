@@ -47,7 +47,6 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     private Call<BiliBiliResultResponse<IndexPage>> indexCall;
     private Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> recommendCall;
-    private int mNotifyCount;
 
     private boolean mNeedRefresh; //是否需要全部刷新
 
@@ -64,7 +63,6 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     protected void initView(View view) {
         ButterKnife.bind(this, view);
         mNeedRefresh = true;
-        mNotifyCount = 2;
         initRecyclerView();
         loadAllData();
     }
@@ -115,9 +113,7 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
                     indexData = response.body().getResult();
                     Collections.sort(indexData.getSerializing());
                     adapter.setmIndexPage(indexData);
-                    if (mNeedRefresh) {
-                        notifyDataLoadFinish();
-                    }
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -142,9 +138,10 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
                         return;
                     }
                     if (mNeedRefresh) {//需要全部刷新
+                        mNeedRefresh = false;
                         adapter.clearRecommend();
                         adapter.addBangumis(response.body().getResult());
-                        notifyDataLoadFinish();
+                        adapter.notifyDataSetChanged();
                     } else {//加载更多
                         int startPosition = adapter.getItemCount();
                         adapter.addBangumis(response.body().getResult());
@@ -168,7 +165,6 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        mNotifyCount = 2;
         mNeedRefresh = true;
         recyclerView.setEnableLoadMore(true);
         recyclerView.setLoadView(R.string.loading, true);
@@ -199,16 +195,6 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
             if (data.equals(String.valueOf(R.id.follow_bangumi))) {
                 FollowBangumiActivity.startActivity(getContext());
             }
-        }
-    }
-
-    //保证数据全部加载完毕再刷新
-    private void notifyDataLoadFinish() {
-        mNotifyCount--;
-        if (mNotifyCount == 0) {
-            mNotifyCount = 2;
-            mNeedRefresh = false;
-            adapter.notifyDataSetChanged();
         }
     }
 

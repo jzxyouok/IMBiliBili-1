@@ -19,9 +19,9 @@ import java.util.List;
  * Created by home on 2016/8/2.
  * 集数选择对话框
  */
-public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter.onEpClickListener {
+public class EpisodeDialogFragment extends DialogFragment implements FeedbackEpAdapter.onEpClickListener {
 
-    public static final String TAG = "EpisodeFragment";
+    public static final String TAG = "EpisodeDialogFragment";
 
     private static final String EXTRA_DATA = "data";
     private static final String EXTRA_POSITION = "position";
@@ -30,8 +30,8 @@ public class EpisodeFragment extends DialogFragment implements FeedbackEpAdapter
 
     private View mRootView;
 
-    public static EpisodeFragment newInstance(BangumiDetail bangumiDetail, int position) {
-        EpisodeFragment fragment = new EpisodeFragment();
+    public static EpisodeDialogFragment newInstance(BangumiDetail bangumiDetail, int position) {
+        EpisodeDialogFragment fragment = new EpisodeDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_DATA, bangumiDetail);
         bundle.putInt(EXTRA_POSITION, position);

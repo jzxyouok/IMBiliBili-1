@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by liuhui on 2016/10/5.
+ * 搜索主界面Adapter
  */
 
 public class SearchAdapter extends RecyclerView.Adapter {

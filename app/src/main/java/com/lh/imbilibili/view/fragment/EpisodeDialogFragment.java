@@ -75,4 +75,12 @@ public class EpisodeDialogFragment extends DialogFragment implements FeedbackEpA
         }
         dismiss();
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRootView != null && mRootView.getParent() != null) {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+        }
+    }
 }

@@ -79,12 +79,6 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
             mRootView = inflater.inflate(R.layout.search_widget_layout, container, false);
             ButterKnife.bind(this, mRootView);
         }
-        Window window = getDialog().getWindow();
-        if (window != null) {
-            window.setGravity(Gravity.TOP);
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
         return mRootView;
     }
 
@@ -119,6 +113,17 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
             }
         }
         return false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog().getWindow();
+        if (window != null) {
+            window.setGravity(Gravity.TOP);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     @Override

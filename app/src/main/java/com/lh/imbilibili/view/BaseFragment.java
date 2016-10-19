@@ -9,22 +9,31 @@ import android.view.ViewGroup;
 
 /**
  * Created by liuhui on 2016/7/5.
+ * Fragment基类
  */
 public abstract class BaseFragment extends Fragment {
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(getContentView(), container, false);
-    }
+    private View mRootView;
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initView(view);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mRootView == null) {
+            mRootView = inflater.inflate(getContentView(), container, false);
+            initView(mRootView);
+        }
+        return mRootView;
     }
 
     protected abstract void initView(View view);
 
     protected abstract int getContentView();
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRootView != null && mRootView.getParent() != null) {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+        }
+    }
 
     public String getTitle() {
         return "";

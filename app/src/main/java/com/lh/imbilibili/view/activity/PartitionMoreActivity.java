@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.lh.imbilibili.R;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
 import com.lh.imbilibili.view.BaseFragment;
@@ -18,6 +19,7 @@ import com.lh.imbilibili.view.adapter.categoryfragment.PartionViewPagerAdapter;
 import com.lh.imbilibili.view.adapter.categoryfragment.model.PartionModel;
 import com.lh.imbilibili.view.fragment.PartionHomeFragment;
 import com.lh.imbilibili.view.fragment.PartionListFragment;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +63,20 @@ public class PartitionMoreActivity extends BaseActivity {
         initView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.out.println("onStart");
+        BusUtils.getBus().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("onStop");
+        BusUtils.getBus().unregister(this);
+    }
+
     private void initView() {
         mFragments = new ArrayList<>();
         mFragments.add(PartionHomeFragment.newInstance(mPartionModel));
@@ -78,5 +94,10 @@ public class PartitionMoreActivity extends BaseActivity {
                 finish();
             }
         });
+    }
+
+    @Subscribe
+    public void onSubPartionItemClick(PartionHomeFragment.SubPartionClickEvent event) {
+        mViewPager.setCurrentItem(event.position + 1);
     }
 }

@@ -20,7 +20,7 @@ import com.lh.imbilibili.model.SeasonGroup;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseActivity;
-import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
+import com.lh.imbilibili.view.adapter.GridLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.seasongroupactivity.SeasonGroupAdapter;
 import com.lh.imbilibili.view.adapter.seasongroupactivity.SeasonGroupItemDecoration;
 import com.lh.imbilibili.view.adapter.seasongroupactivity.SeasonYearAdapter;
@@ -119,7 +119,7 @@ public class SeasonGroupActivity extends BaseActivity implements SeasonYearAdapt
         GridLayoutManager yearGridLayoutManager = new GridLayoutManager(this, 5);
         mSeasonYearAdapter = new SeasonYearAdapter(this, mYears);
         mRecyclerViewYear.setLayoutManager(yearGridLayoutManager);
-        mRecyclerViewYear.addItemDecoration(new GridRecyclerViewItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_large_spacing), false));
+        mRecyclerViewYear.addItemDecoration(new GridLayoutItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_large_spacing), false));
         mRecyclerViewYear.setAdapter(mSeasonYearAdapter);
         mSeasonYearAdapter.setOnYearItemClickListener(this);
         mSeasonGroupAdapter.setOnItemClickListener(this);

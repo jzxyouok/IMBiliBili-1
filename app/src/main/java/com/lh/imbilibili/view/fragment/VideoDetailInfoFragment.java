@@ -1,10 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,15 +12,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lh.imbilibili.R;
 import com.lh.imbilibili.model.VideoDetail;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.SearchActivity;
+import com.lh.imbilibili.view.activity.UserCenterActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.videodetailactivity.RelatesVideoItemDecoration;
 import com.lh.imbilibili.view.adapter.videodetailactivity.VideoPageRecyclerViewAdapter;
 import com.lh.imbilibili.view.adapter.videodetailactivity.VideoRelatesRecyclerViewAdapter;
 import com.lh.imbilibili.widget.FlowLayout;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +32,7 @@ import butterknife.ButterKnife;
  * Created by liuhui on 2016/10/2.
  */
 
-public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.onItemClickListener, VideoPageRecyclerViewAdapter.OnPageClickListener, VideoRelatesRecyclerViewAdapter.OnVideoItemClickListener {
+public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.OnItemClickListener, VideoPageRecyclerViewAdapter.OnPageClickListener, VideoRelatesRecyclerViewAdapter.OnVideoItemClickListener {
 
     public static final String EXTRA_DATA = "videoDetail";
 
@@ -52,6 +50,8 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
     FlowLayout mFlowLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.owner_layout)
+    ViewGroup mOwnerLayout;
     @BindView(R.id.iv_author_face)
     ImageView mIvAuthorFace;
     @BindView(R.id.tv_author_name)
@@ -68,7 +68,6 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
     private VideoDetail mVideoDetail;
     private VideoRelatesRecyclerViewAdapter mAdapter;
     private VideoPageRecyclerViewAdapter mVideoPageAdapter;
-    private MyBroadCastReceiver mBroadCastReceiver;
 
     public static VideoDetailInfoFragment newInstance() {
         return new VideoDetailInfoFragment();
@@ -79,8 +78,18 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         ButterKnife.bind(this, view);
         mFlowLayout.setOnItemClickListener(this);
         initRecyclerView();
-        mBroadCastReceiver = new MyBroadCastReceiver();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mBroadCastReceiver, new IntentFilter(VideoDetailActivity.ACTION_NOTIFY_INFO));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BusUtils.getBus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        BusUtils.getBus().unregister(this);
     }
 
     private void initRecyclerView() {
@@ -109,9 +118,15 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         mTvDanmakus.setText(StringUtils.formateNumber(mVideoDetail.getStat().getDanmaku()));
         mTvPlayCount.setText(StringUtils.formateNumber(mVideoDetail.getStat().getView()));
         mTvDescription.setText(mVideoDetail.getDesc());
-        Glide.with(this).load(mVideoDetail.getOwner().getFace()).transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
+        Glide.with(this).load(mVideoDetail.getOwner().getFace()).asBitmap().transform(new CircleTransformation(getContext().getApplicationContext())).into(mIvAuthorFace);
         mTvAuthorName.setText(mVideoDetail.getOwner().getName());
         mTvPubTime.setText(StringUtils.formateDateRelative(mVideoDetail.getPubdate()));
+        mOwnerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserCenterActivity.startActivity(getContext(), mVideoDetail.getOwner().getMid(), 1);
+            }
+        });
         if (mVideoDetail.getPages().size() > 1) {
             mPageLayout.setVisibility(View.VISIBLE);
             mTvPageCount.setText(StringUtils.format("分集(%d)", mVideoDetail.getPages().size()));
@@ -121,7 +136,8 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         }
         LayoutInflater inflater = LayoutInflater.from(getContext());
         if (mVideoDetail.getTags() != null) {
-            for (int i = 0; i < mVideoDetail.getTags().length; i++) {
+            int count = mVideoDetail.getTags().length > 8 ? 8 : mVideoDetail.getTags().length;
+            for (int i = 0; i < count; i++) {
                 View view = inflater.inflate(R.layout.video_detail_tag_item, mFlowLayout, false);
                 TextView textView = (TextView) view.findViewById(R.id.tv_tag);
                 textView.setText(mVideoDetail.getTags()[i]);
@@ -140,7 +156,6 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadCastReceiver);
     }
 
     @Override
@@ -165,14 +180,16 @@ public class VideoDetailInfoFragment extends BaseFragment implements FlowLayout.
         VideoDetailActivity.startActivity(getContext(), mVideoDetail.getRelates().get(position).getAid());
     }
 
-    private class MyBroadCastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(VideoDetailActivity.ACTION_NOTIFY_INFO)) {
-                mVideoDetail = intent.getParcelableExtra(EXTRA_DATA);
+    @Subscribe
+    public void onVideoDetailLoadFinish(VideoDetailActivity.VideoStateChangeEvent event) {
+        switch (event.state) {
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_LOAD_FINISH:
+                mVideoDetail = event.videoDetail;
                 bindViewWithData();
-            }
+                break;
+            case VideoDetailActivity.VideoStateChangeEvent.STATE_PLAY:
+                mScrollView.setNestedScrollingEnabled(false);
+                break;
         }
     }
 }

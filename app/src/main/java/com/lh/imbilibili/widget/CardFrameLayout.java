@@ -11,13 +11,20 @@ public class CardFrameLayout extends CardView {
 
     public CardFrameLayout(Context context) {
         super(context);
+        init();
     }
 
     public CardFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public CardFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        setUseCompatPadding(true);
     }
 }

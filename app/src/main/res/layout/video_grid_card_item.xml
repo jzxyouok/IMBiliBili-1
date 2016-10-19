@@ -16,8 +16,8 @@
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:aspectRadioWidth="16"
-            app:aspectRadioHeight="10"/>
+            app:aspectRadioHeight="10"
+            app:aspectRadioWidth="16" />
 
         <TextView
             android:id="@+id/title"

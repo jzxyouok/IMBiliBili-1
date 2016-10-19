@@ -43,6 +43,7 @@ public class Constant {
     public static final String BANGUMI_INDEX_COND = "/api/bangumi_index_cond";
     public static final String BANGUMI_INDEX = "/api/bangumi_index";
     public static final String MY_FOLLOWS = "/api/my_follows";
+    public static final String MY_CONCERNED_SEASON = "/api/get_concerned_season";
     public static final String REPORT_WATCH = "/api/report_watch";
 
     public static final String FEEDBACK = "/x/reply";
@@ -54,6 +55,13 @@ public class Constant {
     public static final String PARTION_DYNAMIC = "/x/v2/region/show/dynamic";
     public static final String PARTION_CHILD = "/x/v2/region/show/child";
     public static final String PARTION_CHILD_LIST = "/x/v2/region/show/child/list";
+
+    public static final String USER_SPACE = "/x/v2/space";
+    public static final String USER_SPACE_ARCHIVE = "/x/v2/space/archive";
+    public static final String USER_SPACE_COIN_ARCHIVE = "/x/v2/space/coinarc";
+    public static final String USER_SPACE_BANGUMI = "/x/v2/space/bangumi";
+    public static final String USER_SPACE_COMMUNITY = "/x/v2/space/community";
+    public static final String USER_SPACE_GAME = "/x/v2/space/game";
 
     public static final String SEARCH = "/x/v2/search";
     public static final String SEARCH_TYPE = SEARCH + "/type";

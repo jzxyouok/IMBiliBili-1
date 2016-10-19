@@ -10,6 +10,7 @@ import com.lh.imbilibili.data.RetrofitHelper;
 import com.lh.imbilibili.model.BilibiliDataResponse;
 import com.lh.imbilibili.model.PartionHome;
 import com.lh.imbilibili.model.PartionVideo;
+import com.lh.imbilibili.utils.BusUtils;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
@@ -28,10 +29,12 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/9/29.
+ * 分区主页
  */
 
 public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SwipeRefreshLayout.OnRefreshListener, PartionHomeRecyclerViewAdapter.OnItemClickListener {
     private static final String EXTRA_DATA = "partionModel";
+    private static final int PAGE_SIZE = 50;
 
     @BindView(R.id.swiperefresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -46,12 +49,24 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
 
     private int mCurrentPage = 1;
 
+    private boolean mNeedRefresh;
+
     public static PartionHomeFragment newInstance(PartionModel partionModel) {
         PartionHomeFragment fragment = new PartionHomeFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_DATA, partionModel);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    protected void initView(View view) {
+        mPartionModel = getArguments().getParcelable(EXTRA_DATA);
+        ButterKnife.bind(this, view);
+        mCurrentPage = 1;
+        mNeedRefresh = true;
+        initRecyclerView();
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -79,44 +94,42 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
         });
     }
 
-    private void loadDynamicData(int page) {
-        mPartionDynamicCall = RetrofitHelper.getInstance().getPartionService().getPartionDynamic(mPartionModel.getId(), page, 50);
+    private void loadDynamicData() {
+        mPartionDynamicCall = RetrofitHelper.getInstance().getPartionService().getPartionDynamic(mPartionModel.getId(), mCurrentPage, PAGE_SIZE);
         mPartionDynamicCall.enqueue(new Callback<BilibiliDataResponse<List<PartionVideo>>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<List<PartionVideo>>> call, Response<BilibiliDataResponse<List<PartionVideo>>> response) {
                 mRecyclerView.setLoading(false);
                 if (response.body().isSuccess()) {
                     if (response.body().getData().size() == 0) {
-                        mCurrentPage--;
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                         mRecyclerView.setEnableLoadMore(false);
                     }
-                    mAdapter.addDynamicVideo(response.body().getData());
-                    mAdapter.notifyDataSetChanged();
+                    if (mNeedRefresh) {//需要全部刷新
+                        mNeedRefresh = false;
+                        mAdapter.clearDynamicVideo();
+                        mAdapter.addDynamicVideo(response.body().getData());
+                        mAdapter.notifyDataSetChanged();
+                    } else {//加载更多
+                        int startPosition = mAdapter.getItemCount();
+                        mAdapter.addDynamicVideo(response.body().getData());
+                        mAdapter.notifyItemRangeInserted(startPosition, response.body().getData().size());
+                    }
+                    mCurrentPage++;
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<List<PartionVideo>>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setLoading(false);
             }
         });
     }
 
-
-    @Override
-    protected void initView(View view) {
-        mPartionModel = getArguments().getParcelable(EXTRA_DATA);
-        ButterKnife.bind(this, view);
-        initRecyclerView();
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-    }
-
     @Override
     protected void fetchData() {
         loadData();
-        loadDynamicData(1);
+        loadDynamicData();
     }
 
     private void initRecyclerView() {
@@ -155,17 +168,17 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
-        loadDynamicData(mCurrentPage);
+        loadDynamicData();
     }
 
     @Override
     public void onRefresh() {
         mCurrentPage = 1;
-        loadData();
-        loadDynamicData(mCurrentPage);
+        mNeedRefresh = true;
         mRecyclerView.setEnableLoadMore(true);
-        mRecyclerView.setLoadView("加载中", true);
+        mRecyclerView.setLoadView(R.string.loading, true);
+        loadData();
+        loadDynamicData();
     }
 
     @Override
@@ -181,11 +194,21 @@ public class PartionHomeFragment extends LazyLoadFragment implements LoadMoreRec
 
     @Override
     public void onSubPartionItemClick(int position) {
-
+        BusUtils.getBus().post(new SubPartionClickEvent(position));
     }
 
     @Override
     public void onHeadItemClick(int type) {
+        if (type == PartionHomeRecyclerViewAdapter.TYPE_NEW_VIDEO_HEAD) {
+            BusUtils.getBus().post(new SubPartionClickEvent(1));
+        }
+    }
 
+    public static class SubPartionClickEvent {
+        public int position;
+
+        SubPartionClickEvent(int position) {
+            this.position = position;
+        }
     }
 }

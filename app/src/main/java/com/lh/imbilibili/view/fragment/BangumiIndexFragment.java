@@ -1,6 +1,5 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +25,7 @@ import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
-import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
+import com.lh.imbilibili.view.adapter.GridLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.bangumiindexfragment.BangumiIndexAdapter;
 import com.lh.imbilibili.view.adapter.bangumiindexfragment.GridMenuAdapter;
 import com.lh.imbilibili.widget.FlowLayout;
@@ -123,8 +122,6 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
     private ImageView[] mIvUps;
     private ImageView[] mIvDowns;
     private TextView[] mTvFliterButtons;
-
-    private ValueAnimator gridMenuAnimator;
 
     public static BangumiIndexFragment newInstance(int year, int quarter, ArrayList<Integer> years) {
         BangumiIndexFragment fragment = new BangumiIndexFragment();
@@ -235,7 +232,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                 }
             }
         });
-        GridRecyclerViewItemDecoration itemDecoration = new GridRecyclerViewItemDecoration(getContext(), true);
+        GridLayoutItemDecoration itemDecoration = new GridLayoutItemDecoration(getContext(), true);
         mLoadMoreRecyclerView.setLayoutManager(gridLayoutManager);
         mLoadMoreRecyclerView.addItemDecoration(itemDecoration);
         mLoadMoreRecyclerView.setAdapter(mAdapter);
@@ -313,7 +310,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
      * @param updatePeriod 默认0
      * @param version      类型：0全部 1Tv版 2OVA·OAD 3剧场版 4其他
      */
-    private void loadData(int indexSort, int indexType, String isFinish, int page, int pageSize, int quarter, int startYear, final String tagId, int updatePeriod, String version) {
+    private void loadData(int indexSort, int indexType, String isFinish, int page, int pageSize, int quarter, final int startYear, final String tagId, int updatePeriod, String version) {
         mBangumiIndexCall = RetrofitHelper.getInstance().getBangumiService().getBangumiIndex(
                 indexSort, indexType, "", isFinish, page, pageSize,
                 quarter, startYear, tagId, System.currentTimeMillis(), updatePeriod, version);
@@ -327,10 +324,10 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
                     mLoadMoreRecyclerView.setLoading(false);
                     if (mBangumiIndex.getPages().equals(mCurrentPage + "") || mBangumiIndex.getList().size() == 0) {
                         mLoadMoreRecyclerView.setEnableLoadMore(false);
-                        mLoadMoreRecyclerView.setLoadView("没有更多了", false);
+                        mLoadMoreRecyclerView.setLoadView(R.string.no_data_tips, false);
                     } else {
                         mLoadMoreRecyclerView.setEnableLoadMore(true);
-                        mLoadMoreRecyclerView.setLoadView("加载中...", true);
+                        mLoadMoreRecyclerView.setLoadView(R.string.loading, true);
                     }
                 }
             }
@@ -519,7 +516,7 @@ public class BangumiIndexFragment extends BaseFragment implements LoadMoreRecycl
         loadDataAccordingFlilter();
     }
 
-    class DrawerViewHolder implements View.OnClickListener, FlowLayout.onItemClickListener {
+    class DrawerViewHolder implements View.OnClickListener, FlowLayout.OnItemClickListener {
         @BindView(R.id.exit)
         View mDrawerExit;
 

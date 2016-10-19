@@ -28,9 +28,10 @@ import butterknife.ButterKnife;
 
 /**
  * Created by liuhui on 2016/10/5.
+ * 搜索主界面Adapter
  */
 
-public class SearchAdapter extends RecyclerView.Adapter {
+public class SearchRecyclerViewAdapter extends RecyclerView.Adapter {
 
     public static final int TYPE_SEASON = 1;
     public static final int TYPE_SEASON_MORE = 2;
@@ -43,7 +44,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
     private OnSearchItemClickListener mOnItemClickListener;
     private Context mContext;
 
-    public SearchAdapter(Context context, SearchResult searchResult) {
+    public SearchRecyclerViewAdapter(Context context, SearchResult searchResult) {
         mContext = context;
         mSearchResult = searchResult;
         mTotalBangumiSize = searchResult.getNav().get(0).getTotal();

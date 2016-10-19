@@ -41,9 +41,11 @@ public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
 
+    private List<Integer> mTypeList;
+
     public PartionChildRecyclerViewAdapter(Context context) {
         mContext = context;
-        mNewVideos = new ArrayList<>();
+        mTypeList = new ArrayList<>();
     }
 
     public void setOnVideoItemClickListener(OnVideoItemClickListener listener) {
@@ -51,6 +53,9 @@ public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public void addNewVideos(List<PartionVideo> newVideos) {
+        if (newVideos == null) {
+            return;
+        }
         if (mNewVideos == null) {
             mNewVideos = newVideos;
         } else {
@@ -87,9 +92,9 @@ public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.mHeadName.setText("最热视频");
         } else if (type == TYPE_HOT_ITEM) {
             VideoHolder videoHolder = (VideoHolder) holder;
-            int partPosition = position - 1;
-            PartionVideo video = mPartionHomeData.getRecommend().get(partPosition);
-            Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
+            int realPosition = position - mTypeList.indexOf(TYPE_HOT_ITEM);
+            PartionVideo video = mPartionHomeData.getRecommend().get(realPosition);
+            Glide.with(mContext).load(video.getCover()).asBitmap().into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvAuthor.setText(video.getName());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
@@ -101,14 +106,9 @@ public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.mHeadName.setText("最新视频");
         } else if (type == TYPE_NEW_ITEM) {
             VideoHolder videoHolder = (VideoHolder) holder;
-            int partPosition;
-            if (mPartionHomeData != null && mPartionHomeData.getRecommend() != null && mPartionHomeData.getRecommend().size() != 0) {
-                partPosition = position - 6;
-            } else {
-                partPosition = position;
-            }
-            PartionVideo video = mNewVideos.get(partPosition);
-            Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
+            int realPosition = position - mTypeList.indexOf(TYPE_NEW_ITEM);
+            PartionVideo video = mNewVideos.get(realPosition);
+            Glide.with(mContext).load(video.getCover()).asBitmap().into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvAuthor.setText(video.getName());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
@@ -120,39 +120,25 @@ public class PartionChildRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (mPartionHomeData == null) {
-            return 0;
-        } else if (mPartionHomeData.getRecommend().size() == 0) {
-            return mNewVideos.size() + 1;
-        } else {
-            return 6 + mNewVideos.size();
+        mTypeList.clear();
+        if (mPartionHomeData != null && mPartionHomeData.getRecommend() != null && mPartionHomeData.getRecommend().size() > 0) {
+            mTypeList.add(TYPE_HOT_HEAD);
+            for (int i = 0; i < mPartionHomeData.getRecommend().size(); i++) {
+                mTypeList.add(TYPE_HOT_ITEM);
+            }
         }
+        if (mNewVideos != null && mNewVideos.size() > 0) {
+            mTypeList.add(TYPE_NEW_HEAD);
+            for (int i = 0; i < mNewVideos.size(); i++) {
+                mTypeList.add(TYPE_NEW_ITEM);
+            }
+        }
+        return mTypeList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mPartionHomeData != null && mPartionHomeData.getRecommend().size() != 0) {
-            switch (position) {
-                case 0:
-                    return TYPE_HOT_HEAD;
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    return TYPE_HOT_ITEM;
-                case 5:
-                    return TYPE_NEW_HEAD;
-                default:
-                    return TYPE_NEW_ITEM;
-            }
-        } else {
-            switch (position) {
-                case 0:
-                    return TYPE_NEW_HEAD;
-                default:
-                    return TYPE_NEW_ITEM;
-            }
-        }
+        return mTypeList.get(position);
     }
 
     private class HeadHolder extends RecyclerView.ViewHolder {

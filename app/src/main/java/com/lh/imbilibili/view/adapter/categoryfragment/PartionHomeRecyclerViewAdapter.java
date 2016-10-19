@@ -50,10 +50,12 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private OnItemClickListener mOnItemClickListener;
 
+    private List<Integer> mTypeList;
+
     public PartionHomeRecyclerViewAdapter(Context context, PartionModel partionModel) {
         mContext = context;
         mPartionModel = partionModel;
-        mDynamicVideo = new ArrayList<>();
+        mTypeList = new ArrayList<>();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -61,11 +63,21 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public void addDynamicVideo(List<PartionVideo> data) {
-        mDynamicVideo.addAll(data);
+        if (mDynamicVideo == null) {
+            mDynamicVideo = data;
+        } else {
+            mDynamicVideo.addAll(data);
+        }
     }
 
     public void setPartionData(PartionHome partionData) {
         this.mPartionData = partionData;
+    }
+
+    public void clearDynamicVideo() {
+        if (mDynamicVideo != null) {
+            mDynamicVideo.clear();
+        }
     }
 
     @Override
@@ -111,10 +123,10 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.setLeftDrawable(R.drawable.ic_header_hot);
             headHolder.tvSubTitle.setVisibility(View.GONE);
         } else if (type == TYPE_HOT_RECOMMEND_ITEM) {
-            int partPosition = position - 3;
-            PartionVideo video = mPartionData.getRecommend().get(partPosition);
+            int realPosition = position - mTypeList.indexOf(TYPE_HOT_RECOMMEND_ITEM);
+            PartionVideo video = mPartionData.getRecommend().get(realPosition);
             VideoHolder videoHolder = (VideoHolder) holder;
-            Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
+            Glide.with(mContext).load(video.getCover()).asBitmap().into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
@@ -125,10 +137,10 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.setLeftDrawable(R.drawable.ic_header_new);
             headHolder.tvSubTitle.setVisibility(View.GONE);
         } else if (type == TYPE_NEW_VIDEO_ITEM) {
-            int partPosition = position - 8;
-            PartionVideo video = mPartionData.getNewVideo().get(partPosition);
+            int realPosition = position - mTypeList.indexOf(TYPE_NEW_VIDEO_ITEM);
+            PartionVideo video = mPartionData.getNewVideo().get(realPosition);
             VideoHolder videoHolder = (VideoHolder) holder;
-            Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
+            Glide.with(mContext).load(video.getCover()).asBitmap().into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
@@ -139,10 +151,10 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.setLeftDrawable(R.drawable.ic_header_ding);
             headHolder.tvSubTitle.setVisibility(View.GONE);
         } else if (type == TYPE_PARTION_DYNAMIC_ITME) {
-            int partPosition = position - 13;
-            PartionVideo video = mDynamicVideo.get(partPosition);
+            int realPosition = position - mTypeList.indexOf(TYPE_PARTION_DYNAMIC_ITME);
+            PartionVideo video = mDynamicVideo.get(realPosition);
             VideoHolder videoHolder = (VideoHolder) holder;
-            Glide.with(mContext).load(video.getCover()).into(videoHolder.mIvCover);
+            Glide.with(mContext).load(video.getCover()).asBitmap().into(videoHolder.mIvCover);
             videoHolder.mTvTitle.setText(video.getTitle());
             videoHolder.mTvInfoViews.setText(StringUtils.formateNumber(video.getPlay()));
             videoHolder.mTvInfoDanmakus.setText(StringUtils.formateNumber(video.getDanmaku()));
@@ -152,38 +164,37 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (mPartionData == null) {
-            return 0;
+        mTypeList.clear();
+        if (mPartionData != null) {
+            if (mPartionData.getBanner() != null) {
+                mTypeList.add(TYPE_BANNER);
+            }
+            mTypeList.add(TYPE_SUB_PARTION);
+            if (mPartionData.getRecommend() != null) {
+                mTypeList.add(TYPE_HOT_RECOMMEND_HEAD);
+                for (int i = 0; i < mPartionData.getRecommend().size(); i++) {
+                    mTypeList.add(TYPE_HOT_RECOMMEND_ITEM);
+                }
+            }
+            if (mPartionData.getNewVideo() != null) {
+                mTypeList.add(TYPE_NEW_VIDEO_HEAD);
+                for (int i = 0; i < mPartionData.getNewVideo().size(); i++) {
+                    mTypeList.add(TYPE_NEW_VIDEO_ITEM);
+                }
+            }
         }
-        return 13 + mDynamicVideo.size();
+        if (mDynamicVideo != null) {
+            mTypeList.add(TYPE_PARTION_DYNAMIC_HEAD);
+            for (int i = 0; i < mDynamicVideo.size(); i++) {
+                mTypeList.add(TYPE_PARTION_DYNAMIC_ITME);
+            }
+        }
+        return mTypeList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        switch (position) {
-            case 0:
-                return TYPE_BANNER;
-            case 1:
-                return TYPE_SUB_PARTION;
-            case 2:
-                return TYPE_HOT_RECOMMEND_HEAD;
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                return TYPE_HOT_RECOMMEND_ITEM;
-            case 7:
-                return TYPE_NEW_VIDEO_HEAD;
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                return TYPE_NEW_VIDEO_ITEM;
-            case 12:
-                return TYPE_PARTION_DYNAMIC_HEAD;
-            default:
-                return TYPE_PARTION_DYNAMIC_ITME;
-        }
+        return mTypeList.get(position);
     }
 
     private class BannerHolder extends RecyclerView.ViewHolder {
@@ -201,7 +212,7 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    class SubPartionHolder extends RecyclerView.ViewHolder {
+    class SubPartionHolder extends RecyclerView.ViewHolder implements SubPartionGridAdapter.OnItemClickListener {
 
         @BindView(R.id.recycler_view)
         RecyclerView recyclerView;
@@ -214,10 +225,18 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
             recyclerView.setLayoutManager(gridLayoutManager);
             recyclerView.setAdapter(adapter);
             recyclerView.setNestedScrollingEnabled(false);
+            adapter.setOnItemClickListener(this);
+        }
+
+        @Override
+        public void onItemClick(int position) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onSubPartionItemClick(position);
+            }
         }
     }
 
-    class HeadHolder extends RecyclerView.ViewHolder {
+    class HeadHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title)
         TextView tvTitle;
         @BindView(R.id.sub_title)
@@ -226,12 +245,20 @@ public class PartionHomeRecyclerViewAdapter extends RecyclerView.Adapter {
         HeadHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         void setLeftDrawable(int resId) {
             Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), resId);
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             tvTitle.setCompoundDrawables(drawable, null, null, null);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onHeadItemClick(getItemViewType());
+            }
         }
     }
 

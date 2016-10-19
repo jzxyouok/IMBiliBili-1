@@ -176,6 +176,9 @@ public class BannerView extends FrameLayout implements ViewPager.OnPageChangeLis
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (currentPosition == 0) {
+            setCurrentItem(1, false);
+        }
         startLoop(loopTime);
     }
 

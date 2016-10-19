@@ -25,8 +25,7 @@ public class StatusBarUtils {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
-            contentLayout.getChildAt(0).setFitsSystemWindows(false);
-            rootView.setFitsSystemWindows(true);
+            rootView.setPadding(0, getStatusBarHeight(activity), 0, 0);
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
@@ -36,8 +35,7 @@ public class StatusBarUtils {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.statusBar));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
-            contentLayout.getChildAt(0).setFitsSystemWindows(false);
-            rootView.setFitsSystemWindows(true);
+            rootView.setPadding(0, getStatusBarHeight(activity), 0, 0);
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }

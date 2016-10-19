@@ -35,7 +35,7 @@ import com.lh.imbilibili.utils.transformation.BlurTransformation;
 import com.lh.imbilibili.utils.transformation.RoundedCornersTransformation;
 import com.lh.imbilibili.utils.transformation.TopCropTransformation;
 import com.lh.imbilibili.view.BaseActivity;
-import com.lh.imbilibili.view.adapter.GridRecyclerViewItemDecoration;
+import com.lh.imbilibili.view.adapter.GridLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.BangumiEpAdapter;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.BangumiRecommendAdapter;
 import com.lh.imbilibili.view.adapter.bangumidetailactivity.SeasonListAdapter;
@@ -96,7 +96,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
     TextView tvSeasonCommentTitle;
     @BindViews({R.id.feedback1, R.id.feedback2, R.id.feedback3})
     List<FeedbackView> feedbackViews;
-    @BindView(R.id.emptyView)
+    @BindView(R.id.empty_view)
     TextView emptyView;
 
     @BindView(R.id.recommend_bangumi_header)
@@ -262,7 +262,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
             GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
             recommendAdapter = new BangumiRecommendAdapter(this, recommendSeasons.getList());
             recommendRecyclerView.setLayoutManager(gridLayoutManager);
-            recommendRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this, false));
+            recommendRecyclerView.addItemDecoration(new GridLayoutItemDecoration(this, false));
             recommendRecyclerView.setHasFixedSize(true);
             recommendRecyclerView.setNestedScrollingEnabled(false);
             recommendRecyclerView.setAdapter(recommendAdapter);
@@ -331,7 +331,7 @@ public class BangumiDetailActivity extends BaseActivity implements BangumiEpAdap
         if (bangumiEpAdapter == null) {
             GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
             bangumiEpAdapter = new BangumiEpAdapter(bangumiDetail.getEpisodes());
-            epRecyclerView.addItemDecoration(new GridRecyclerViewItemDecoration(this, false));
+            epRecyclerView.addItemDecoration(new GridLayoutItemDecoration(this, false));
             epRecyclerView.setLayoutManager(gridLayoutManager);
             epRecyclerView.setAdapter(bangumiEpAdapter);
             epRecyclerView.setNestedScrollingEnabled(false);

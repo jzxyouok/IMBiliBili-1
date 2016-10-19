@@ -1,8 +1,6 @@
 package com.lh.imbilibili.view.fragment;
 
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +14,7 @@ import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.LoadAnimationUtils;
 import com.lh.imbilibili.utils.ToastUtils;
 import com.lh.imbilibili.view.LazyLoadFragment;
+import com.lh.imbilibili.view.activity.UserCenterActivity;
 import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.search.UpUserSearchAdapter;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
@@ -28,9 +27,10 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/6.
+ * 搜索界面-Up主
  */
 
-public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener {
+public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, UpUserSearchAdapter.OnItemClickListener {
     private static final String EXTRA_DATA = "keyWord";
 
     @BindView(R.id.recycler_view)
@@ -43,7 +43,6 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
     private UpSearchResult mSearchResult;
     private UpUserSearchAdapter mAdapter;
     private int mCurrentPage;
-    private AnimationDrawable mLoadingDrawable;
 
     public static SearchUpFragment newInstance(String keyWord) {
         SearchUpFragment fragment = new SearchUpFragment();
@@ -57,7 +56,6 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
     protected void initView(View view) {
         ButterKnife.bind(this, view);
         mKeyWord = getArguments().getString(EXTRA_DATA);
-        mLoadingDrawable = (AnimationDrawable) ContextCompat.getDrawable(getContext(), R.drawable.anim_search_loading);
         initRecyclerView();
         mCurrentPage = 1;
         mIvLoading.setVisibility(View.VISIBLE);
@@ -79,6 +77,7 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
         mRecyclerView.setOnLoadMoreLinstener(this);
         mRecyclerView.setEnableLoadMore(false);
         mRecyclerView.setShowLoadingView(false);
+        mAdapter.setOnItemClickListener(this);
     }
 
     private void loadSearchPage(int page) {
@@ -94,7 +93,7 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
                     if (response.body().getData().getItems() != null) {
                         if (response.body().getData().getPages() == mCurrentPage) {
                             mRecyclerView.setEnableLoadMore(false);
-                            mRecyclerView.setLoadView("没有更多了", false);
+                            mRecyclerView.setLoadView(R.string.no_data_tips, false);
                         }
                         if (mCurrentPage == 1) {
                             LoadAnimationUtils.stopLoadAnimate(mIvLoading, 0);
@@ -102,24 +101,22 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
                             mRecyclerView.setShowLoadingView(true);
                         }
                         mSearchResult = response.body().getData();
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addData(mSearchResult.getItems());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemRangeInserted(startPosition, mSearchResult.getItems().size());
+                        mCurrentPage++;
                     } else {
                         if (mCurrentPage == 1) {
                             LoadAnimationUtils.stopLoadAnimate(mIvLoading, R.drawable.search_failed);
                         }
-                        mCurrentPage--;
                     }
-                } else {
-                    mCurrentPage--;
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<UpSearchResult>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
                 LoadAnimationUtils.stopLoadAnimate(mIvLoading, R.drawable.search_failed);
                 mRecyclerView.setVisibility(View.GONE);
             }
@@ -139,7 +136,11 @@ public class SearchUpFragment extends LazyLoadFragment implements LoadMoreRecycl
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
         loadSearchPage(mCurrentPage);
+    }
+
+    @Override
+    public void onUpItemClick(int mid) {
+        UserCenterActivity.startActivity(getContext(), mid, 0);
     }
 }

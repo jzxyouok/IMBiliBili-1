@@ -270,9 +270,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
     }
 
     private void startPlaying() {
-        mHandler.removeMessages(MSG_SYNC_NOW);
+        mHandler.removeMessages(MSG_SYNC_AT_TIME);
         mIjkVideoView.start();
-        mHandler.sendEmptyMessage(MSG_SYNC_NOW);
         mHandler.sendEmptyMessage(MSG_SYNC_AT_TIME);
     }
 
@@ -283,9 +282,9 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
             mIjkVideoView.start();
         }
         if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
-            mHandler.removeMessages(MSG_SYNC_NOW);
+            mHandler.removeMessages(MSG_SYNC_AT_TIME);
             mDanmakuView.resume();
-            mHandler.sendEmptyMessage(MSG_SYNC_NOW);
+            mHandler.sendEmptyMessage(MSG_SYNC_AT_TIME);
         }
     }
 
@@ -297,6 +296,8 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
             mIjkVideoView.pause();
         }
         if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
+            mHandler.removeMessages(MSG_SYNC_AT_TIME);
+            mHandler.removeMessages(MSG_SYNC_NOW);
             mDanmakuView.pause();
         }
     }
@@ -326,14 +327,16 @@ public class VideoActivity extends BaseActivity implements IMediaPlayer.OnInfoLi
                 mDanmakuView.start();
                 break;
             case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                mHandler.removeMessages(MSG_SYNC_AT_TIME);
+                mHandler.removeMessages(MSG_SYNC_NOW);
                 mDanmakuView.pause();
                 mTvBuffering.setVisibility(View.VISIBLE);
                 mProgressBar.setVisibility(View.VISIBLE);
                 break;
             case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                mHandler.removeMessages(MSG_SYNC_NOW);
+                mHandler.removeMessages(MSG_SYNC_AT_TIME);
                 mDanmakuView.resume();
-                mHandler.sendEmptyMessage(MSG_SYNC_NOW);
+                mHandler.sendEmptyMessage(MSG_SYNC_AT_TIME);
                 mProgressBar.setVisibility(View.GONE);
                 mTvBuffering.setVisibility(View.GONE);
                 mPrePlayMsg.setVisibility(View.GONE);

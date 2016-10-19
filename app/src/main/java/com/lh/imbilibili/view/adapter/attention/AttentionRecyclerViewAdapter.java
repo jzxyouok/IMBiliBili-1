@@ -21,6 +21,7 @@ import com.lh.imbilibili.model.attention.FollowBangumi;
 import com.lh.imbilibili.utils.StringUtils;
 import com.lh.imbilibili.utils.transformation.CircleTransformation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,10 +43,13 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
     private List<FollowBangumi> mFollowBangumis;
     private List<DynamicVideo.Feed> mFeeds;
 
+    private List<Integer> mTypeList;
+
     private OnItemClickListener mOnItemClickListener;
 
     public AttentionRecyclerViewAdapter(Context context) {
         mContext = context;
+        mTypeList = new ArrayList<>();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -95,22 +99,32 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             headHolder.tvTitle.setText("番剧");
             headHolder.setLeftDrawable(R.drawable.search_result_ic_bangumi);
             headHolder.tvSubTitle.setText("更多");
+            headHolder.itemView.setClickable(true);
         } else if (type == TYPE_BANGUMI_FOLLOW_ITEM) {
             BangumiViewHolder bangumiViewHolder = (BangumiViewHolder) holder;
-            FollowBangumi followBangumi = mFollowBangumis.get(position - 1);
-            Glide.with(mContext).load(followBangumi.getCover()).into(bangumiViewHolder.ivCover);
-            bangumiViewHolder.tvTitle.setText(followBangumi.getTitle());
-            bangumiViewHolder.tv1.setText(StringUtils.format("看到第%s话", followBangumi.getUserSeason().getLastEpIndex()));
-            bangumiViewHolder.tv2.setText(StringUtils.format("更新至第%s话", followBangumi.getNewEp().getIndex()));
-            bangumiViewHolder.mSeasonId = followBangumi.getSeasonId();
+            int realPosition = position - mTypeList.indexOf(TYPE_BANGUMI_FOLLOW_ITEM);
+            if (realPosition < mFollowBangumis.size()) {
+                bangumiViewHolder.itemView.setVisibility(View.VISIBLE);
+                FollowBangumi followBangumi = mFollowBangumis.get(realPosition);
+                Glide.with(mContext).load(followBangumi.getCover()).into(bangumiViewHolder.ivCover);
+                bangumiViewHolder.tvTitle.setText(followBangumi.getTitle());
+                bangumiViewHolder.tv1.setText(StringUtils.format("看到第%s话", followBangumi.getUserSeason().getLastEpIndex()));
+                bangumiViewHolder.tv2.setText(StringUtils.format("更新至第%s话", followBangumi.getNewEp().getIndex()));
+                bangumiViewHolder.mSeasonId = followBangumi.getSeasonId();
+            } else {
+                bangumiViewHolder.itemView.setVisibility(View.GONE);
+            }
         } else if (type == TYPE_DYNAMIC_HEAD) {
             HeadHolder headHolder = (HeadHolder) holder;
             headHolder.tvTitle.setText("动态");
             headHolder.setLeftDrawable(R.drawable.ic_header_dynamic);
             headHolder.tvSubTitle.setText("");
+            headHolder.tvSubTitle.setCompoundDrawables(null, null, null, null);
+            headHolder.itemView.setClickable(false);
         } else {
             DynamicVideoViewHolder dynamicVideoViewHolder = (DynamicVideoViewHolder) holder;
-            DynamicVideo.Feed feed = mFeeds.get(position - 5);
+            int realPosition = position - mTypeList.indexOf(TYPE_DYNAMIC_ITEM);
+            DynamicVideo.Feed feed = mFeeds.get(realPosition);
             dynamicVideoViewHolder.mAId = feed.getAddition().getAid();
             if (feed.getType() == 1) {//video
                 dynamicVideoViewHolder.mIvAuthor.setVisibility(View.VISIBLE);
@@ -148,31 +162,28 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (mFollowBangumis == null || mFollowBangumis.isEmpty()) {
-            return 0;
-        } else {
-            if (mFeeds == null || mFeeds.isEmpty()) {
-                return mFollowBangumis.size() + 1;
-            } else {
-                return mFollowBangumis.size() + mFeeds.size() + 2;
+        mTypeList.clear();
+        if (mFollowBangumis != null && !mFollowBangumis.isEmpty()) {
+            mTypeList.add(TYPE_BANGUMI_FOLLOW_HEAD);
+            mTypeList.add(TYPE_BANGUMI_FOLLOW_ITEM);
+            mTypeList.add(TYPE_BANGUMI_FOLLOW_ITEM);
+            mTypeList.add(TYPE_BANGUMI_FOLLOW_ITEM);
+        }
+        if (mFeeds != null && !mFeeds.isEmpty()) {
+            mTypeList.add(TYPE_DYNAMIC_HEAD);
+            for (int i = 0; i < mFeeds.size(); i++) {
+                mTypeList.add(TYPE_DYNAMIC_ITEM);
             }
         }
+        return mTypeList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
-            return TYPE_BANGUMI_FOLLOW_HEAD;
-        } else if (position < 4) {
-            return TYPE_BANGUMI_FOLLOW_ITEM;
-        } else if (position == 4) {
-            return TYPE_DYNAMIC_HEAD;
-        } else {
-            return TYPE_DYNAMIC_ITEM;
-        }
+        return mTypeList.get(position);
     }
 
-    class HeadHolder extends RecyclerView.ViewHolder {
+    class HeadHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title)
         TextView tvTitle;
         @BindView(R.id.sub_title)
@@ -183,12 +194,19 @@ public class AttentionRecyclerViewAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        public void setLeftDrawable(int resId) {
+        void setLeftDrawable(int resId) {
             Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), resId);
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             tvTitle.setCompoundDrawables(drawable, null, null, null);
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            if (getItemViewType() == TYPE_BANGUMI_FOLLOW_HEAD && mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(null, getItemViewType());
+            }
+        }
     }
 
     class BangumiViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

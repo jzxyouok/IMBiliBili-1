@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -15,8 +16,10 @@ import com.lh.imbilibili.model.history.History;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.utils.StatusBarUtils;
 import com.lh.imbilibili.utils.ToastUtils;
+import com.lh.imbilibili.utils.UserManagerUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.IDrawerLayoutActivity;
+import com.lh.imbilibili.view.activity.LoginActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
 import com.lh.imbilibili.view.adapter.history.HistoryAdapter;
@@ -31,6 +34,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/10/8.
+ * 历史记录界面
  */
 
 public class HistoryRecordFragment extends BaseFragment {
@@ -45,6 +49,10 @@ public class HistoryRecordFragment extends BaseFragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.loading_view)
     ProgressBar mPb;
+    @BindView(R.id.btn_login)
+    Button mBtnLogin;
+
+    private boolean mNeedToLoad;
 
     private HistoryAdapter mAdapter;
 
@@ -55,8 +63,26 @@ public class HistoryRecordFragment extends BaseFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (mNeedToLoad && UserManagerUtils.getInstance().getCurrentUser() != null) {
+            mNeedToLoad = false;
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mPb.setVisibility(View.VISIBLE);
+            mBtnLogin.setVisibility(View.GONE);
+            loadHistory();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
+        mNeedToLoad = true;
         StatusBarUtils.setDrawerToolbarLayout(getActivity(), mRootView);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +94,23 @@ public class HistoryRecordFragment extends BaseFragment {
         });
         mToolbar.setTitle("历史记录");
         initRecyclerView();
-        loadHistory();
+        if (UserManagerUtils.getInstance().getCurrentUser() != null) {
+            mNeedToLoad = false;
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mPb.setVisibility(View.VISIBLE);
+            mBtnLogin.setVisibility(View.GONE);
+            loadHistory();
+        } else {
+            mRecyclerView.setVisibility(View.GONE);
+            mPb.setVisibility(View.GONE);
+            mBtnLogin.setVisibility(View.VISIBLE);
+            mBtnLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LoginActivity.startActivity(getContext());
+                }
+            });
+        }
     }
 
     private void initRecyclerView() {
@@ -101,7 +143,7 @@ public class HistoryRecordFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<List<History>>> call, Throwable t) {
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }

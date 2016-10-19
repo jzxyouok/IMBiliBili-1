@@ -29,17 +29,13 @@ public class BlurTransformation extends BitmapTransformation {
         Bitmap blurredBitmap = toTransform.copy(Bitmap.Config.ARGB_8888, true);
         Allocation input = Allocation.createFromBitmap(
                 rs,
-                blurredBitmap,
-                Allocation.MipmapControl.MIPMAP_FULL,
-                Allocation.USAGE_SHARED
-        );
+                blurredBitmap);
         Allocation output = Allocation.createTyped(rs, input.getType());
         ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
         script.setInput(input);
         script.setRadius(radius);
         script.forEach(output);
         output.copyTo(blurredBitmap);
-        //toTransform.recycle();
         rs.destroy();
         return blurredBitmap;
     }

@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by liuhui on 2016/10/6.
+ * SearchView
  */
 
 public class BiliBiliSearchView extends DialogFragment implements DialogInterface.OnKeyListener, View.OnClickListener {
@@ -48,10 +49,14 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
     private String mHint;
     private String mKeyWord;
 
+    private View mRootView;
+
     private OnSearchListener mOnSearchListener;
 
     public static BiliBiliSearchView newInstance() {
-        return new BiliBiliSearchView();
+        BiliBiliSearchView searchView = new BiliBiliSearchView();
+        searchView.setStyle(STYLE_NO_TITLE, 0);
+        return searchView;
     }
 
 
@@ -70,19 +75,11 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.search_widget_layout, container, false);
-        ButterKnife.bind(this, view);
-        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        return view;
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        getDialog().getWindow().setGravity(Gravity.TOP);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        if (mRootView == null) {
+            mRootView = inflater.inflate(R.layout.search_widget_layout, container, false);
+            ButterKnife.bind(this, mRootView);
+        }
+        return mRootView;
     }
 
     @Override
@@ -119,9 +116,28 @@ public class BiliBiliSearchView extends DialogFragment implements DialogInterfac
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog().getWindow();
+        if (window != null) {
+            window.setGravity(Gravity.TOP);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mEdSearchBar.setText(mKeyWord);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRootView != null && mRootView.getParent() != null) {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+        }
     }
 
     @Override

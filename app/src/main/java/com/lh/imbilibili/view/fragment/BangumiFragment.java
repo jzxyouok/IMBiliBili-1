@@ -12,13 +12,13 @@ import com.lh.imbilibili.model.IndexPage;
 import com.lh.imbilibili.utils.CallUtils;
 import com.lh.imbilibili.view.BaseFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
+import com.lh.imbilibili.view.activity.FollowBangumiActivity;
 import com.lh.imbilibili.view.activity.SeasonGroupActivity;
 import com.lh.imbilibili.view.activity.WebViewActivity;
 import com.lh.imbilibili.view.adapter.bangumifragment.BangumiAdapter;
 import com.lh.imbilibili.view.adapter.bangumifragment.BangumiIndexItemDecoration;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +30,7 @@ import retrofit2.Response;
 
 /**
  * Created by liuhui on 2016/7/6.
+ * 番剧页面
  */
 public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnLoadMoreLinstener, BangumiAdapter.OnItemClickListener {
 
@@ -39,12 +40,15 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     LoadMoreRecyclerView recyclerView;
 
     private IndexPage indexData;
-    private List<IndexBangumiRecommend> bangumis;
 
     private BangumiAdapter adapter;
 
+    private String mCursor;
+
     private Call<BiliBiliResultResponse<IndexPage>> indexCall;
     private Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> recommendCall;
+
+    private boolean mNeedRefresh; //是否需要全部刷新
 
     public static BangumiFragment newInstance() {
         return new BangumiFragment();
@@ -58,63 +62,44 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
     @Override
     protected void initView(View view) {
         ButterKnife.bind(this, view);
+        mNeedRefresh = true;
         initRecyclerView();
-        loadAllData(false);
+        loadAllData();
     }
 
-    private void loadAllData(boolean forceRefresh) {
-        if (indexData == null || forceRefresh) {
-            loadIndexData();
-        }
-        if (bangumis == null || bangumis.size() == 0) {
-            loadBangumiRecommendData("-1", 10);
-        }
+    private void loadAllData() {
+        mCursor = "-1";
+        loadIndexData();
+        loadBangumiRecommendData(mCursor, 10);
     }
 
     private void initRecyclerView() {
-        if (adapter == null) {
-            swipeRefreshLayout.setOnRefreshListener(this);
-            adapter = new BangumiAdapter(getActivity(), indexData, bangumis);
-            adapter.setItemClickListener(this);
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
-            gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
-            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    int type = recyclerView.getItemViewType(position);
-                    if (type == BangumiAdapter.BANNER ||
-                            type == BangumiAdapter.NAV ||
-                            type == BangumiAdapter.SERIALIZING_HEAD ||
-                            type == BangumiAdapter.SEASON_BANGUMI_HEAD ||
-                            type == BangumiAdapter.BANGUMI_RECOMMEND_HEAD ||
-                            type == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
-                            type == LoadMoreRecyclerView.TYPE_LOAD_MORE) {
-                        return 3;
-                    } else {
-                        return 1;
-                    }
+        swipeRefreshLayout.setOnRefreshListener(this);
+        adapter = new BangumiAdapter(getContext());
+        adapter.setItemClickListener(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
+        gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int type = recyclerView.getItemViewType(position);
+                if (type == BangumiAdapter.BANNER ||
+                        type == BangumiAdapter.NAV ||
+                        type == BangumiAdapter.SERIALIZING_HEAD ||
+                        type == BangumiAdapter.SEASON_BANGUMI_HEAD ||
+                        type == BangumiAdapter.BANGUMI_RECOMMEND_HEAD ||
+                        type == BangumiAdapter.BANGUMI_RECOMMEND_ITEM ||
+                        type == LoadMoreRecyclerView.TYPE_LOAD_MORE) {
+                    return 3;
+                } else {
+                    return 1;
                 }
-            });
-            recyclerView.addItemDecoration(new BangumiIndexItemDecoration(getActivity()));
-            recyclerView.setLayoutManager(gridLayoutManager);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setOnLoadMoreLinstener(this);
-        }
-    }
-
-    private void setIndexData() {
-        adapter.setIndexPage(indexData);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void addBangumiRecommendData(List<IndexBangumiRecommend> date) {
-        if (bangumis == null) {
-            bangumis = new ArrayList<>();
-            adapter.setBangumis(bangumis);
-        }
-        bangumis.addAll(date);
-        recyclerView.setLoading(false);
-        adapter.notifyDataSetChanged();
+            }
+        });
+        recyclerView.addItemDecoration(new BangumiIndexItemDecoration(getActivity()));
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setOnLoadMoreLinstener(this);
     }
 
     private void loadIndexData() {
@@ -127,7 +112,8 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
                 if (response.isSuccessful() && response.body().getCode() == 0) {
                     indexData = response.body().getResult();
                     Collections.sort(indexData.getSerializing());
-                    setIndexData();
+                    adapter.setmIndexPage(indexData);
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -144,18 +130,30 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
         recommendCall.enqueue(new Callback<BiliBiliResultResponse<List<IndexBangumiRecommend>>>() {
             @Override
             public void onResponse(Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> call, Response<BiliBiliResultResponse<List<IndexBangumiRecommend>>> response) {
+                recyclerView.setLoading(false);
                 if (response.isSuccessful() && response.body().getCode() == 0) {
                     if (response.body().getResult().size() == 0) {
-                        recyclerView.setLoadView("再怎么找也没有了", false);
+                        recyclerView.setLoadView(R.string.no_data_tips, false);
                         recyclerView.setEnableLoadMore(false);
+                        return;
                     }
-                    addBangumiRecommendData(response.body().getResult());
+                    if (mNeedRefresh) {//需要全部刷新
+                        mNeedRefresh = false;
+                        adapter.clearRecommend();
+                        adapter.addBangumis(response.body().getResult());
+                        adapter.notifyDataSetChanged();
+                    } else {//加载更多
+                        int startPosition = adapter.getItemCount();
+                        adapter.addBangumis(response.body().getResult());
+                        adapter.notifyItemRangeInserted(startPosition, response.body().getResult().size());
+                    }
+                    mCursor = response.body().getResult().get(response.body().getResult().size() - 1).getCursor();
                 }
             }
 
             @Override
             public void onFailure(Call<BiliBiliResultResponse<List<IndexBangumiRecommend>>> call, Throwable t) {
-
+                recyclerView.setLoading(false);
             }
         });
     }
@@ -167,43 +165,36 @@ public class BangumiFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        if (bangumis != null) {
-            bangumis.clear();
-        }
+        mNeedRefresh = true;
         recyclerView.setEnableLoadMore(true);
-        loadAllData(true);
+        recyclerView.setLoadView(R.string.loading, true);
+        loadAllData();
     }
 
     @Override
     public void onLoadMore() {
-        if (bangumis == null || bangumis.size() == 0) {
-            loadBangumiRecommendData("-1", 10);
-        } else {
-            loadBangumiRecommendData(bangumis.get(bangumis.size() - 1).getCursor(), 10);
-        }
+        loadBangumiRecommendData(mCursor, 10);
     }
 
     @Override
-    public void onClick(int itemType, int position) {
+    public void onClick(int itemType, String data) {
         if (itemType == BangumiAdapter.SERIALIZING_GRID_ITEM) {
-            BangumiDetailActivity.startActivity(getContext(), indexData.getSerializing().get(position).getSeasonId());
+            BangumiDetailActivity.startActivity(getContext(), data);
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_ITEM) {
-            BangumiDetailActivity.startActivity(getContext(), indexData.getPrevious().getList().get(position).getSeasonId());
+            BangumiDetailActivity.startActivity(getContext(), data);
         } else if (itemType == BangumiAdapter.BANGUMI_RECOMMEND_ITEM) {
-            String link = null;
-            IndexBangumiRecommend bangumi = bangumis.get(position);
-            link = bangumi.getLink();
-            if (link.contains("anime")) {
-                String[] temp = link.split("anime/");
+            if (data.contains("anime")) {
+                String[] temp = data.split("anime/");
                 BangumiDetailActivity.startActivity(getContext(), temp[temp.length - 1]);
             } else {
-                WebViewActivity.startActivity(getContext(), link);
+                WebViewActivity.startActivity(getContext(), data);
             }
         } else if (itemType == BangumiAdapter.SEASON_BANGUMI_HEAD) {
             SeasonGroupActivity.startActivity(getContext());
-        } else {
-            // TODO: 2016/8/9
-            return;
+        } else if (itemType == BangumiAdapter.NAV) {
+            if (data.equals(String.valueOf(R.id.follow_bangumi))) {
+                FollowBangumiActivity.startActivity(getContext());
+            }
         }
     }
 

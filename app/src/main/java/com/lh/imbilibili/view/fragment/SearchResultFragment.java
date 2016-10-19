@@ -15,7 +15,7 @@ import com.lh.imbilibili.view.LazyLoadFragment;
 import com.lh.imbilibili.view.activity.BangumiDetailActivity;
 import com.lh.imbilibili.view.activity.VideoDetailActivity;
 import com.lh.imbilibili.view.adapter.LinearLayoutItemDecoration;
-import com.lh.imbilibili.view.adapter.search.SearchAdapter;
+import com.lh.imbilibili.view.adapter.search.SearchRecyclerViewAdapter;
 import com.lh.imbilibili.widget.LoadMoreRecyclerView;
 
 import butterknife.BindView;
@@ -28,13 +28,16 @@ import retrofit2.Response;
  * Created by liuhui on 2016/10/5.
  */
 
-public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SearchAdapter.OnSearchItemClickListener {
+public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRecyclerView.OnLoadMoreLinstener, SearchRecyclerViewAdapter.OnSearchItemClickListener {
+
+    private static final int PAGE_SIZE = 20;
+
     private static final String EXTRA_DATA = "searchData";
     private static final String EXTRA_KEY = "keyWord";
 
     @BindView(R.id.recycler_view)
     LoadMoreRecyclerView mRecyclerView;
-    private SearchAdapter mAdapter;
+    private SearchRecyclerViewAdapter mAdapter;
     private int mCurrentPage;
     private Call<BilibiliDataResponse<SearchResult>> mSearchCall;
     private SearchResult mSearchResult;
@@ -54,7 +57,8 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         ButterKnife.bind(this, view);
         mKeyWord = getArguments().getString(EXTRA_KEY);
         SearchResult searchResult = getArguments().getParcelable(EXTRA_DATA);
-        mAdapter = new SearchAdapter(getContext(), searchResult);
+        mCurrentPage = 2;
+        mAdapter = new SearchRecyclerViewAdapter(getContext(), searchResult);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         LinearLayoutItemDecoration itemDecoration = new LinearLayoutItemDecoration(getContext());
@@ -67,7 +71,6 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
 
     @Override
     protected void fetchData() {
-
     }
 
     @Override
@@ -75,8 +78,8 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
         return R.layout.fragment_search_result_list;
     }
 
-    private void loadSearchPage(int page) {
-        mSearchCall = RetrofitHelper.getInstance().getSearchService().getSearchResult(0, mKeyWord, page, 20);
+    private void loadSearchPage() {
+        mSearchCall = RetrofitHelper.getInstance().getSearchService().getSearchResult(0, mKeyWord, mCurrentPage, PAGE_SIZE);
         mSearchCall.enqueue(new Callback<BilibiliDataResponse<SearchResult>>() {
             @Override
             public void onResponse(Call<BilibiliDataResponse<SearchResult>> call, Response<BilibiliDataResponse<SearchResult>> response) {
@@ -84,42 +87,40 @@ public class SearchResultFragment extends LazyLoadFragment implements LoadMoreRe
                 if (response.body().getCode() == 0) {
                     if (response.body().getData().getItems().getArchive().size() != 0) {
                         mSearchResult = response.body().getData();
+                        int startPosition = mAdapter.getItemCount();
                         mAdapter.addData(mSearchResult.getItems().getArchive());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemRangeInserted(startPosition, mSearchResult.getItems().getArchive().size());
+                        mCurrentPage++;
                     } else {
                         mRecyclerView.setEnableLoadMore(false);
-                        mRecyclerView.setLoadView("没有更多了", false);
+                        mRecyclerView.setLoadView(R.string.no_data_tips, false);
                     }
-                } else {
-                    mCurrentPage--;
                 }
             }
 
             @Override
             public void onFailure(Call<BilibiliDataResponse<SearchResult>> call, Throwable t) {
-                mCurrentPage--;
                 mRecyclerView.setLoading(false);
-                ToastUtils.showToast(getContext(), "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(getContext(), R.string.load_error, Toast.LENGTH_SHORT);
             }
         });
     }
 
     @Override
     public void onLoadMore() {
-        mCurrentPage++;
-        loadSearchPage(mCurrentPage);
+        loadSearchPage();
     }
 
     @Override
     public void onSearchItemClick(String param, int type) {
         switch (type) {
-            case SearchAdapter.TYPE_SEASON:
+            case SearchRecyclerViewAdapter.TYPE_SEASON:
                 BangumiDetailActivity.startActivity(getContext(), param);
                 break;
-            case SearchAdapter.TYPE_VIDEO:
+            case SearchRecyclerViewAdapter.TYPE_VIDEO:
                 VideoDetailActivity.startActivity(getContext(), param);
                 break;
-            case SearchAdapter.TYPE_SEASON_MORE:
+            case SearchRecyclerViewAdapter.TYPE_SEASON_MORE:
                 if (getActivity() instanceof OnSeasonMoreClickListener) {
                     ((OnSeasonMoreClickListener) getActivity()).onSeasonMoreClick();
                 }
